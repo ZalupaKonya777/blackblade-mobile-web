@@ -11,34 +11,34 @@
     ]
   },
   "pack": {
-    "bytes": 50250320,
-    "compressedBytes": 34207658,
-    "sha256": "1b5464b92060cc8764843ffee1892163aa1bdd14c9bf141fadbeba71edf19fba",
+    "bytes": 50250240,
+    "compressedBytes": 34207586,
+    "sha256": "3216275509368b09b7a33f6426416f9f8ed32699f83e1136e7f351808c99505c",
     "parts": [
       {
-        "url": "data/game.pck-00.fc5dda95ec6c.bin",
+        "url": "data/game.pck-00.cc56d8c0aaf4.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-01.94f95163d2e5.bin",
+        "url": "data/game.pck-01.16b080e420cd.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-02.888318411d1f.bin",
+        "url": "data/game.pck-02.ca2737c69749.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-03.ea0d3295dcf4.bin",
+        "url": "data/game.pck-03.6a9641a7db9c.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-04.16129c348f55.bin",
-        "bytes": 653226
+        "url": "data/game.pck-04.3470df9d19ff.bin",
+        "bytes": 653154
       }
     ]
   },
   "script": "engine.8b649683883a.js",
   "threaded": false,
-  "downloadBytes": 42183639,
-  "version": "2ac8ea4ffc970f33"
+  "downloadBytes": 42183567,
+  "version": "e27a84df9f8e830d"
 }

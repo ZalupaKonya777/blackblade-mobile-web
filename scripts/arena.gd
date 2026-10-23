@@ -350,6 +350,6 @@ func apply_quality() -> void:
 		for l in lights:l.visible=false
 		for l in detail_nodes:l.visible=false
 		get_viewport().msaa_3d=Viewport.MSAA_DISABLED
-		get_viewport().scaling_3d_scale=1.0
+		get_viewport().scaling_3d_scale=.85
 		stone.normal_enabled=true;trim.normal_enabled=true
 		if floor_mat is StandardMaterial3D:floor_mat.normal_enabled=true
