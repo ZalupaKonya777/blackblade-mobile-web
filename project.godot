@@ -1,0 +1,53 @@
+config_version=5
+
+[application]
+config/name="BLACKBLADE Mobile — Храм затмения"
+config/description="A soulslike boss fight. The Beast of the Eclipse."
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+config/icon="res://icon.svg"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="blackblade-mobile"
+
+[autoload]
+G="*res://scripts/globals.gd"
+
+[display]
+window/size/viewport_width=1600
+window/size/viewport_height=900
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/vsync/vsync_mode=1
+
+[input_devices]
+pointing/emulate_mouse_from_touch=false
+pointing/emulate_touch_from_mouse=false
+
+[audio]
+general/default_playback_type.web=2
+
+[importer_defaults]
+texture={
+"compress/mode": 2,
+"mipmaps/generate": true,
+"process/size_limit": 1024
+}
+
+[physics]
+common/physics_ticks_per_second=60
+common/max_physics_steps_per_frame=8
+3d/default_gravity=25.0
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+limits/opengl/max_lights_per_object=4
+textures/default_filters/use_nearest_mipmap_filter=false
+anti_aliasing/quality/msaa_3d=1
+textures/default_filters/anisotropic_filtering_level=3
+lights_and_shadows/directional_shadow/size=2048
+lights_and_shadows/positional_shadow/atlas_size=2048
+textures/vram_compression/import_etc2_astc=true
+reflections/sky_reflections/ggx_samples=32

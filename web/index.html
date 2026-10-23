@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a1017">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Храм затмения. Мобильный 3D-босс-файт с перекатами, тяжёлыми ударами и сенсорным управлением.">
+  <title>BLACKBLADE — Храм затмения</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="game.apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="game" tabindex="0" aria-label="Арена Храма затмения"></canvas>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <symbol id="icon-sword" viewBox="0 0 32 32"><path d="m9 23 15-18 3-1-1 4-15 17M6 20l8 7M5 28l4-5"/></symbol>
+      <symbol id="icon-heavy" viewBox="0 0 32 32"><path d="M16 3 20 8 18 21h-4L12 8zM9 22h14M16 22v7M12 29h8"/></symbol>
+      <symbol id="icon-roll" viewBox="0 0 32 32"><path d="M24 10a10 10 0 1 0 1 13M24 4v7h-7M12 19l5-6 4 5-3 6M11 25h8"/><circle cx="18" cy="9" r="2"/></symbol>
+      <symbol id="icon-shield" viewBox="0 0 32 32"><path d="m16 3 10 4v9c0 7-10 13-10 13S6 23 6 16V7zM16 8v15M10 14h12"/></symbol>
+      <symbol id="icon-jump" viewBox="0 0 32 32"><path d="m8 17 8-7 8 7M16 10v17M6 29h20"/><circle cx="16" cy="4" r="2"/></symbol>
+      <symbol id="icon-parry" viewBox="0 0 32 32"><path d="m7 27 18-21M5 20l8 8M23 16v9M19 20h9M6 6v7M3 9h7"/></symbol>
+      <symbol id="icon-flask" viewBox="0 0 32 32"><path d="M12 3h8M13 4v8L8 22c-2 5 1 7 8 7s10-2 8-7l-5-10V4M10 21h12"/></symbol>
+      <symbol id="icon-target" viewBox="0 0 32 32"><circle cx="16" cy="16" r="9"/><circle cx="16" cy="16" r="2"/><path d="M16 2v7M16 23v7M2 16h7M23 16h7"/></symbol>
+      <symbol id="icon-pause-icon" viewBox="0 0 32 32"><path d="M11 7v18M21 7v18"/></symbol>
+      <symbol id="icon-expand" viewBox="0 0 32 32"><path d="M5 13V5h8M19 5h8v8M27 19v8h-8M13 27H5v-8"/></symbol>
+    </defs>
+  </svg>
+
+  <main id="home" class="screen home">
+    <div class="home-shade"></div>
+    <div class="home-content">
+      <div class="eyebrow"><span class="small-sigil">✧</span> ХРАМ ЗАТМЕНИЯ <span class="edition">MOBILE</span></div>
+      <h1>BLACKBLADE</h1>
+      <p class="subtitle">Зверь забытого храма</p>
+      <div class="gold-line"></div>
+      <p class="intro">Сломи его стойку.<br>Переживи Чёрный Клинок.</p>
+      <button id="enter" class="primary enter" type="button"><span id="enter-text">Войти в храм</span><span aria-hidden="true">↗</span></button>
+      <button id="training" class="secondary" type="button" hidden>Тренировка</button>
+      <div id="load-status" class="load-status" role="status" aria-live="polite">Загрузка по нажатию · игра в горизонтальном положении</div>
+      <div id="progress-track" class="progress-track" hidden><div id="progress-fill"></div></div>
+      <button id="home-help-toggle" class="text-button" type="button" aria-expanded="false">Как играть <span aria-hidden="true">＋</span></button>
+      <div id="home-help" class="home-help" hidden>
+        <p><b>Движение</b> — стик слева. Камера — свайп по свободной части экрана.</p>
+        <p><b>Перекат</b> — отпусти кнопку с направлением; удержание включает спринт.</p>
+        <p><b>Сильный удар</b> — удерживай для заряда. После блока он становится контрударом.</p>
+        <p>На iPhone: «Поделиться» → «На экран “Домой”» для запуска без панелей браузера.</p>
+      </div>
+      <div class="home-foot">СЕНСОРНОЕ УПРАВЛЕНИЕ <span>·</span> КЛАВИАТУРА <span>·</span> ГЕЙМПАД</div>
+    </div>
+  </main>
+
+  <section id="hud" class="hud" hidden aria-label="Состояние боя">
+    <div class="player-vitals">
+      <span class="vital-sigil" aria-hidden="true">✧</span>
+      <div class="vital-bars">
+        <div class="bar hp" aria-label="Здоровье"><i id="hp-fill"></i></div>
+        <div class="bar stamina" aria-label="Стамина"><i id="stamina-fill"></i></div>
+        <div class="vital-caption"><span id="hp-text"></span><span id="curse" hidden>КЛЕЙМО СМЕРТИ</span></div>
+      </div>
+    </div>
+    <div id="training-tag" class="training-tag" hidden>ТРЕНИРОВКА</div>
+    <div class="top-actions">
+      <button id="lock" class="utility action-button" data-action="lock" aria-label="Захват цели" aria-pressed="true"><svg><use href="#icon-target"/></svg></button>
+      <button id="fullscreen" class="utility" aria-label="Полный экран"><svg><use href="#icon-expand"/></svg></button>
+      <button id="pause" class="utility" aria-label="Пауза"><svg><use href="#icon-pause-icon"/></svg></button>
+    </div>
+    <div id="boss-hud" class="boss-vitals">
+      <div id="boss-name">Астар, зверь затмения</div>
+      <div class="bar boss"><i id="boss-fill"></i></div>
+      <div class="boss-caption"><span id="boss-phase">I / ЗВЕРИНАЯ КЛЯТВА</span><div class="stance-track"><i id="stance-fill"></i></div></div>
+    </div>
+    <div id="announcement" class="announcement" role="status"></div>
+  </section>
+
+  <section id="touch-controls" class="touch-controls" hidden aria-label="Сенсорное управление">
+    <div id="joystick" class="joystick" aria-label="Стик движения"><div class="joystick-ring"></div><div id="stick-knob" class="stick-knob"></div><span>ДВИЖЕНИЕ</span></div>
+    <button id="flask" class="combat-button flask action-button" data-action="heal" aria-label="Выпить флягу"><svg><use href="#icon-flask"/></svg><span id="flask-count">5</span></button>
+    <div class="combat-controls">
+      <button id="light" class="combat-button light action-button" data-action="light" aria-label="Быстрый удар"><svg><use href="#icon-sword"/></svg><span>УДАР</span></button>
+      <button id="heavy" class="combat-button heavy action-button" data-action="heavy" aria-label="Сильный удар, удерживать для заряда"><svg><use href="#icon-heavy"/></svg><span>СИЛЬНЫЙ</span></button>
+      <button id="dodge" class="combat-button dodge action-button" data-action="dodge" aria-label="Перекат при отпускании, удерживать для спринта"><svg><use href="#icon-roll"/></svg><span>ПЕРЕКАТ</span></button>
+      <button id="guard" class="combat-button guard action-button" data-action="guard" aria-label="Удерживать блок"><svg><use href="#icon-shield"/></svg><span>БЛОК</span></button>
+      <button id="jump" class="combat-button jump action-button" data-action="jump" aria-label="Прыжок"><svg><use href="#icon-jump"/></svg></button>
+      <button id="parry" class="combat-button parry action-button" data-action="parry" aria-label="Парирование золотого удара"><svg><use href="#icon-parry"/></svg></button>
+    </div>
+  </section>
+
+  <section id="pause-menu" class="screen modal-screen" hidden aria-label="Пауза">
+    <div class="menu-card">
+      <div class="eyebrow">У ГРАНИЦЫ ТЬМЫ</div><h2>Передышка</h2>
+      <button id="resume" class="primary" type="button">Продолжить бой <span>→</span></button>
+      <div class="settings-row"><label for="volume">Звук</label><input id="volume" type="range" min="0" max="1" step="0.05" value="0.75"></div>
+      <div class="settings-row"><label for="shake">Отдача камеры</label><input id="shake" type="checkbox" checked></div>
+      <button id="change-phase" class="secondary" type="button" hidden>Сменить фазу босса</button>
+      <button id="restart" class="secondary" type="button">Начать заново</button>
+      <button id="to-title" class="text-button" type="button">В главное меню</button>
+      <p class="menu-tip">Стик + отпустить перекат — уклонение.<br>Удержание переката — спринт. Удержание сильного — заряд.</p>
+    </div>
+  </section>
+
+  <section id="result" class="screen result-screen" hidden aria-label="Результат боя">
+    <div class="result-content"><div class="eyebrow" id="result-eyebrow">ХРАМ ЗАТМЕНИЯ</div><h2 id="result-title">ТЫ ПОГИБ</h2><p id="result-stats"></p>
+      <button id="retry" class="primary" type="button">Ещё одна попытка <span>↗</span></button><button id="result-home" class="text-button" type="button">Главное меню</button>
+    </div>
+  </section>
+
+  <div id="rotate" class="screen rotate-screen" hidden><div class="phone-outline" aria-hidden="true">↻</div><h2>Разверни телефон</h2><p>Храм открыт в горизонтальном положении.</p></div>
+  <div id="error" class="screen error-screen" hidden><div class="menu-card"><div class="eyebrow">СВЯЗЬ С ХРАМОМ ПРЕРВАНА</div><h2>Не удалось войти</h2><p id="error-text"></p><button id="reload" class="primary" type="button">Попробовать снова <span>↻</span></button></div></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

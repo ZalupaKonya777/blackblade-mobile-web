@@ -1,0 +1,14 @@
+{
+  "id": "./",
+  "name": "BLACKBLADE — Храм затмения",
+  "short_name": "BLACKBLADE",
+  "description": "Мобильный босс-файт с перекатами и тяжёлыми ударами.",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0a1017",
+  "theme_color": "#0a1017",
+  "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}]
+}

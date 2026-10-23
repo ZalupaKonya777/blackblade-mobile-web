@@ -1,0 +1,19 @@
+Poly Haven materials used in BLACKBLADE
+
+These assets are made available by their creators under CC0 1.0 Universal.
+They have been repacked and colour-adjusted for this project.
+
+Monastery Stone Floor — Amal Kumar
+https://polyhaven.com/a/monastery_stone_floor
+
+Stone Block Wall — Amal Kumar
+https://polyhaven.com/a/stone_block_wall
+
+Small Cathedral 02 — Sergej Majboroda
+https://polyhaven.com/a/small_cathedral_02
+
+Poly Haven licensing statement: https://polyhaven.com/license
+CC0 deed: https://creativecommons.org/publicdomain/zero/1.0/
+Full legal text: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+This is an asset attribution notice, not a replacement for the CC0 legal text.

@@ -1,0 +1,48 @@
+import { webkit } from '../.runtime/qa/node_modules/playwright-core/index.mjs';
+import { writeFile } from 'node:fs/promises';
+const root = new URL('../', import.meta.url);
+const checks = [], errors = [], logs = [];
+let browser, page, failure = null;
+function check(name, ok, detail = '') {
+  checks.push({ name, ok:!!ok, detail }); console.log(ok ? 'PASS' : 'FAIL', name, detail);
+  if (!ok) throw new Error(name);
+}
+try {
+  browser = await webkit.launch({
+    executablePath: process.env.WEBKIT_PATH || '/root/.cache/ms-playwright/webkit-2370/pw_run.sh',
+    headless: true,
+    env: { ...process.env, TMPDIR: new URL('.runtime/tmp',root).pathname,
+      XDG_CACHE_HOME:new URL('.runtime/webkit-cache',root).pathname,
+      XDG_CONFIG_HOME:new URL('.runtime/webkit-config',root).pathname,
+      XDG_DATA_HOME:new URL('.runtime/webkit-data',root).pathname,
+      LIBGL_ALWAYS_SOFTWARE:'1', WEBKIT_DISABLE_DMABUF_RENDERER:'1' },
+  });
+  const context = await browser.newContext({ viewport:{width:844,height:390}, deviceScaleFactor:2, isMobile:true, hasTouch:true, serviceWorkers:'block' });
+  page = await context.newPage();
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type()==='error') { logs.push(message.text());console.log('WEBKIT ERROR',message.text()); } });
+  await page.goto('http://127.0.0.1:8793/?qa=1',{waitUntil:'networkidle',timeout:60000});
+  check('WebKit mobile shell loads',await page.getByRole('button',{name:/Войти в храм/}).isVisible());
+  const supports = await page.evaluate(() => {
+    const c=document.createElement('canvas');const gl=c.getContext('webgl2');const supported=!!gl;
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();return {webgl2:supported,wasm:!!window.WebAssembly};
+  });
+  check('WebKit has WebGL 2 and WebAssembly',supports.webgl2&&supports.wasm,supports);
+  await page.getByRole('button',{name:/Войти в храм/}).tap();
+  await page.waitForFunction(()=>window.BlackbladeUI?.state?.phase==='title'&&typeof window.BlackbladeNative==='function',null,{timeout:300000});
+  check('WebKit boots the actual Godot Web game',true);
+  await page.getByRole('button',{name:'Тренировка',exact:true}).tap();
+  await page.waitForFunction(()=>window.BlackbladeUI?.state?.phase==='fight',null,{timeout:120000});
+  check('WebKit touch starts training',true);
+  await page.screenshot({path:new URL('artifacts/mobile-webkit.png',root).pathname,scale:'css'});
+  await page.getByRole('button',{name:'Быстрый удар',exact:true}).tap();
+  await page.waitForFunction(()=>window.BlackbladeUI.state.action==='light',null,{timeout:60000});
+  check('WebKit touch reaches native attack',true);
+  check('WebKit audio unlocked',await page.evaluate(()=>window.BlackbladeUI.audioStates.includes('running')));
+  check('WebKit reports no script, resource or framebuffer errors',errors.length===0&&!logs.some(t=>/USER ERROR|SCRIPT ERROR|Failed loading resource|WebAssembly.*error|INVALID_OPERATION/i.test(t)),{errors,logs});
+} catch(error) { failure=String(error);console.log('WEBKIT CHECK FAILED',failure); }
+finally {
+  await writeFile(new URL('artifacts/webkit_check.json',root),JSON.stringify({checks,failures:failure?1:0,failure,errors,logs,note:'Linux Playwright WebKit with mobile touch emulation. Not a physical iPhone.'},null,2));
+  if(browser)await browser.close();
+}
+if(failure)process.exitCode=1;

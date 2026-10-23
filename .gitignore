@@ -1,0 +1,11 @@
+.godot/
+.runtime/
+artifacts/
+build/
+__pycache__/
+*.pyc
+*.import
+.DS_Store
+node_modules/
+.sites-runtime/
+

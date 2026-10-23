@@ -1,0 +1,48 @@
+BLACKBLADE — Храм затмения
+
+Исходные GLB рыцаря, босса, двух мечей и PNG-референсы — предоставлены пользователем в /root/DS1.
+Облегчение мешей, скелеты, веса, анимация через IK, код, арена, процедурные материалы и синтезированный звук — созданы для этой сборки.
+
+Cormorant Garamond: Christian Thalmann / The Cormorant Project Authors, SIL Open Font License 1.1.
+https://github.com/google/fonts/tree/main/ofl/cormorantgaramond
+Полный текст лицензии: assets/fonts/OFL.txt.
+
+DejaVu Sans: DejaVu Fonts / Bitstream Vera. Лицензия в assets/fonts/DejaVu-LICENSE.txt.
+https://dejavu-fonts.github.io/
+
+Godot Engine: MIT License. https://godotengine.org/license/
+
+Фотографические PBR-материалы и HDRI: Poly Haven, CC0 1.0.
+Monastery Stone Floor — Amal Kumar:
+https://polyhaven.com/a/monastery_stone_floor
+Stone Block Wall — Amal Kumar:
+https://polyhaven.com/a/stone_block_wall
+Small Cathedral 02 — Sergej Majboroda:
+https://polyhaven.com/a/small_cathedral_02
+Лицензия: https://polyhaven.com/license
+Карты упакованы и скорректированы для этой сборки. Материалы персонажей производны от предоставленных пользователем текстур.
+
+Новая анимация переката, опорные точки меша, веса жёсткой брони,
+отдельные цепи передних пол сюрко и плаща, слои Foley и эффекты —
+авторская доработка этой сборки. Существующий набор из девяти атак сохранён.
+
+Непрерывные движения девяти атак зверя, фиксация опор, прыжковые
+траектории с коллизиями, восстановление, поведение вокруг препятствий
+и расходящиеся боевые волны — авторская доработка босса.
+
+Референсы мувсета и механик:
+https://www.gamespot.com/articles/elden-ring-how-to-beat-maliketh-the-black-blade/1100-6502923/
+https://eldenring.fandom.com/wiki/Maliketh,_the_Black_Blade
+
+Elden Ring и Maliketh — названия FromSoftware / Bandai Namco. Это неофициальный самостоятельный прототип; ресурсы из игры не извлекались.
+
+Доработка веса и баланса: авторские тайминги рыцаря, движения опор
+и корпуса, торможение клинка, импульсы попаданий, экономика стамины,
+контрудары и ограниченные связки босса. Исправлены ошибочные влияния
+костей плаща на перчатках производного игрового меша; оригинальные GLB сохранены.
+
+Мобильная браузерная версия: сенсорный ввод, HTML-интерфейс, Web-мост,
+пауза при сворачивании, однопоточная загрузка и упаковка для статического хостинга.
+fflate 0.8.3 — Arjun Barrett, MIT, используется как резервная распаковка gzip.
+https://github.com/101arrowz/fflate
+Лицензия приложена в web/vendor/fflate-LICENSE.txt и dist/vendor/fflate-LICENSE.txt.

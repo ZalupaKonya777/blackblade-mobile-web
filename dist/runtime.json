@@ -1,0 +1,44 @@
+{
+  "engine": {
+    "bytes": 35376909,
+    "compressedBytes": 7975981,
+    "sha256": "fe5cebc590758c10bc4469be5a591e28edbde5ec8f458f21baeb83db50d028b9",
+    "parts": [
+      {
+        "url": "data/game.wasm-00.e61d3f9a465a.bin",
+        "bytes": 7975981
+      }
+    ]
+  },
+  "pack": {
+    "bytes": 50250320,
+    "compressedBytes": 34207658,
+    "sha256": "1b5464b92060cc8764843ffee1892163aa1bdd14c9bf141fadbeba71edf19fba",
+    "parts": [
+      {
+        "url": "data/game.pck-00.fc5dda95ec6c.bin",
+        "bytes": 8388608
+      },
+      {
+        "url": "data/game.pck-01.94f95163d2e5.bin",
+        "bytes": 8388608
+      },
+      {
+        "url": "data/game.pck-02.888318411d1f.bin",
+        "bytes": 8388608
+      },
+      {
+        "url": "data/game.pck-03.ea0d3295dcf4.bin",
+        "bytes": 8388608
+      },
+      {
+        "url": "data/game.pck-04.16129c348f55.bin",
+        "bytes": 653226
+      }
+    ]
+  },
+  "script": "engine.8b649683883a.js",
+  "threaded": false,
+  "downloadBytes": 42183639,
+  "version": "2ac8ea4ffc970f33"
+}

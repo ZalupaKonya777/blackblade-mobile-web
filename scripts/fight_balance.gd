@@ -1,0 +1,27 @@
+class_name FightBalance
+extends RefCounted
+## A single tuning sheet. Roll motion and protection keep their established timings.
+const PLAYER_HP:=1300.0
+const STAMINA:=120.0
+const RUN:=4.0
+const SPRINT:=6.0
+const ACCEL:=13.0
+const BRAKE:=20.0
+const ROLL_COST:=18.0
+const REGEN:=34.0
+const REGEN_DELAY:=.65
+const SPRINT_DRAIN:=12.0
+const FLASKS:=5
+const FLASK_HEAL:=560.0
+const FLASK_USE:=.82
+const FLASK_RECOVER:=1.38
+const CHARGE_TIME:=.65
+const CHARGE_COST:=12.0
+const CRITICAL_DAMAGE:=1250.0
+const HIT_GRACE:=.18
+const BOSS_HP:=7800.0
+const BOSS_STANCE:=110.0
+const STANCE_DELAY:=3.5
+const STANCE_REGEN:=13.0
+const CURSE_SECONDS:=6.0
+const CURSE_DPS:=10.0
