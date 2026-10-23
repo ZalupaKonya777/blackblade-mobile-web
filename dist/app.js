@@ -1,3 +1,4 @@
+import './sound.js';
 const $ = id => document.getElementById(id);
 const canvas = $('game');
 let engineReady = false;
@@ -41,10 +42,12 @@ if (AudioContextClass) {
   if (window.webkitAudioContext) window.webkitAudioContext = GestureAudioContext;
 }
 function unlockAudio() {
+  window.BlackbladeSound.unlock();
   for (const context of audioContexts) {
     if (context.state === 'suspended') context.resume().catch(() => {});
   }
 }
+document.addEventListener('keydown', unlockAudio, { capture: true });
 document.addEventListener('pointerdown', unlockAudio, { capture: true });
 document.addEventListener('touchend', unlockAudio, { capture: true, passive: true });
 
@@ -120,6 +123,7 @@ window.BlackbladeUI = {
     }
     if (document.activeElement !== $('volume')) $('volume').value = state.volume;
     $('shake').checked = state.shake;
+    if (document.activeElement !== $('music-volume')) $('music-volume').value = state.music;
     if (state.phase !== previousPhase) {
       previousPhase = state.phase;
       clearTimeout(resultTimer);
@@ -250,6 +254,8 @@ $('restart').addEventListener('click', () => { cancelControls(); send({ type: 'r
 $('retry').addEventListener('click', () => { cancelControls(); send({ type: 'retry' }); focusGame(); });
 for (const id of ['to-title', 'result-home']) $(id).addEventListener('click', () => { cancelControls(); send({ type: 'title' }); });
 $('change-phase').addEventListener('click', () => send({ type: 'phase' }));
+$('music-volume').addEventListener('input', event => send({ type: 'setting', key: 'music', value: Number(event.target.value) }));
+$('sound-toggle').addEventListener('click', () => { const sound = window.BlackbladeSound; sound.mute(!sound.muted); $('sound-toggle').textContent = sound.muted ? 'Включить звук' : 'Выключить звук'; $('sound-toggle').setAttribute('aria-pressed', String(sound.muted)); });
 $('volume').addEventListener('input', event => send({ type: 'setting', key: 'volume', value: Number(event.target.value) }));
 $('shake').addEventListener('change', event => send({ type: 'setting', key: 'shake', value: event.target.checked }));
 $('graphics-quality').addEventListener('change', event => {
@@ -327,7 +333,7 @@ async function loadGame() {
       if (buffer.byteLength !== asset.bytes) throw new Error('Файлы игры загрузились не полностью. Попробуй ещё раз.');
       return buffer;
     }
-    let [wasm, pack] = await Promise.all([unpack(manifest.engine), unpack(manifest.pack), loadScript(manifest.script)]);
+    let [wasm, pack] = await Promise.all([unpack(manifest.engine), unpack(manifest.pack), loadScript(manifest.script), window.BlackbladeSound.prepare()]);
     $('load-status').textContent = 'Создаём мир. Первый вход может занять немного времени…';
     const originalFetch = window.fetch;
     window.fetch = function(input, init) {

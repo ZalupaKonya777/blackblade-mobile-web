@@ -11,54 +11,59 @@
     ]
   },
   "pack": {
-    "bytes": 121126384,
-    "compressedBytes": 80434327,
-    "sha256": "a9dd50468df6aeabe2b0d57f4e3c57960bec9ac00e619d7ad7228ed09b23cced",
+    "bytes": 110640560,
+    "compressedBytes": 76471978,
+    "sha256": "060f4c35a300a910b8c48f00fbdefb065a8956761076b01f8774fb007a9618d0",
     "parts": [
       {
-        "url": "data/game.pck-00.97eed79e1496.bin",
+        "url": "data/game.pck-00.b7b89aca8e46.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-01.1adbe895157e.bin",
+        "url": "data/game.pck-01.9a81f85622bb.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-02.7f15a078f9cc.bin",
+        "url": "data/game.pck-02.670ba4f8084e.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-03.d6b2dfdacf76.bin",
+        "url": "data/game.pck-03.94b3af7ecad8.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-04.cfcfbaac93d7.bin",
+        "url": "data/game.pck-04.7c123267de4d.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-05.6ff2291b469a.bin",
+        "url": "data/game.pck-05.5b15901f1b67.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-06.2637ecde735a.bin",
+        "url": "data/game.pck-06.511dad80ad2f.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-07.7ee78822ca4f.bin",
+        "url": "data/game.pck-07.e7cac88889cb.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-08.c003dd128fbe.bin",
+        "url": "data/game.pck-08.40d5232e63c2.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-09.5da74e7788cb.bin",
-        "bytes": 4936855
+        "url": "data/game.pck-09.3a4c0b48a3ce.bin",
+        "bytes": 974506
       }
     ]
   },
   "script": "engine.8b649683883a.js",
   "threaded": false,
-  "downloadBytes": 88456631,
-  "version": "29f69fea55a3fc75"
+  "audio": {
+    "bytes": 5073059,
+    "sha256": "f7f3088b46258764b122d7cc534086125a065a8de0e4930d45bec9d57b48250f",
+    "files": 135
+  },
+  "downloadBytes": 89567341,
+  "version": "8802a3c4d29219f2"
 }

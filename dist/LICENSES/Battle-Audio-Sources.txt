@@ -1,0 +1,417 @@
+BLACKBLADE MOBILE — BATTLE AUDIO SOURCES
+All packaged battle audio is CC0-1.0. No extracted game audio.
+Kenney source archives were retrieved from the author's own website.
+Recorded foley was trimmed, filtered, pitched, layered and mastered.
+Air movement, creature growls, resonators, ambience, and the 80 BPM
+D-minor music arrangement were synthesized originally for this project.
+These original contributions are dedicated to the public domain under
+CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+
+Kenney Impact Sounds 1.0
+Page: https://kenney.nl/assets/impact-sounds
+Archive: https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip
+SHA-256: 029d734af1582474edf3a694d1b0cebc97c1c152f2f39fa34d4c2bafc5de77f8
+License: CC0 1.0 Universal
+Original bundled License.txt follows verbatim:
+----- BEGIN ORIGINAL LICENSE -----
+	
+
+	Impact Sounds (1.0)
+
+	Created/distributed by Kenney (www.kenney.nl)
+	Creation date: 19-12-2019
+
+			------------------------------
+
+	License: (Creative Commons Zero, CC0)
+	http://creativecommons.org/publicdomain/zero/1.0/
+
+	This content is free to use in personal, educational and commercial projects.
+	Support us by crediting Kenney or www.kenney.nl (this is not mandatory)
+
+			------------------------------
+
+	Donate:   http://support.kenney.nl
+	Request:  http://request.kenney.nl
+	Patreon:  http://patreon.com/kenney/
+
+	Follow on Twitter for updates:
+	http://twitter.com/KenneyNL
+----- END ORIGINAL LICENSE -----
+
+Kenney RPG Audio
+Page: https://kenney.nl/assets/rpg-audio
+Archive: https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip
+SHA-256: 6dbeaf8544da958d8f2adcb4a4a4b76c1ade34a05f8ab9edccd327da7375f38b
+License: CC0 1.0 Universal
+Original bundled License.txt follows verbatim:
+----- BEGIN ORIGINAL LICENSE -----
+	
+
+	RPG Audio
+
+	by  Kenney Vleugels (Kenney.nl)
+
+			------------------------------
+
+	License (Creative Commons Zero, CC0)
+	http://creativecommons.org/publicdomain/zero/1.0/
+
+	You may use these assets in personal and commercial projects.
+	Credit (Kenney or www.kenney.nl) would be nice but is not mandatory.
+
+			------------------------------
+
+	Donate:   http://support.kenney.nl
+	Request:  http://request.kenney.nl
+
+	Follow on Twitter for updates:
+	@KenneyNL
+----- END ORIGINAL LICENSE -----
+
+PROVENANCE BY FINAL FILE (full paths are relative to assets/audio/battle):
+knight_swing_01.wav
+  Kenney RPG Audio/Audio/cloth1.ogg
+  Kenney RPG Audio/Audio/drawKnife1.ogg
+  Kenney RPG Audio/Audio/knifeSlice.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+knight_swing_02.wav
+  Kenney RPG Audio/Audio/cloth2.ogg
+  Kenney RPG Audio/Audio/drawKnife2.ogg
+  Kenney RPG Audio/Audio/knifeSlice2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+knight_swing_03.wav
+  Kenney RPG Audio/Audio/cloth3.ogg
+  Kenney RPG Audio/Audio/drawKnife3.ogg
+  Kenney RPG Audio/Audio/knifeSlice.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+knight_swing_04.wav
+  Kenney RPG Audio/Audio/cloth4.ogg
+  Kenney RPG Audio/Audio/drawKnife1.ogg
+  Kenney RPG Audio/Audio/knifeSlice2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+knight_heavy_01.wav
+  Kenney RPG Audio/Audio/cloth1.ogg
+  Kenney RPG Audio/Audio/drawKnife1.ogg
+  Kenney RPG Audio/Audio/knifeSlice.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+knight_heavy_02.wav
+  Kenney RPG Audio/Audio/cloth2.ogg
+  Kenney RPG Audio/Audio/drawKnife2.ogg
+  Kenney RPG Audio/Audio/knifeSlice2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+knight_heavy_03.wav
+  Kenney RPG Audio/Audio/cloth3.ogg
+  Kenney RPG Audio/Audio/drawKnife3.ogg
+  Kenney RPG Audio/Audio/knifeSlice.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+boss_swing_01.wav
+  Kenney RPG Audio/Audio/cloth1.ogg
+  Kenney RPG Audio/Audio/drawKnife1.ogg
+  Kenney RPG Audio/Audio/knifeSlice.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+boss_swing_02.wav
+  Kenney RPG Audio/Audio/cloth2.ogg
+  Kenney RPG Audio/Audio/drawKnife2.ogg
+  Kenney RPG Audio/Audio/knifeSlice2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+boss_swing_03.wav
+  Kenney RPG Audio/Audio/cloth3.ogg
+  Kenney RPG Audio/Audio/drawKnife3.ogg
+  Kenney RPG Audio/Audio/knifeSlice.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+boss_swing_04.wav
+  Kenney RPG Audio/Audio/cloth4.ogg
+  Kenney RPG Audio/Audio/drawKnife1.ogg
+  Kenney RPG Audio/Audio/knifeSlice2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+boss_step_01.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+boss_step_02.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+boss_step_03.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+boss_step_04.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_003.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+step_01.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg
+  Kenney RPG Audio/Audio/beltHandle2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+step_02.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg
+  Kenney RPG Audio/Audio/beltHandle1.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+step_03.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg
+  Kenney RPG Audio/Audio/beltHandle2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+step_04.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_003.ogg
+  Kenney RPG Audio/Audio/beltHandle1.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+step_05.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_004.ogg
+  Kenney RPG Audio/Audio/beltHandle2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+armor_takeoff_01.wav
+  Kenney Impact Sounds 1.0/Audio/impactPlate_light_000.ogg
+  Kenney RPG Audio/Audio/cloth1.ogg
+  Kenney RPG Audio/Audio/clothBelt.ogg
+  Kenney RPG Audio/Audio/handleCoins.ogg
+armor_takeoff_02.wav
+  Kenney Impact Sounds 1.0/Audio/impactPlate_light_001.ogg
+  Kenney RPG Audio/Audio/cloth2.ogg
+  Kenney RPG Audio/Audio/clothBelt2.ogg
+  Kenney RPG Audio/Audio/handleCoins2.ogg
+armor_takeoff_03.wav
+  Kenney Impact Sounds 1.0/Audio/impactPlate_light_002.ogg
+  Kenney RPG Audio/Audio/cloth3.ogg
+  Kenney RPG Audio/Audio/clothBelt.ogg
+  Kenney RPG Audio/Audio/handleCoins.ogg
+body_contact_01.wav
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_000.ogg
+  Kenney RPG Audio/Audio/cloth1.ogg
+  Kenney RPG Audio/Audio/dropLeather.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+body_contact_02.wav
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_001.ogg
+  Kenney RPG Audio/Audio/cloth2.ogg
+  Kenney RPG Audio/Audio/dropLeather.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+body_contact_03.wav
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_002.ogg
+  Kenney RPG Audio/Audio/cloth3.ogg
+  Kenney RPG Audio/Audio/dropLeather.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+boot_land_01.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_medium_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_000.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+boot_land_02.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_medium_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_001.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+boot_land_03.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_medium_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_002.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+hit_01.wav
+  Kenney Impact Sounds 1.0/Audio/impactPunch_medium_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_000.ogg
+  Kenney RPG Audio/Audio/cloth1.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+hit_02.wav
+  Kenney Impact Sounds 1.0/Audio/impactPunch_medium_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_001.ogg
+  Kenney RPG Audio/Audio/cloth2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+hit_03.wav
+  Kenney Impact Sounds 1.0/Audio/impactPunch_medium_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_002.ogg
+  Kenney RPG Audio/Audio/cloth3.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+hit_04.wav
+  Kenney Impact Sounds 1.0/Audio/impactPunch_medium_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_003.ogg
+  Kenney RPG Audio/Audio/cloth4.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+impact_knight_01.wav
+  Kenney Impact Sounds 1.0/Audio/impactMetal_heavy_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_medium_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+impact_knight_02.wav
+  Kenney Impact Sounds 1.0/Audio/impactMetal_heavy_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_medium_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+impact_knight_03.wav
+  Kenney Impact Sounds 1.0/Audio/impactMetal_heavy_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_medium_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+impact_knight_04.wav
+  Kenney Impact Sounds 1.0/Audio/impactMetal_heavy_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_medium_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_003.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+impact_beast_01.wav
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_000.ogg
+  Kenney RPG Audio/Audio/chop.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+impact_beast_02.wav
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_001.ogg
+  Kenney RPG Audio/Audio/chop.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+impact_beast_03.wav
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_002.ogg
+  Kenney RPG Audio/Audio/chop.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+impact_beast_04.wav
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_003.ogg
+  Kenney RPG Audio/Audio/chop.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+guard_01.wav
+  Kenney Impact Sounds 1.0/Audio/impactMetal_medium_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMining_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_000.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+guard_02.wav
+  Kenney Impact Sounds 1.0/Audio/impactMetal_medium_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMining_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_001.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+guard_03.wav
+  Kenney Impact Sounds 1.0/Audio/impactMetal_medium_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMining_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_002.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+parry_01.wav
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMining_000.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+parry_02.wav
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMining_001.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+parry_03.wav
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMining_002.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+slam_01.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_003.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_004.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_000.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+slam_02.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_003.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_004.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_001.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+slam_03.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_003.ogg
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_004.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_002.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+flask_01.wav
+  Kenney Impact Sounds 1.0/Audio/impactGlass_light_000.ogg
+  Kenney RPG Audio/Audio/handleSmallLeather.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+flask_02.wav
+  Kenney Impact Sounds 1.0/Audio/impactGlass_light_001.ogg
+  Kenney RPG Audio/Audio/handleSmallLeather2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+roar_01.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+roar_02.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+death_01.wav
+  Kenney Impact Sounds 1.0/Audio/impactMetal_medium_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_002.ogg
+  Kenney RPG Audio/Audio/cloth3.ogg
+  Kenney RPG Audio/Audio/dropLeather.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+win_01.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+menu_01.wav
+  Kenney RPG Audio/Audio/beltHandle1.ogg
+  Kenney RPG Audio/Audio/metalClick.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+menu_02.wav
+  Kenney RPG Audio/Audio/beltHandle1.ogg
+  Kenney RPG Audio/Audio/metalClick.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+menu_03.wav
+  Kenney RPG Audio/Audio/beltHandle1.ogg
+  Kenney RPG Audio/Audio/metalClick.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+projectile_01.wav
+  Kenney RPG Audio/Audio/knifeSlice2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+projectile_02.wav
+  Kenney RPG Audio/Audio/knifeSlice2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+projectile_03.wav
+  Kenney RPG Audio/Audio/knifeSlice2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+blade_drag_01.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMining_000.ogg
+  Kenney RPG Audio/Audio/drawKnife1.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+blade_drag_02.wav
+  Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMining_001.ogg
+  Kenney RPG Audio/Audio/drawKnife2.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+ambient.mp3
+  Original procedural synthesis and arrangement (CC0-1.0)
+music_1.mp3
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_004.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_004.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_004.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)
+music_2.mp3
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactMetal_light_004.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_004.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_000.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_001.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_002.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_003.ogg
+  Kenney Impact Sounds 1.0/Audio/impactWood_heavy_004.ogg
+  Original procedural synthesis and arrangement (CC0-1.0)

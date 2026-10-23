@@ -1,0 +1,1562 @@
+{
+  "version": 1,
+  "files": {
+    "knight_swing_01": {
+      "file": "knight_swing_01.wav",
+      "loop": false,
+      "duration_s": 0.690344,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 44226,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -20.952,
+      "dc_dbfs": -81.981,
+      "true_peak_4x_dbfs": -3.914,
+      "sources": [
+        "Kenney RPG Audio/Audio/cloth1.ogg",
+        "Kenney RPG Audio/Audio/drawKnife1.ogg",
+        "Kenney RPG Audio/Audio/knifeSlice.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "knight_swing_02": {
+      "file": "knight_swing_02.wav",
+      "loop": false,
+      "duration_s": 0.606938,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 38888,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.932,
+      "dc_dbfs": -83.513,
+      "true_peak_4x_dbfs": -3.629,
+      "sources": [
+        "Kenney RPG Audio/Audio/cloth2.ogg",
+        "Kenney RPG Audio/Audio/drawKnife2.ogg",
+        "Kenney RPG Audio/Audio/knifeSlice2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "knight_swing_03": {
+      "file": "knight_swing_03.wav",
+      "loop": false,
+      "duration_s": 0.588437,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 37704,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -20.533,
+      "dc_dbfs": -94.434,
+      "true_peak_4x_dbfs": -3.993,
+      "sources": [
+        "Kenney RPG Audio/Audio/cloth3.ogg",
+        "Kenney RPG Audio/Audio/drawKnife3.ogg",
+        "Kenney RPG Audio/Audio/knifeSlice.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "knight_swing_04": {
+      "file": "knight_swing_04.wav",
+      "loop": false,
+      "duration_s": 0.565594,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 36242,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.171,
+      "dc_dbfs": -107.465,
+      "true_peak_4x_dbfs": -3.92,
+      "sources": [
+        "Kenney RPG Audio/Audio/cloth4.ogg",
+        "Kenney RPG Audio/Audio/drawKnife1.ogg",
+        "Kenney RPG Audio/Audio/knifeSlice2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "knight_heavy_01": {
+      "file": "knight_heavy_01.wav",
+      "loop": false,
+      "duration_s": 0.777625,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 49812,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -21.018,
+      "dc_dbfs": -87.378,
+      "true_peak_4x_dbfs": -3.936,
+      "sources": [
+        "Kenney RPG Audio/Audio/cloth1.ogg",
+        "Kenney RPG Audio/Audio/drawKnife1.ogg",
+        "Kenney RPG Audio/Audio/knifeSlice.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "knight_heavy_02": {
+      "file": "knight_heavy_02.wav",
+      "loop": false,
+      "duration_s": 0.764687,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 48984,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.476,
+      "dc_dbfs": -95.973,
+      "true_peak_4x_dbfs": -3.864,
+      "sources": [
+        "Kenney RPG Audio/Audio/cloth2.ogg",
+        "Kenney RPG Audio/Audio/drawKnife2.ogg",
+        "Kenney RPG Audio/Audio/knifeSlice2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "knight_heavy_03": {
+      "file": "knight_heavy_03.wav",
+      "loop": false,
+      "duration_s": 0.65925,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 42236,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -18.349,
+      "dc_dbfs": -83.531,
+      "true_peak_4x_dbfs": -3.941,
+      "sources": [
+        "Kenney RPG Audio/Audio/cloth3.ogg",
+        "Kenney RPG Audio/Audio/drawKnife3.ogg",
+        "Kenney RPG Audio/Audio/knifeSlice.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "boss_swing_01": {
+      "file": "boss_swing_01.wav",
+      "loop": false,
+      "duration_s": 0.934031,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 59822,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.402,
+      "dc_dbfs": -97.672,
+      "true_peak_4x_dbfs": -3.966,
+      "sources": [
+        "Kenney RPG Audio/Audio/cloth1.ogg",
+        "Kenney RPG Audio/Audio/drawKnife1.ogg",
+        "Kenney RPG Audio/Audio/knifeSlice.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "boss_swing_02": {
+      "file": "boss_swing_02.wav",
+      "loop": false,
+      "duration_s": 1.012594,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 64850,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.259,
+      "dc_dbfs": -83.307,
+      "true_peak_4x_dbfs": -3.858,
+      "sources": [
+        "Kenney RPG Audio/Audio/cloth2.ogg",
+        "Kenney RPG Audio/Audio/drawKnife2.ogg",
+        "Kenney RPG Audio/Audio/knifeSlice2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "boss_swing_03": {
+      "file": "boss_swing_03.wav",
+      "loop": false,
+      "duration_s": 0.784188,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 50232,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -18.676,
+      "dc_dbfs": -93.528,
+      "true_peak_4x_dbfs": -3.979,
+      "sources": [
+        "Kenney RPG Audio/Audio/cloth3.ogg",
+        "Kenney RPG Audio/Audio/drawKnife3.ogg",
+        "Kenney RPG Audio/Audio/knifeSlice.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "boss_swing_04": {
+      "file": "boss_swing_04.wav",
+      "loop": false,
+      "duration_s": 0.934031,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 59822,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -18.429,
+      "dc_dbfs": -126.64,
+      "true_peak_4x_dbfs": -3.983,
+      "sources": [
+        "Kenney RPG Audio/Audio/cloth4.ogg",
+        "Kenney RPG Audio/Audio/drawKnife1.ogg",
+        "Kenney RPG Audio/Audio/knifeSlice2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "boss_step_01": {
+      "file": "boss_step_01.wav",
+      "loop": false,
+      "duration_s": 0.962594,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 61650,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -21.129,
+      "dc_dbfs": -76.001,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "boss_step_02": {
+      "file": "boss_step_02.wav",
+      "loop": false,
+      "duration_s": 0.851688,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 54552,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.889,
+      "dc_dbfs": -71.46,
+      "true_peak_4x_dbfs": -3.99,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "boss_step_03": {
+      "file": "boss_step_03.wav",
+      "loop": false,
+      "duration_s": 0.945187,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 60536,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -20.442,
+      "dc_dbfs": -69.778,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "boss_step_04": {
+      "file": "boss_step_04.wav",
+      "loop": false,
+      "duration_s": 0.799375,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 51204,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.005,
+      "dc_dbfs": -71.495,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_003.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "step_01": {
+      "file": "step_01.wav",
+      "loop": false,
+      "duration_s": 0.522625,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 33492,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -24.47,
+      "dc_dbfs": -89.866,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg",
+        "Kenney RPG Audio/Audio/beltHandle2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "step_02": {
+      "file": "step_02.wav",
+      "loop": false,
+      "duration_s": 0.378812,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 24288,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -24.044,
+      "dc_dbfs": -80.673,
+      "true_peak_4x_dbfs": -3.945,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg",
+        "Kenney RPG Audio/Audio/beltHandle1.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "step_03": {
+      "file": "step_03.wav",
+      "loop": false,
+      "duration_s": 0.522625,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 33492,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.658,
+      "dc_dbfs": -74.335,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg",
+        "Kenney RPG Audio/Audio/beltHandle2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "step_04": {
+      "file": "step_04.wav",
+      "loop": false,
+      "duration_s": 0.378812,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 24288,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -24.163,
+      "dc_dbfs": -78.59,
+      "true_peak_4x_dbfs": -3.97,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_003.ogg",
+        "Kenney RPG Audio/Audio/beltHandle1.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "step_05": {
+      "file": "step_05.wav",
+      "loop": false,
+      "duration_s": 0.522625,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 33492,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.714,
+      "dc_dbfs": -84.699,
+      "true_peak_4x_dbfs": -3.994,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_004.ogg",
+        "Kenney RPG Audio/Audio/beltHandle2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "armor_takeoff_01": {
+      "file": "armor_takeoff_01.wav",
+      "loop": false,
+      "duration_s": 0.728969,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 46698,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -22.829,
+      "dc_dbfs": -75.471,
+      "true_peak_4x_dbfs": -3.587,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_light_000.ogg",
+        "Kenney RPG Audio/Audio/cloth1.ogg",
+        "Kenney RPG Audio/Audio/clothBelt.ogg",
+        "Kenney RPG Audio/Audio/handleCoins.ogg"
+      ]
+    },
+    "armor_takeoff_02": {
+      "file": "armor_takeoff_02.wav",
+      "loop": false,
+      "duration_s": 0.65625,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 42044,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.138,
+      "dc_dbfs": -86.114,
+      "true_peak_4x_dbfs": -3.942,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_light_001.ogg",
+        "Kenney RPG Audio/Audio/cloth2.ogg",
+        "Kenney RPG Audio/Audio/clothBelt2.ogg",
+        "Kenney RPG Audio/Audio/handleCoins2.ogg"
+      ]
+    },
+    "armor_takeoff_03": {
+      "file": "armor_takeoff_03.wav",
+      "loop": false,
+      "duration_s": 0.728969,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 46698,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -22.725,
+      "dc_dbfs": -82.247,
+      "true_peak_4x_dbfs": -3.74,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_light_002.ogg",
+        "Kenney RPG Audio/Audio/cloth3.ogg",
+        "Kenney RPG Audio/Audio/clothBelt.ogg",
+        "Kenney RPG Audio/Audio/handleCoins.ogg"
+      ]
+    },
+    "body_contact_01": {
+      "file": "body_contact_01.wav",
+      "loop": false,
+      "duration_s": 0.830656,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 53206,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -20.791,
+      "dc_dbfs": -103.326,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_000.ogg",
+        "Kenney RPG Audio/Audio/cloth1.ogg",
+        "Kenney RPG Audio/Audio/dropLeather.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "body_contact_02": {
+      "file": "body_contact_02.wav",
+      "loop": false,
+      "duration_s": 0.705438,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 45192,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.925,
+      "dc_dbfs": -74.717,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_001.ogg",
+        "Kenney RPG Audio/Audio/cloth2.ogg",
+        "Kenney RPG Audio/Audio/dropLeather.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "body_contact_03": {
+      "file": "body_contact_03.wav",
+      "loop": false,
+      "duration_s": 0.7105,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 45516,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.963,
+      "dc_dbfs": -72.341,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_002.ogg",
+        "Kenney RPG Audio/Audio/cloth3.ogg",
+        "Kenney RPG Audio/Audio/dropLeather.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "boot_land_01": {
+      "file": "boot_land_01.wav",
+      "loop": false,
+      "duration_s": 0.777656,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 49814,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.089,
+      "dc_dbfs": -74.67,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_medium_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_000.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "boot_land_02": {
+      "file": "boot_land_02.wav",
+      "loop": false,
+      "duration_s": 0.892531,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 57166,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.325,
+      "dc_dbfs": -73.28,
+      "true_peak_4x_dbfs": -3.96,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_medium_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_001.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "boot_land_03": {
+      "file": "boot_land_03.wav",
+      "loop": false,
+      "duration_s": 0.775813,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 49696,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.131,
+      "dc_dbfs": -75.77,
+      "true_peak_4x_dbfs": -3.924,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_medium_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_002.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "hit_01": {
+      "file": "hit_01.wav",
+      "loop": false,
+      "duration_s": 0.691719,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 44314,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -21.897,
+      "dc_dbfs": -77.323,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_medium_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_000.ogg",
+        "Kenney RPG Audio/Audio/cloth1.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "hit_02": {
+      "file": "hit_02.wav",
+      "loop": false,
+      "duration_s": 0.742938,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 47592,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -20.911,
+      "dc_dbfs": -71.822,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_medium_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_001.ogg",
+        "Kenney RPG Audio/Audio/cloth2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "hit_03": {
+      "file": "hit_03.wav",
+      "loop": false,
+      "duration_s": 0.681875,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 43684,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.956,
+      "dc_dbfs": -76.513,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_medium_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_002.ogg",
+        "Kenney RPG Audio/Audio/cloth3.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "hit_04": {
+      "file": "hit_04.wav",
+      "loop": false,
+      "duration_s": 0.720781,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 46174,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -21.686,
+      "dc_dbfs": -74.555,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_medium_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_003.ogg",
+        "Kenney RPG Audio/Audio/cloth4.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "impact_knight_01": {
+      "file": "impact_knight_01.wav",
+      "loop": false,
+      "duration_s": 0.757594,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 48530,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.817,
+      "dc_dbfs": -94.416,
+      "true_peak_4x_dbfs": -3.983,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_heavy_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_medium_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "impact_knight_02": {
+      "file": "impact_knight_02.wav",
+      "loop": false,
+      "duration_s": 0.789844,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 50594,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.286,
+      "dc_dbfs": -97.464,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_heavy_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_medium_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "impact_knight_03": {
+      "file": "impact_knight_03.wav",
+      "loop": false,
+      "duration_s": 0.688844,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 44130,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.553,
+      "dc_dbfs": -84.959,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_heavy_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_medium_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "impact_knight_04": {
+      "file": "impact_knight_04.wav",
+      "loop": false,
+      "duration_s": 0.755531,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 48398,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.708,
+      "dc_dbfs": -85.377,
+      "true_peak_4x_dbfs": -3.993,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_heavy_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_medium_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_003.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "impact_beast_01": {
+      "file": "impact_beast_01.wav",
+      "loop": false,
+      "duration_s": 0.868625,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 55636,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -20.032,
+      "dc_dbfs": -70.508,
+      "true_peak_4x_dbfs": -3.994,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_000.ogg",
+        "Kenney RPG Audio/Audio/chop.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "impact_beast_02": {
+      "file": "impact_beast_02.wav",
+      "loop": false,
+      "duration_s": 0.862563,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 55248,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -21.958,
+      "dc_dbfs": -79.809,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_001.ogg",
+        "Kenney RPG Audio/Audio/chop.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "impact_beast_03": {
+      "file": "impact_beast_03.wav",
+      "loop": false,
+      "duration_s": 0.788,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 50476,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -20.448,
+      "dc_dbfs": -69.016,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_002.ogg",
+        "Kenney RPG Audio/Audio/chop.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "impact_beast_04": {
+      "file": "impact_beast_04.wav",
+      "loop": false,
+      "duration_s": 0.835531,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 53518,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -21.257,
+      "dc_dbfs": -76.189,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_003.ogg",
+        "Kenney RPG Audio/Audio/chop.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "guard_01": {
+      "file": "guard_01.wav",
+      "loop": false,
+      "duration_s": 1.082969,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 69354,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.741,
+      "dc_dbfs": -80.641,
+      "true_peak_4x_dbfs": -3.989,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_medium_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMining_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_000.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "guard_02": {
+      "file": "guard_02.wav",
+      "loop": false,
+      "duration_s": 0.990406,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 63430,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.982,
+      "dc_dbfs": -98.419,
+      "true_peak_4x_dbfs": -3.965,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_medium_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMining_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_001.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "guard_03": {
+      "file": "guard_03.wav",
+      "loop": false,
+      "duration_s": 0.929,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 59500,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.165,
+      "dc_dbfs": -88.522,
+      "true_peak_4x_dbfs": -3.977,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_medium_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMining_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_002.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "parry_01": {
+      "file": "parry_01.wav",
+      "loop": false,
+      "duration_s": 0.865,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 55404,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.927,
+      "dc_dbfs": -81.959,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMining_000.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "parry_02": {
+      "file": "parry_02.wav",
+      "loop": false,
+      "duration_s": 0.865,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 55404,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.515,
+      "dc_dbfs": -78.035,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMining_001.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "parry_03": {
+      "file": "parry_03.wav",
+      "loop": false,
+      "duration_s": 0.865,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 55404,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.961,
+      "dc_dbfs": -92.992,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMining_002.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "slam_01": {
+      "file": "slam_01.wav",
+      "loop": false,
+      "duration_s": 1.173281,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 75134,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.911,
+      "dc_dbfs": -139.002,
+      "true_peak_4x_dbfs": -3.958,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_004.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_000.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "slam_02": {
+      "file": "slam_02.wav",
+      "loop": false,
+      "duration_s": 1.040938,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 66664,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.843,
+      "dc_dbfs": -132.767,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_004.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_001.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "slam_03": {
+      "file": "slam_03.wav",
+      "loop": false,
+      "duration_s": 1.071594,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 68626,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -18.826,
+      "dc_dbfs": -119.278,
+      "true_peak_4x_dbfs": -3.959,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_004.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_002.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "flask_01": {
+      "file": "flask_01.wav",
+      "loop": false,
+      "duration_s": 1.189,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 76140,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -17.681,
+      "dc_dbfs": -158.394,
+      "true_peak_4x_dbfs": -3.749,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactGlass_light_000.ogg",
+        "Kenney RPG Audio/Audio/handleSmallLeather.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "flask_02": {
+      "file": "flask_02.wav",
+      "loop": false,
+      "duration_s": 1.189,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 76140,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -18.502,
+      "dc_dbfs": -158.993,
+      "true_peak_4x_dbfs": -3.99,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactGlass_light_001.ogg",
+        "Kenney RPG Audio/Audio/handleSmallLeather2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "roar_01": {
+      "file": "roar_01.wav",
+      "loop": false,
+      "duration_s": 1.941312,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 124288,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -17.537,
+      "dc_dbfs": -155.544,
+      "true_peak_4x_dbfs": -3.969,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "roar_02": {
+      "file": "roar_02.wav",
+      "loop": false,
+      "duration_s": 2.151312,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 137728,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -17.405,
+      "dc_dbfs": -149.336,
+      "true_peak_4x_dbfs": -3.937,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "death_01": {
+      "file": "death_01.wav",
+      "loop": false,
+      "duration_s": 2.008,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 128556,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -20.599,
+      "dc_dbfs": -119.443,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_medium_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPlate_heavy_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactSoft_heavy_002.ogg",
+        "Kenney RPG Audio/Audio/cloth3.ogg",
+        "Kenney RPG Audio/Audio/dropLeather.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "win_01": {
+      "file": "win_01.wav",
+      "loop": false,
+      "duration_s": 3.126906,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 200166,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -23.813,
+      "dc_dbfs": -112.801,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "menu_01": {
+      "file": "menu_01.wav",
+      "loop": false,
+      "duration_s": 0.298375,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 19140,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -25.196,
+      "dc_dbfs": -93.115,
+      "true_peak_4x_dbfs": -3.133,
+      "sources": [
+        "Kenney RPG Audio/Audio/beltHandle1.ogg",
+        "Kenney RPG Audio/Audio/metalClick.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "menu_02": {
+      "file": "menu_02.wav",
+      "loop": false,
+      "duration_s": 0.285219,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 18298,
+      "peak_dbfs": -4.873,
+      "rms_dbfs": -26.584,
+      "dc_dbfs": -106.064,
+      "true_peak_4x_dbfs": -3.05,
+      "sources": [
+        "Kenney RPG Audio/Audio/beltHandle1.ogg",
+        "Kenney RPG Audio/Audio/metalClick.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "menu_03": {
+      "file": "menu_03.wav",
+      "loop": false,
+      "duration_s": 0.273156,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 17526,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -25.097,
+      "dc_dbfs": -94.996,
+      "true_peak_4x_dbfs": -3.28,
+      "sources": [
+        "Kenney RPG Audio/Audio/beltHandle1.ogg",
+        "Kenney RPG Audio/Audio/metalClick.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "projectile_01": {
+      "file": "projectile_01.wav",
+      "loop": false,
+      "duration_s": 0.779156,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 49910,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -21.62,
+      "dc_dbfs": -164.265,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney RPG Audio/Audio/knifeSlice2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "projectile_02": {
+      "file": "projectile_02.wav",
+      "loop": false,
+      "duration_s": 0.761781,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 48798,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -22.404,
+      "dc_dbfs": -149.105,
+      "true_peak_4x_dbfs": -3.995,
+      "sources": [
+        "Kenney RPG Audio/Audio/knifeSlice2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "projectile_03": {
+      "file": "projectile_03.wav",
+      "loop": false,
+      "duration_s": 0.745687,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 47768,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -19.459,
+      "dc_dbfs": -162.3,
+      "true_peak_4x_dbfs": -3.887,
+      "sources": [
+        "Kenney RPG Audio/Audio/knifeSlice2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "blade_drag_01": {
+      "file": "blade_drag_01.wav",
+      "loop": false,
+      "duration_s": 1.338812,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 85728,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -24.048,
+      "dc_dbfs": -176.926,
+      "true_peak_4x_dbfs": -3.859,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMining_000.ogg",
+        "Kenney RPG Audio/Audio/drawKnife1.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "blade_drag_02": {
+      "file": "blade_drag_02.wav",
+      "loop": false,
+      "duration_s": 1.394594,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 89298,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -22.039,
+      "dc_dbfs": -167.738,
+      "true_peak_4x_dbfs": -3.715,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/footstep_concrete_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMining_001.ogg",
+        "Kenney RPG Audio/Audio/drawKnife2.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ]
+    },
+    "ambient": {
+      "file": "ambient.mp3",
+      "loop": true,
+      "duration_s": 18.0,
+      "sample_rate": 32000,
+      "channels": 2,
+      "encoding": "mp3",
+      "bytes": 216909,
+      "peak_dbfs": -10.534,
+      "rms_dbfs": -23.667,
+      "dc_dbfs": -95.259,
+      "true_peak_4x_dbfs": -10.527,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ],
+      "loop_start_s": 0,
+      "loop_end_s": 18.0
+    },
+    "music_1": {
+      "file": "music_1.mp3",
+      "loop": true,
+      "duration_s": 36.0,
+      "sample_rate": 32000,
+      "channels": 2,
+      "encoding": "mp3",
+      "bytes": 577197,
+      "peak_dbfs": -7.002,
+      "rms_dbfs": -18.483,
+      "dc_dbfs": -71.113,
+      "true_peak_4x_dbfs": -6.997,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_004.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_004.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_004.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ],
+      "loop_start_s": 0,
+      "loop_end_s": 36.0,
+      "bpm": 80,
+      "beats_per_bar": 4,
+      "bars": 12,
+      "key": "D minor"
+    },
+    "music_2": {
+      "file": "music_2.mp3",
+      "loop": true,
+      "duration_s": 36.0,
+      "sample_rate": 32000,
+      "channels": 2,
+      "encoding": "mp3",
+      "bytes": 577197,
+      "peak_dbfs": -6.992,
+      "rms_dbfs": -18.4,
+      "dc_dbfs": -71.642,
+      "true_peak_4x_dbfs": -6.986,
+      "sources": [
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactMetal_light_004.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactPunch_heavy_004.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_000.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_001.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_002.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_003.ogg",
+        "Kenney Impact Sounds 1.0/Audio/impactWood_heavy_004.ogg",
+        "Original procedural synthesis and arrangement (CC0-1.0)"
+      ],
+      "loop_start_s": 0,
+      "loop_end_s": 36.0,
+      "bpm": 80,
+      "beats_per_bar": 4,
+      "bars": 12,
+      "key": "D minor"
+    }
+  },
+  "events": {
+    "knight_swing": {
+      "clips": [
+        "knight_swing_01",
+        "knight_swing_02",
+        "knight_swing_03",
+        "knight_swing_04"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "knight_heavy": {
+      "clips": [
+        "knight_heavy_01",
+        "knight_heavy_02",
+        "knight_heavy_03"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "boss_swing": {
+      "clips": [
+        "boss_swing_01",
+        "boss_swing_02",
+        "boss_swing_03",
+        "boss_swing_04"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "boss_step": {
+      "clips": [
+        "boss_step_01",
+        "boss_step_02",
+        "boss_step_03",
+        "boss_step_04"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "step": {
+      "clips": [
+        "step_01",
+        "step_02",
+        "step_03",
+        "step_04",
+        "step_05"
+      ],
+      "gain_db": -2,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "armor_takeoff": {
+      "clips": [
+        "armor_takeoff_01",
+        "armor_takeoff_02",
+        "armor_takeoff_03"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "body_contact": {
+      "clips": [
+        "body_contact_01",
+        "body_contact_02",
+        "body_contact_03"
+      ],
+      "gain_db": -2,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "boot_land": {
+      "clips": [
+        "boot_land_01",
+        "boot_land_02",
+        "boot_land_03"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "hit": {
+      "clips": [
+        "hit_01",
+        "hit_02",
+        "hit_03",
+        "hit_04"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "impact_knight": {
+      "clips": [
+        "impact_knight_01",
+        "impact_knight_02",
+        "impact_knight_03",
+        "impact_knight_04"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "impact_beast": {
+      "clips": [
+        "impact_beast_01",
+        "impact_beast_02",
+        "impact_beast_03",
+        "impact_beast_04"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "guard": {
+      "clips": [
+        "guard_01",
+        "guard_02",
+        "guard_03"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "parry": {
+      "clips": [
+        "parry_01",
+        "parry_02",
+        "parry_03"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "slam": {
+      "clips": [
+        "slam_01",
+        "slam_02",
+        "slam_03"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "flask": {
+      "clips": [
+        "flask_01",
+        "flask_02"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "roar": {
+      "clips": [
+        "roar_01",
+        "roar_02"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "death": {
+      "clips": [
+        "death_01"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        1,
+        1
+      ]
+    },
+    "win": {
+      "clips": [
+        "win_01"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        1,
+        1
+      ]
+    },
+    "menu": {
+      "clips": [
+        "menu_01",
+        "menu_02",
+        "menu_03"
+      ],
+      "gain_db": -4,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "projectile": {
+      "clips": [
+        "projectile_01",
+        "projectile_02",
+        "projectile_03"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    },
+    "blade_drag": {
+      "clips": [
+        "blade_drag_01",
+        "blade_drag_02"
+      ],
+      "gain_db": -2,
+      "pitch": [
+        0.97,
+        1.03
+      ]
+    }
+  },
+  "loops": {
+    "ambient": "ambient",
+    "music_1": "music_1",
+    "music_2": "music_2"
+  }
+}

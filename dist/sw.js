@@ -1,5 +1,5 @@
-const CACHE = 'blackblade-29f69fea55a3fc75';
-const SHELL = ["./", "index.html", "app.js", "style.css", "manifest.webmanifest", "icon.svg", "runtime.json", "engine.8b649683883a.js", "assets/poster.png", "fonts/Inter.ttf", "fonts/Cormorant.ttf", "game.audio.worklet.js"];
+const CACHE = 'blackblade-8802a3c4d29219f2';
+const SHELL = ["./", "index.html", "app.js", "sound.js", "style.css", "manifest.webmanifest", "icon.svg", "runtime.json", "engine.8b649683883a.js", "assets/poster.png", "fonts/Inter.ttf", "fonts/Cormorant.ttf", "game.audio.worklet.js"];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });
@@ -11,7 +11,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
   const name = url.pathname.split('/').pop();
-  if (!(SHELL.some(path => new URL(path, self.registration.scope).pathname === url.pathname) || url.pathname.includes('/data/'))) return;
+  if (!(SHELL.some(path => new URL(path, self.registration.scope).pathname === url.pathname) || url.pathname.includes('/data/') || url.pathname.includes('/audio/'))) return;
   const immutable = url.pathname.includes('/data/') || name.startsWith('engine.');
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
