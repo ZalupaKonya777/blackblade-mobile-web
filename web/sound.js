@@ -1,7 +1,7 @@
 // Local samples, sample accurate hits, and a shared clock for both music phases.
 const dbGain = db => Math.pow(10, db / 20);
 class BattleSound {
-  context = null; bank = null; buffers = new Map(); pending = new Map();
+  context = null; bank = null; buffers = new Map(); readyBuffers = new Map(); pending = new Map();
   decoded = new Set(); lastClip = new Map(); active = new Set(); loops = new Map(); counters = {};
   volume = .75; musicVolume = .5; fighting = false; phase = 1; paused = false; muted = false;
   async prepare() {
@@ -19,7 +19,7 @@ class BattleSound {
   async buffer(id) {
     if (!this.buffers.has(id)) this.buffers.set(id, this.bytes(id)
       .then(data => this.context.decodeAudioData(data.slice(0)))
-      .then(buffer => { this.decoded.add(id); return buffer; }));
+      .then(buffer => { this.decoded.add(id); this.readyBuffers.set(id,buffer); return buffer; }));
     return this.buffers.get(id);
   }
   async decodeAll() { await Promise.all(Object.keys(this.bank.files).map(id => this.buffer(id))); this.syncLoops(); }
@@ -76,7 +76,7 @@ class BattleSound {
     const clips=event.clips;let index=Math.floor(Math.random()*clips.length);
     if(clips.length>1&&clips[index]===this.lastClip.get(name))index=(index+1)%clips.length;
     const id=clips[index];this.lastClip.set(name,id);const requestTime=this.context.currentTime;
-    this.buffer(id).then(buffer=>{
+    const start=buffer=>{
       const c=this.context;if(c.state!=='running'||c.currentTime-requestTime>.12)return;
       if(this.active.size>=28){const oldest=this.active.values().next().value;this.active.delete(oldest);oldest.stop();}
       const source=c.createBufferSource();source.buffer=buffer;
@@ -90,7 +90,12 @@ class BattleSound {
       source.connect(gain).connect(panner);panner.connect(this.sfx);panner.connect(this.reverb);
       source.onended=()=>{this.active.delete(source);source.disconnect();gain.disconnect();panner.disconnect();};
       this.active.add(source);this.counters[name]=(this.counters[name]||0)+1;source.start();
-    }).catch(error=>console.warn('Audio event',name,error));
+    };
+    // Native combat may run several physics ticks before a slow GPU yields.
+    // Starting a cached source now avoids a delayed Promise microtask and keeps
+    // impacts audible even while that frame is rendering.
+    if(this.readyBuffers.has(id))start(this.readyBuffers.get(id));
+    else this.buffer(id).then(start).catch(error=>console.warn('Audio event',name,error));
   }
   fight(on){this.fighting=on;this.syncLoops();}
   state(phase,paused){this.phase=phase;this.paused=paused;this.settings(this.volume,this.musicVolume);this.syncLoops();}

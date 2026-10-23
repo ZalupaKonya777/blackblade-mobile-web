@@ -1,7 +1,8 @@
 """Prepare mobile skins from immutable supplied GLBs: welded weights and sword grips.
 
 UVs, textures, mesh topology and original assets are preserved. Only the derived
-hand geometry is curled; normals follow that geometry. No external runtime dependency.
+hand geometry is curled and longer beast arms are baked into the rest mesh;
+normals follow the prepared geometry. No external runtime dependency.
 """
 from pathlib import Path
 import hashlib,json,struct

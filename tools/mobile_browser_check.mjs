@@ -5,11 +5,11 @@ const artifacts = new URL('../artifacts/', import.meta.url);
 await mkdir(artifacts, { recursive: true });
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH || '/root/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome',
-  headless: true,
+  headless: process.env.BB_HEADED !== '1',
   env: { ...process.env, XDG_DATA_HOME: new URL('../.runtime/qa-data', import.meta.url).pathname,
     XDG_CONFIG_HOME: new URL('../.runtime/qa-config', import.meta.url).pathname,
     XDG_CACHE_HOME: new URL('../.runtime/qa-cache', import.meta.url).pathname },
-  args: ['--no-sandbox', '--disable-dev-shm-usage', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--autoplay-policy=user-gesture-required',...(process.env.BB_DEBUG_PORT?['--remote-debugging-port='+process.env.BB_DEBUG_PORT]:[])],
+  args: ['--no-sandbox', '--disable-dev-shm-usage', '--use-gl=angle', '--use-angle='+(process.env.BB_GL_BACKEND||'swiftshader'), '--enable-unsafe-swiftshader', '--autoplay-policy=user-gesture-required',...(process.env.BB_DEBUG_PORT?['--remote-debugging-port='+process.env.BB_DEBUG_PORT]:[])],
 });
 const context = await browser.newContext({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, serviceWorkers: 'block' });
 const page = await context.newPage();
@@ -129,6 +129,7 @@ try {
   await waitState(() => window.BlackbladeUI.state.charged && window.BlackbladeUI.state.action === 'heavy',60000);
   check('Held heavy button reaches full charge', true, await state());
   await pointer('#heavy', 'pointerup', 4);
+  await page.waitForFunction(() => (BlackbladeSound.diagnostics.events.knight_heavy||0)>0, null, {timeout:120000});
   await tap('#pause');
   await waitState(() => window.BlackbladeUI.state.paused);
   const paused = await state(); await page.waitForTimeout(700);

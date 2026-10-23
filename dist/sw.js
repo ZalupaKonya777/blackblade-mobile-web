@@ -1,4 +1,4 @@
-const CACHE = 'blackblade-8802a3c4d29219f2';
+const CACHE = 'blackblade-1e71e1f5c8310668';
 const SHELL = ["./", "index.html", "app.js", "sound.js", "style.css", "manifest.webmanifest", "icon.svg", "runtime.json", "engine.8b649683883a.js", "assets/poster.png", "fonts/Inter.ttf", "fonts/Cormorant.ttf", "game.audio.worklet.js"];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));

@@ -21,6 +21,14 @@ for(const [name,type,executablePath] of [
   await page.evaluate(()=>{BlackbladeSound.listener(0,1,4,0,0,-1,0,1,0);BlackbladeSound.fight(true);BlackbladeSound.play('knight_swing',0,1,0,-1,1);});
   await page.waitForFunction(()=>BlackbladeSound.diagnostics.rms>.0005);
   check('actual output contains audible samples',true,await page.evaluate(()=>BlackbladeSound.diagnostics));
+  const immediate=await page.evaluate(()=>{
+   for(const name of ['armor_takeoff','body_contact','knight_heavy'])BlackbladeSound.play(name,0,1,0,-3,1);
+   const counts={...BlackbladeSound.diagnostics.events};const until=performance.now()+300;while(performance.now()<until){}
+   return counts;
+  });
+  check('cached combat effects start synchronously before a slow frame yields',immediate.armor_takeoff===1&&immediate.body_contact===1&&immediate.knight_heavy===1,immediate);
+  const afterStall=await page.evaluate(()=>BlackbladeSound.diagnostics);
+  check('slow rendering does not discard roll and heavy effects',afterStall.events.body_contact===1&&afterStall.events.knight_heavy===1,afterStall);
   await page.evaluate(()=>{BlackbladeSound.state(2,false);BlackbladeSound.play('impact_beast',-2,1,0,-1,1);});
   await page.waitForTimeout(1100);
   const phase=await page.evaluate(()=>({diagnostics:BlackbladeSound.diagnostics,gains:[...BlackbladeSound.loops].map(([id,l])=>[id,l?.gain.gain.value]),loops:[...BlackbladeSound.loops].map(([id,l])=>[id,l?.source.loopEnd])}));
