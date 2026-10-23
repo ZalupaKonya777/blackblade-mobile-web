@@ -24,7 +24,7 @@ func run(scene:Node) -> void:
 	b.ai_enabled=false
 	await _step(10)
 	_check("source knight has skin",p.rig.skel.get_bone_count()==33,p.rig.skel.get_bone_count())
-	_check("source boss has skin",b.rig.skel.get_bone_count()==33,b.rig.skel.get_bone_count())
+	_check("mobile boss has body, limb and front-fur skin",b.rig.skel.get_bone_count()==34 and b.rig.ids.has("loin"),b.rig.skel.get_bone_count())
 	_check("ground collision",p.is_on_floor(),p.global_position.y)
 	for load_id in 3:
 		await _reset()
@@ -88,7 +88,7 @@ func run(scene:Node) -> void:
 	b.rig.skel.force_update_all_bone_transforms()
 	var hand_id:int=b.rig.ids.hand_l
 	var pose:Transform3D=b.rig.skel.get_bone_global_pose(hand_id)
-	var claw:Vector3=b.rig.skel.global_transform*(pose*Vector3(0,b.rig.lengths.hand_l,0))
+	var claw:Vector3=b.rig.skel.global_transform*(pose*b.rig.rest.hand_l.affine_inverse()*b.rig.support_socket)
 	_check("free claw contacts the floor",absf(claw.y)<.14,claw.y)
 	await _reset();p.bot_move=Vector2(0,1)
 	var press:=InputEventAction.new();press.action="dodge";press.pressed=true

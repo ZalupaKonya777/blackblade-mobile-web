@@ -38,7 +38,7 @@ def configure():
             elif source in ['slate_orm.png', 'masonry_orm.png']:
                 name = source.removesuffix('_orm.png')
                 params.update({'roughness/mode': '3', 'roughness/src_normal': f'"res://assets/textures/{name}_normal.jpg"'})
-        elif source in ['knight.glb', 'boss.glb', 'boss_mobile.glb']:
+        elif source in ['knight.glb', 'knight_mobile.glb', 'boss.glb', 'boss_mobile.glb']:
             # Decimation of a skinned fur/armour silhouette causes visible
             # topology pops. These supplied meshes are small enough to retain.
             params = {'meshes/generate_lods': 'false', 'meshes/force_disable_compression': 'true',

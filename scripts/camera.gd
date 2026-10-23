@@ -22,7 +22,7 @@ var impact_velocity:=Vector3.ZERO
 func _ready() -> void:
 	G.camera=self
 	cam=Camera3D.new();cam.fov=59;cam.near=.07;cam.far=110;cam.current=true;add_child(cam)
-	var fill:=OmniLight3D.new();fill.light_color=Color(.90,.88,.82);fill.light_energy=.23;fill.omni_range=11;fill.light_specular=.65;cam.add_child(fill)
+	var fill:=OmniLight3D.new();fill.light_color=Color(.90,.88,.82);fill.light_energy=.32;fill.light_cull_mask=2;fill.omni_range=11;fill.light_specular=.65;cam.add_child(fill)
 	var grading:=CanvasLayer.new();grading.layer=5;add_child(grading)
 	var screen:=ColorRect.new();screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);screen.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	post=ShaderMaterial.new();post.shader=load("res://shaders/mobile_grade.gdshader" if G.mobile else "res://shaders/grade.gdshader");screen.material=post;grading.add_child(screen)

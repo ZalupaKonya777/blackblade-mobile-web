@@ -43,6 +43,7 @@ var shot_aims:={}
 var followup:=""
 var pressure:=0
 var entry_velocity:=Vector3.ZERO
+var blade_drag_t:=0.0
 
 func _ready() -> void:
 	G.boss=self
@@ -51,15 +52,15 @@ func _ready() -> void:
 	floor_snap_length=.3
 	rig=FighterRig.new();add_child(rig);rig.setup("boss");rig.scale=Vector3.ONE*1.20
 	last_blade=rig.blade()
-	blade_light=OmniLight3D.new();blade_light.light_color=Color(.95,.10,.12);blade_light.omni_range=5;blade_light.light_energy=0;add_child(blade_light)
-	eye_light=OmniLight3D.new();eye_light.light_color=Color(1,.55,.18);eye_light.omni_range=1.2;eye_light.light_energy=.18;add_child(eye_light)
+	blade_light=OmniLight3D.new();blade_light.light_color=Color(.95,.10,.12);blade_light.omni_range=5;blade_light.light_cull_mask=1;blade_light.light_energy=0;add_child(blade_light)
+	eye_light=OmniLight3D.new();eye_light.light_color=Color(1,.55,.18);eye_light.omni_range=1.2;eye_light.light_cull_mask=1;eye_light.light_energy=.18;add_child(eye_light)
 
 func _physics_process(dt:float) -> void:
 	if G.freeze>0:return
 	posture_delay-=dt
 	if posture_delay<=0 and state not in ["stagger","fall"]:posture=maxf(0,posture-FightBalance.STANCE_REGEN*dt)
 	for k in cooldowns:cooldowns[k]-=dt
-	t+=dt
+	t+=dt;blade_drag_t=maxf(0,blade_drag_t-dt)
 	if state not in ["idle","move"]:
 		velocity.x=move_toward(velocity.x,0,24*dt);velocity.z=move_toward(velocity.z,0,24*dt)
 	if G.player and G.player.state=="heal":heal_seen+=dt
@@ -126,11 +127,14 @@ func _physics_process(dt:float) -> void:
 	rig.pose(anim,t,dt,stride,relative)
 	if stride>.25 and is_on_floor() and int(rig.gait/PI)!=paw_step:
 		paw_step=int(rig.gait/PI)
-		if G.audio:G.audio.play("boot_land",global_position,-15,.68)
+		pass # Contact-driven rig events supply the three-limb gait sound.
 		if G.fx:G.fx.ground_contact(global_position,displacement.normalized(),.45)
 	var blade:=rig.blade()
 	if G.playing and state=="attack":
 		_attack_events(blade)
+		if attack=="drag" and t>.34 and t<.90 and blade_drag_t<=0 and blade[1].y<.4:
+			blade_drag_t=.30
+			if G.audio:G.audio.play("blade_drag",blade[1],-9,1.0)
 		_check_blade(blade)
 	if G.fx:
 		G.fx.trail("boss",blade,state=="attack" and (_active() or attack=="air_blades" and _shot_release()),Color(1,.15,.12,.56) if phase==2 else Color(.88,.77,.57,.35))
@@ -139,7 +143,7 @@ func _physics_process(dt:float) -> void:
 	blade_light.global_position=blade[0].lerp(blade[1],.5)
 	blade_light.light_color=Color(1,.65,.15) if parry_flash else Color(.95,.05,.07)
 	blade_light.light_energy=2.0 if parry_flash else (.9 if phase==2 and state!="dead" else 0.0)
-	eye_light.global_position=rig.target_point()+Vector3.UP*.5
+	eye_light.global_position=rig.motion.to_global(rig.globals.head.origin) if rig.globals.has("head") else rig.target_point()
 	last_blade=blade
 
 func _think(dt:float) -> void:
@@ -275,7 +279,7 @@ func _attack_events(blade:Array) -> void:
 		var h:Array=m.hits[i];var key:="sound%d"%i
 		if t>=h[0]-.10 and not events.has(key):
 			events[key]=true
-			if G.audio:G.audio.play("swing",blade[0],-3,.62)
+			if G.audio:G.audio.play("boss_swing",blade[0],-2,1.0)
 	if attack=="drag" and t>.47 and t<.96 and blade[1].y<.38 and int(t*16)!=events.get("scrape",-1):
 		events.scrape=int(t*16)
 		var tip:Vector3=blade[1];tip.y=.055
@@ -356,7 +360,7 @@ func take_damage(amount:float,stance:float,point:Vector3,_kind:String) -> void:
 	posture_delay=FightBalance.STANCE_DELAY
 	if state not in ["stagger","critical","transition","fall"]:posture+=stance
 	if G.fx:G.fx.burst(point,Color(.9,.55,.24),18 if amount<400 else 28,3.4)
-	if G.audio:G.audio.play("hit",point,-5,.75)
+	if G.audio:G.audio.play("impact_beast",point,-3,1.0)
 	rig.impact((.018 if amount<350 else .055)*(.35 if state=="attack" else 1.0),G.flat(point-global_position).normalized())
 	if G.ui:G.ui.damage_number(amount,point)
 	if hp<=0:

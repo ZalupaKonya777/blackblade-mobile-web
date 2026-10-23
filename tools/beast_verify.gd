@@ -44,10 +44,10 @@ func run(scene:Node) -> void:
 					var h:Array=EclipseBeast.MOVES[id].hits[i]
 					if time>=h[0] and time<h[1]:travels[i]+=distance
 			last=blade[1]
-			var wrist:Vector3=b.rig.skel.global_transform*b.rig.skel.get_bone_global_pose(b.rig.ids.hand_r).origin
-			wrist_error=maxf(wrist_error,wrist.distance_to(blade[0]))
+			var wrist:Vector3=b.rig.skel.global_transform*b.rig.skel.get_bone_global_pose(b.rig.ids.hand_r)*b.rig.rest.hand_r.affine_inverse()*b.rig.right_socket
+			wrist_error=maxf(wrist_error,wrist.distance_to(b.rig.weapon.to_global(b.rig.source_grip)))
 		check(id+" continuous full-body motion",finite and max_jump<1.35,{"max_tip_step":max_jump,"tip_min_y":low})
-		check(id+" sword stays attached to animated wrist",wrist_error<.005,wrist_error)
+		check(id+" sword stays attached inside animated palm",wrist_error<.005,wrist_error)
 		if id!="lunge":
 			for i in travels.size():check(id+" active swing %d moves the blade"%i,float(travels[i])>.55,travels[i])
 	var auditor=load("res://tools/roll_studio.gd").new();auditor.rig=b.rig

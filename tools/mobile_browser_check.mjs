@@ -77,7 +77,8 @@ try {
   }), await page.evaluate(()=>({graphics:window.BlackbladeUI.graphics,native:window.BlackbladeUI.state})));
   // Real-time input is checked at a software-GPU budget; native HD poses are
   // captured separately by visual_review.gd. No phone FPS claim is made.
-  await page.evaluate(() => { game.width=480;game.height=222; });
+  await page.evaluate(() => { game.width=480;game.height=222; window.BlackbladeNative(JSON.stringify({type:"setting",key:"quality",value:0})); });
+  await waitState(() => window.BlackbladeUI.state.quality===0);
   await tap('#training');
   await waitState(() => window.BlackbladeUI.state.phase === 'fight');
   check('Training starts from the mobile menu', (await state()).training);
@@ -147,6 +148,8 @@ try {
   await waitState(() => !window.BlackbladeUI.state.paused);
   await page.screenshot({ path: new URL('mobile-iphone-se.png', artifacts).pathname, scale: 'css' });
   check('Controls remain inside an iPhone SE landscape viewport', await page.evaluate(() => [...document.querySelectorAll('.combat-button')].every(element => { const r = element.getBoundingClientRect(); return r.x >= 0 && r.y >= 0 && r.right <= innerWidth && r.bottom <= innerHeight; })));
+  check('Battle audio bank is decoded in the running game', await page.evaluate(() => BlackbladeSound.diagnostics.decoded===67), await page.evaluate(() => BlackbladeSound.diagnostics));
+  check('Native combat triggers real sword and roll sounds', await page.evaluate(() => (BlackbladeSound.diagnostics.events.knight_heavy||0)>0 && (BlackbladeSound.diagnostics.events.body_contact||0)>0),await page.evaluate(() => BlackbladeSound.diagnostics.events));
   check('Sound is unlocked after a real menu tap', await page.evaluate(() => window.BlackbladeUI.audioStates.some(state => state === 'running')), await page.evaluate(() => window.BlackbladeUI.audioStates));
   check('No JavaScript exceptions', errors.length === 0, errors);
   const nativeErrors = logs.filter(entry => entry.type === 'error' && /USER ERROR|SCRIPT ERROR|Failed loading resource|WebAssembly.*error/i.test(entry.text));

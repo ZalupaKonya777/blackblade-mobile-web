@@ -58,16 +58,29 @@ var weapon_last_t:=-1.0
 var weapon_entry_t:=0.0
 var weapon_from:Dictionary={}
 var weapon_plants:Dictionary={}
+var grip_shapes:Array=[]
+var left_grip_blend:=0.0
+var sockets:Dictionary={}
+var right_socket:=Vector3.ZERO
+var left_socket:=Vector3.ZERO
+var support_socket:=Vector3.ZERO
+var support_normal:=Vector3.DOWN
+const PALM_FRAME=Basis(Vector3.RIGHT,Vector3.BACK,Vector3.DOWN)
+var source_grip:=Vector3.ZERO
+var source_shoulder:=Vector3.ZERO
+var source_tip:=Vector3.ZERO
+var weapon_scale:=1.0
+var source_frame:=Basis.IDENTITY
 
 func setup(p_kind: String) -> void:
 	kind = p_kind
 	unit = 1.0 if kind == "knight" else 2.05
 	motion = Node3D.new()
 	add_child(motion)
-	model = load("res://assets/characters/"+("boss_mobile" if kind=="boss" else kind)+".glb").instantiate()
+	model = load("res://assets/characters/"+kind+"_mobile.glb").instantiate()
 	motion.add_child(model)
 	skel = _skeleton(model)
-	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/characters/"+kind+".json"))
+	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/characters/"+kind+"_mobile.json"))
 	for i in skel.get_bone_count():
 		var n := String(skel.get_bone_name(i))
 		ids[n] = i
@@ -77,16 +90,24 @@ func setup(p_kind: String) -> void:
 		heads[n] = Vector3(b.head[0],b.head[1],b.head[2])
 		tails[n] = Vector3(b.tail[0],b.tail[1],b.tail[2])
 		lengths[n] = heads[n].distance_to(tails[n])
-		if kind=="boss" and (n.begins_with("upper_") or n.begins_with("fore_")):lengths[n]*=1.6
 	weapon = load("res://assets/weapons/"+("player_sword" if kind=="knight" else "boss_sword")+".glb").instantiate()
 	motion.add_child(weapon)
-	if kind == "boss":
-		weapon.scale = Vector3.ONE*1.38
-		blade_length = 2.12
+	for mesh in weapon.find_children("*","MeshInstance3D",true,false):mesh.layers=2
+	sockets=JSON.parse_string(FileAccess.get_file_as_string("res://assets/characters/"+kind+"_sockets.json"))
+	right_socket=_vec(sockets.right_grip);left_socket=_vec(sockets.left_grip)
+	support_socket=_vec(sockets.left_support);support_normal=_vec(sockets.support_normal).normalized()
+	if kind=="boss":
+		weapon_scale=1.38;source_grip=Vector3(-.000004,.080000,-.000036)
+		source_shoulder=Vector3(0,.31,0);source_tip=Vector3(.000406,1.435179,.000979)
 	else:
-		blade_length = 1.06
+		source_frame=Basis(Vector3.RIGHT,Vector3.DOWN,Vector3.FORWARD)
+		source_grip=Vector3(.000069,.940000,-.000081)
+		source_shoulder=Vector3(0,.775,0);source_tip=Vector3(-.057005,-.162515,.000328)
+	blade_length=source_grip.distance_to(source_tip)*weapon_scale
 	for mi in model.find_children("*","MeshInstance3D",true,false):
 		mi.extra_cull_margin = 5.0
+		mi.layers=2
+		if mi.get_blend_shape_count()>0:grip_shapes.append(mi)
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 		# Keep the supplied silhouette stable when a limb approaches the camera.
 		mi.lod_bias=128.0
@@ -103,10 +124,12 @@ func setup(p_kind: String) -> void:
 		var probes:Array=JSON.parse_string(FileAccess.get_file_as_string("res://assets/characters/knight_contacts.json"))
 		for probe in probes:
 			var point:=Vector3(probe.point[0],probe.point[1],probe.point[2])
-			contact_probes.append({"bone":probe.bone,"local":rest[probe.bone].affine_inverse()*point})
+			var links:=[]
+			for link in probe.influences:links.append({"bone":link.bone,"local":rest[link.bone].affine_inverse()*point,"weight":float(link.weight)})
+			contact_probes.append(links)
 	if kind=="boss":
 		beast_cloth_ids.resize(skel.get_bone_count())
-		for bone in ids:beast_cloth_ids[ids[bone]]=int(String(bone).begins_with("cape_"))
+		for bone in ids:beast_cloth_ids[ids[bone]]=int(String(bone).begins_with("cape_") or bone=="loin")
 		var probes:Array=JSON.parse_string(FileAccess.get_file_as_string("res://assets/characters/boss_cloth_contacts.json"))
 		for probe in probes:
 			var point:=Vector3(probe.point[0],probe.point[1],probe.point[2])
@@ -145,7 +168,6 @@ func _put(n: String, a: Vector3, b: Vector3, roll := 0.0) -> void:
 	var bs: Basis = Basis(q)*rest[n].basis
 	if absf(roll)>0.001: bs=Basis(new_dir,roll)*bs
 	bs=bs.orthonormalized()
-	if kind=="boss" and (n.begins_with("upper_") or n.begins_with("fore_")):bs=bs.scaled(Vector3.ONE*1.6)
 	globals[n] = Transform3D(bs,a)
 
 func _ik(prefix_a: String, prefix_b: String, side: String, root: Vector3, target: Vector3, pole: Vector3) -> Vector3:
@@ -174,6 +196,12 @@ func _swing_angle(t: float, wind: float, hit: float, finish: float, start_angle:
 func pose(action: String, t: float, dt: float, speed: float, direction: Vector3, variant := 0) -> void:
 	if not skel: return
 	clock += dt
+	if kind=="knight":
+		var two_hands:=KnightMoves.is_attack(action) and KnightMoves.key(action,variant) in ["heavy","counter","jump_attack"]
+		var next_grip:=move_toward(left_grip_blend,1.0 if two_hands else 0.0,dt*12)
+		if not is_equal_approx(next_grip,left_grip_blend):
+			left_grip_blend=next_grip
+			for mesh in grip_shapes:mesh.set_blend_shape_value(0,left_grip_blend)
 	recoil_velocity+=(-recoil*210.0-recoil_velocity*24.0)*dt
 	recoil+=recoil_velocity*dt
 	gait += dt*(TAU*clampf(speed/2.25,.65,2.9) if kind=="knight" else TAU*clampf(speed/1.75,.50,2.7))*float(speed>.05)
@@ -247,7 +275,7 @@ func pose(action: String, t: float, dt: float, speed: float, direction: Vector3,
 			lean=-sin(clampf(t/.55,0,1)*PI)*.4;right.z=-.10;left.z=-.10
 		elif action=="dead":
 			var f:=smoothstep(0,1.3,t)
-			p.y=lerpf(.95,.20,f);lean=-1.35*f;lf.z=.50*f;rf.z=.62*f;right.y=.25;left.y=.28
+			p.y=lerpf(.95,.39,f);lean=.92*f;lf.z=lerpf(.06,-.24,f);rf.z=lerpf(.08,-.33,f);right.y=lerpf(1.06,.28,f);right.z=lerpf(.12,.43,f);left.y=lerpf(1.04,.22,f);left.z=lerpf(.18,.48,f)
 		if atk:
 			var wind:=.25;var hit:=.42;var end:=.78
 			if action in ["heavy","charged","jump_attack","counter"]:wind=.55;hit=.78;end=1.2
@@ -280,10 +308,10 @@ func pose(action: String, t: float, dt: float, speed: float, direction: Vector3,
 		var shoulder:=_point(heads["upper_"+side],p,body)
 		var hand_target:Vector3=left if side=="l" else right
 		var elbow_pole:=Vector3(signx*.45,-.12,-.90) if kind=="knight" else Vector3(signx*.85,-.20,-.5)
-		var hand:=_ik("upper_","fore_",side,shoulder,hand_target,elbow_pole)
-		var hand_axis:Vector3=sword if side=="r" else Vector3(0,-1,.15)
-		_put("hand_"+side,hand,hand+hand_axis.normalized()*lengths["hand_"+side])
-		if side=="r":grip=hand
+		if side=="r":_grasp(side,shoulder,hand_target,sword,elbow_pole)
+		else:
+			var hand:=_ik("upper_","fore_",side,shoulder,hand_target,elbow_pole)
+			_put("hand_l",hand,hand+Vector3(0,-1,.15).normalized()*lengths.hand_l)
 	motion.transform=root_xform
 	_cloth(dt,p,body)
 	_commit(action,dt,sword)
@@ -295,7 +323,7 @@ func _beast_cloth_floor() -> void:
 	# Bone centres alone can stay above the floor while their mesh sinks through it.
 	var xf:=motion.global_transform
 	var scale_y:=maxf(.1,xf.basis.get_scale().y)
-	var floor_y:float=(.045-xf.origin.y)/scale_y
+	var floor_y:float=(.065-xf.origin.y)/scale_y
 	var transforms:Array[Transform3D]=[];transforms.resize(skel.get_bone_count())
 	for bone in globals:transforms[ids[bone]]=globals[bone]
 	var lifts:=PackedFloat32Array();lifts.resize(skel.get_bone_count())
@@ -316,6 +344,19 @@ func _beast_cloth_floor() -> void:
 			cloth_points[key].y+=lift*scale_y
 			cloth_previous[key].y+=lift*scale_y
 func _commit(action:String,dt:float,sword:Vector3) -> void:
+	# Contact is measured from the actual curved blade, including its source
+	# grip offset. Rotate the wrist without separating it from the forearm.
+	var floor_y:float=(.036-motion.global_position.y)/maxf(.1,motion.global_basis.get_scale().y)
+	for contact_pass in 4:
+		var hand_delta:Transform3D=globals.hand_r*rest.hand_r.affine_inverse()
+		var palm:Vector3=hand_delta*right_socket
+		var chord:Vector3=hand_delta.basis*PALM_FRAME*source_frame.inverse()*(source_tip-source_grip)*weapon_scale
+		if palm.y+chord.y>=floor_y:break
+		var axis:=chord.normalized();var minimum:=clampf((floor_y-palm.y)/blade_length,-.995,.995)
+		var flat:=Vector3(axis.x,0,axis.z).normalized()
+		if flat.length()<.1:flat=Vector3(0,0,1)
+		var corrected:=flat*sqrt(1-minimum*minimum)+Vector3.UP*minimum
+		globals.hand_r.basis=Basis(Quaternion(axis,corrected))*globals.hand_r.basis
 	# Smooth local transforms while maintaining a deterministic animation clock.
 	var alpha:=1.0-exp(-pose_blend*dt)
 	if action in ["light","heavy","charged","combo","sweep","overhead"]:alpha=1.0-exp(-25.0*dt)
@@ -335,13 +376,14 @@ func _commit(action:String,dt:float,sword:Vector3) -> void:
 		skel.set_bone_pose_position(i,cur.origin)
 		skel.set_bone_pose_rotation(i,cur.basis.orthonormalized().get_rotation_quaternion())
 		skel.set_bone_pose_scale(i,cur.basis.get_scale())
-	blade_dir=sword.normalized()
-	var x:=Vector3.RIGHT
-	if absf(x.dot(blade_dir))>.94:x=Vector3.FORWARD
-	var z:=x.cross(blade_dir).normalized()
-	x=blade_dir.cross(z).normalized()
-	var ws:=1.0 if kind=="knight" else 1.38
-	weapon.transform=Transform3D(Basis(x,blade_dir,z).scaled(Vector3.ONE*ws),grip)
+	skel.force_update_all_bone_transforms()
+	var hand:Transform3D=motion.global_transform.affine_inverse()*skel.global_transform*skel.get_bone_global_pose(ids.hand_r)
+	var delta:Transform3D=hand*rest.hand_r.affine_inverse()
+	grip=delta*right_socket
+	var frame:Basis=delta.basis.orthonormalized()*PALM_FRAME
+	var mounted:Basis=(frame*source_frame.inverse()).scaled(Vector3.ONE*weapon_scale)
+	weapon.transform=Transform3D(mounted,grip-mounted*source_grip)
+	blade_dir=(mounted*(source_tip-source_grip)).normalized()
 	initialized=true
 
 func _locomotion_foot(side:String,dt:float,speed:float,direction:Vector3) -> Vector3:
@@ -414,20 +456,25 @@ func _pose_weapon(action:String,t:float,dt:float,variant:int) -> void:
 		var ankle:=_ik("thigh_","shin_",side,hip,foot,Vector3(sx*.12,.06,1))
 		_put("foot_"+side,ankle,ankle+Vector3(0,-.035,.15));feet[side]=ankle
 		var shoulder:Vector3=globals.spine2*rest.spine2.affine_inverse()*heads["upper_"+side]
-		var hand:=_ik("upper_","fore_",side,shoulder,pose.free if side=="l" else pose.hand,Vector3(sx*.65,-.18,-.65))
-		var axis:Vector3=pose.sword if side=="r" else Vector3(0,-1,.15).normalized()
-		_put("hand_"+side,hand,hand+axis*lengths["hand_"+side])
+		if side=="r":
+			var palm:Vector3=pose.hand
+			var sword:Vector3=pose.sword
+			var minimum:=clampf((.035-motion.to_global(palm).y)/blade_length,-.99,.99)
+			if sword.y<minimum:
+				var flat:=Vector3(sword.x,0,sword.z).normalized();sword=flat*sqrt(1-minimum*minimum)+Vector3.UP*minimum
+			_grasp(side,shoulder,palm,sword,Vector3(sx*.65,-.18,-.65))
+		else:
+			var hand:=_ik("upper_","fore_",side,shoulder,pose.free,Vector3(sx*.65,-.18,-.65))
+			_put("hand_l",hand,hand+Vector3(0,-1,.15).normalized()*lengths.hand_l)
 	var blend:=smoothstep(0,.12,weapon_entry_t)
 	if initialized and blend<1:
 		for bone in globals:
 			if weapon_from.has(bone):globals[bone]=weapon_from[bone].interpolate_with(globals[bone],blend)
-	grip=globals.hand_r.origin
-	var sword:Vector3=(globals.hand_r.basis*rest.hand_r.basis.inverse()*(tails.hand_r-heads.hand_r)).normalized()
-	var minimum:=clampf((.035-motion.to_global(grip).y)/blade_length,-.99,.99)
-	if sword.y<minimum:
-		var flat:=Vector3(sword.x,0,sword.z).normalized()
-		sword=flat*sqrt(1-minimum*minimum)+Vector3.UP*minimum
-		_put("hand_r",grip,grip+sword*lengths.hand_r)
+	var sword:Vector3=pose.sword
+	if id in ["heavy","counter","jump_attack"]:
+		var shoulder:Vector3=globals.spine2*rest.spine2.affine_inverse()*heads.upper_l
+		var palm:Vector3=globals.hand_r*rest.hand_r.affine_inverse()*right_socket
+		_grasp("l",shoulder,palm-sword*.075,sword,Vector3(.7,-.2,-.5))
 	for side in feet:feet[side]=globals["foot_"+side].origin
 	_cloth(dt,p,body)
 	_commit(action,dt,sword)
@@ -462,9 +509,10 @@ func _beast_contact(id:String,home:Vector3,phase_offset:float,dt:float,speed:flo
 		step.t+=dt
 		var f:float=clampf(step.t/step.duration,0,1)
 		var point:Vector3=step.from.lerp(step.to,BeastMoves.smooth_motion(f))
-		point.y+=sin(f*PI)*(.15 if id=="paw" else .12)*unit
+		point.y+=sin(f*PI)*(.19 if id=="paw" else .13)*unit
 		if f>=1:
 			beast_plants[id]=step.to;beast_swings.erase(id)
+			if G.audio:G.audio.play("boss_step",point,-5 if id=="paw" else -9,1.0 if id=="paw" else .93)
 		return xf.affine_inverse()*point
 	if not beast_plants.has(id):beast_plants[id]=xf*home
 	return xf.affine_inverse()*beast_plants[id]
@@ -483,11 +531,16 @@ func _pose_beast(action:String,t:float,dt:float,speed:float,direction:Vector3) -
 	var moving:=action in ["idle","move"] and speed>.12
 	var p:=Vector3(0,target.height,-.15)*unit
 	if moving:
-		p.y+=absf(sin(gait))*minf(.023,speed*.007)*unit
+		p.y+=sin(gait*2-.45)*minf(.030,speed*.009)*unit
+		p.z+=sin(gait-.4)*.025*unit
 		p.x+=sin(gait)*.018*unit
 	var lean:float=target.lean+recoil.x
 	var twist:float=target.twist+sin(clock*1.3)*.012*(1-flight)+recoil.y
 	var bank:float=target.bank+recoil.z
+	if moving:
+		bank+=sin(gait+.5)*.045
+		twist+=sin(gait-.2)*.055
+		lean+=sin(gait*2+.3)*.018
 	var body:=Basis(Vector3.FORWARD,bank)*Basis(Vector3.UP,twist)*Basis(Vector3.RIGHT,lean)
 	var pelvis_bs:=Basis(Vector3.FORWARD,bank*.7)*Basis(Vector3.UP,twist*.35)*Basis(Vector3.RIGHT,lean*.55)
 	_put("root",Vector3.ZERO,Vector3.UP*.1*unit)
@@ -499,10 +552,12 @@ func _pose_beast(action:String,t:float,dt:float,speed:float,direction:Vector3) -
 		elif bn=="spine2":pitch=lean+.06
 		elif bn=="neck":pitch=.35+float(target.head_pitch)*.45;turning=twist*.40
 		elif bn=="head":pitch=target.head_pitch;turning=twist*.15
+		if moving and bn in ["neck","head"]:pitch-=sin(gait*2-.45)*.016
 		var bs:=Basis(Vector3.FORWARD,bank)*Basis(Vector3.UP,turning)*Basis(Vector3.RIGHT,pitch)
 		var end:Vector3=spine+bs*(tails[bn]-heads[bn])
 		_put(bn,spine,end);spine=end
-	var left:=Vector3(target.paw_x,.122,target.paw_z)*unit
+	var left:=Vector3(target.paw_x,0,target.paw_z)*unit
+	left.y=(.045-motion.global_position.y)/maxf(.1,motion.global_basis.get_scale().y)
 	left.y+=((1-float(target.paw_weight))*.44+flight*.12)*unit
 	left.z-=flight*.17*unit
 	left=_beast_contact("paw",left,.25,dt,speed if moving else 0.0,direction,float(target.paw_weight)*(1-flight))
@@ -510,7 +565,7 @@ func _pose_beast(action:String,t:float,dt:float,speed:float,direction:Vector3) -
 		var shoulder:Vector3=globals.spine2*rest.spine2.affine_inverse()*heads.upper_l
 		var reach:float=lengths.upper_l+lengths.fore_l-.025
 		var horizontal:=G.flat(shoulder-left).length()
-		var support_drop:=maxf(0,shoulder.y-left.y-sqrt(maxf(.01,reach*reach-horizontal*horizontal)))
+		var support_drop:=minf(.08*unit,maxf(0,shoulder.y-left.y-sqrt(maxf(.01,reach*reach-horizontal*horizontal))))
 		if support_drop>0:
 			p.y-=support_drop
 			for bone in globals:
@@ -535,19 +590,14 @@ func _pose_beast(action:String,t:float,dt:float,speed:float,direction:Vector3) -
 		var shoulder:Vector3=globals.spine2*rest.spine2.affine_inverse()*heads["upper_"+side]
 		var hand_target:Vector3=left if side=="l" else right
 		var pole:=Basis(Vector3.UP,twist)*Vector3(sx*.90,-.20,-.65)
-		var hand:=_ik("upper_","fore_",side,shoulder,hand_target,pole)
-		var hand_axis:=sword if side=="r" else Vector3(.08,-1,.20).normalized()
 		if side=="r":
-			grip=hand
-			# The blade hits the stone at the end of a downward cut, then drags out.
-			var minimum:=clampf((.035-motion.to_global(grip).y)/(blade_length*global_basis.get_scale().y),-.995,.995)
-			if sword.y<minimum:
-				var flat:=Vector3(sword.x,0,sword.z).normalized()
-				if flat.length()<.1:flat=Vector3(0,0,1)
-				sword=flat*sqrt(1-minimum*minimum)+Vector3.UP*minimum
-			hand_axis=sword
-		else:beast_contacts.paw=motion.to_global(hand+hand_axis*lengths.hand_l)
-		_put("hand_"+side,hand,hand+hand_axis*lengths["hand_"+side])
+			# Raise the grip on a downward slam, preserving a vertical blade at contact.
+			var floor_y:float=(.035-motion.global_position.y)/maxf(.1,motion.global_basis.get_scale().y)
+			right.y=maxf(right.y,floor_y-sword.y*blade_length)
+			_grasp(side,shoulder,right,sword,pole)
+		else:
+			_support_paw(shoulder,left,pole)
+			beast_contacts.paw=motion.to_global(globals.hand_l*rest.hand_l.affine_inverse()*support_socket)
 	_cloth(dt,p,body)
 	_beast_cloth_floor()
 	_commit(action,dt,sword)
@@ -618,15 +668,20 @@ func _pose_roll(t:float,dt:float) -> void:
 			var brace:=sin(smoothstep(.06,.28,f)*PI)*(1-smoothstep(.28,.36,f))
 			hand_target=hand_target.lerp(Vector3(.27,.09,.50),brace*.72)
 		var pole:=chest_basis*Vector3(sx*.85,-.35,-.30)
-		var hand:=_ik("upper_","fore_",side,shoulder,hand_target,pole)
 		var sword_axis:=chest_basis*Vector3(-.24,.12,.96).normalized()
-		_put("hand_"+side,hand,hand+(sword_axis if side=="r" else chest_basis*Vector3(0,-1,.15)).normalized()*lengths["hand_"+side])
-		if side=="r":grip=hand;blade_dir=sword_axis
+		if side=="r":
+			_grasp(side,shoulder,hand_target,sword_axis,pole);grip=globals.hand_r*rest.hand_r.affine_inverse()*right_socket;blade_dir=sword_axis
+		else:
+			var hand:=_ik("upper_","fore_",side,shoulder,hand_target,pole)
+			_put("hand_l",hand,hand+(chest_basis*Vector3(0,-1,.15)).normalized()*lengths.hand_l)
+	_cloth(dt,p,pelvis_bs)
 	# The shoulder/back and the boots support the roll; the helmet stays clear.
 	var min_y:=100.0
 	if not contact_probes.is_empty():
 		for probe in contact_probes:
-			if globals.has(probe.bone):min_y=minf(min_y,(globals[probe.bone]*probe.local).y)
+			var point:=Vector3.ZERO
+			for link in probe:point+=(globals[link.bone]*link.local)*link.weight
+			min_y=minf(min_y,point.y)
 	else:
 		for bn in globals:
 			if bn=="root":continue
@@ -643,13 +698,15 @@ func _pose_roll(t:float,dt:float) -> void:
 	if blade_dir.y<lowest_axis:
 		var horizontal:=Vector3(blade_dir.x,0,blade_dir.z).normalized()
 		blade_dir=horizontal*sqrt(1-lowest_axis*lowest_axis)+Vector3.UP*lowest_axis
-		_put("hand_r",grip,grip+blade_dir*lengths.hand_r)
+		_orient_grip("r",blade_dir)
 	roll_ground_clearance=min_y+lift
 	roll_support="push" if f<.17 else ("shoulder" if f<.42 else ("back" if f<.65 else "plant"))
-	_cloth(dt,p,pelvis_bs)
 	_commit("roll",dt,blade_dir)
 
 func _cloth(dt:float,p:Vector3,body:Basis) -> void:
+	if globals.has("pelvis") and rest.has("loin"):
+		var anchor:Vector3=globals.pelvis*rest.pelvis.affine_inverse()*heads.loin
+		_put("loin",anchor,anchor+Vector3(.015*sin(clock*2),-.99,.12).normalized()*lengths.loin)
 	if not secondary_motion:return
 	var xf:=motion.global_transform
 	var inv:=xf.affine_inverse()
@@ -692,11 +749,49 @@ func _cloth(dt:float,p:Vector3,body:Basis) -> void:
 			cloth_points[key]=ends[seg+1]
 			_put("cape_"+key,inv*ends[seg],inv*ends[seg+1])
 
-func blade() -> Array[Vector3]:
-	var base:=motion.global_transform*grip
-	var tip:=motion.global_transform*(grip+blade_dir*blade_length)
-	return [base,tip]
+func blade() -> Array:
+	return [weapon.to_global(source_shoulder),weapon.to_global(source_tip)]
 
 func target_point() -> Vector3:
 	if globals.has("spine2"):return motion.global_transform*globals.spine2.origin
 	return global_position+Vector3.UP*unit
+
+func _vec(a:Array) -> Vector3:
+	return Vector3(float(a[0]),float(a[1]),float(a[2]))
+
+func _grip_frame(axis:Vector3,forward:Vector3) -> Basis:
+	var y:=axis.normalized();var z:=forward-y*forward.dot(y)
+	if initialized:
+		var previous:Basis=skel.get_bone_global_pose(ids.hand_r).basis*rest.hand_r.basis.inverse()*PALM_FRAME
+		var transported:=previous.z-y*previous.z.dot(y)
+		if transported.length_squared()>.001:
+			transported=transported.normalized()
+			if z.dot(transported)<0:z=-z
+			z=transported.lerp(z.normalized(),smoothstep(.03,.25,z.length_squared())*.55)
+	if z.length_squared()<.025:z=Vector3(0,0,1)-y*y.z
+	if z.length_squared()<.025:z=Vector3.DOWN-y*y.dot(Vector3.DOWN)
+	z=z.normalized();var x:=y.cross(z).normalized()
+	return Basis(x,y,x.cross(y).normalized())
+
+func _grasp(side:String,shoulder:Vector3,palm:Vector3,axis:Vector3,pole:Vector3) -> void:
+	var socket:Vector3=right_socket if side=="r" else left_socket
+	var frame:=_grip_frame(axis,palm-shoulder)
+	var rotation:=frame*PALM_FRAME.inverse()
+	var wrist:Vector3=palm-rotation*(socket-heads["hand_"+side])
+	var hand:=_ik("upper_","fore_",side,shoulder,wrist,pole)
+	globals["hand_"+side]=Transform3D(rotation*rest["hand_"+side].basis,hand)
+
+func _orient_grip(side:String,axis:Vector3) -> void:
+	var hand:Transform3D=globals["hand_"+side]
+	var frame:=_grip_frame(axis,hand.origin-globals["fore_"+side].origin)
+	globals["hand_"+side].basis=frame*PALM_FRAME.inverse()*rest["hand_"+side].basis
+
+func _support_paw(shoulder:Vector3,contact:Vector3,pole:Vector3) -> void:
+	var normal:=support_normal
+	var across:=Vector3.BACK-normal*Vector3.BACK.dot(normal);across=across.normalized()
+	var source:=Basis(across,normal,across.cross(normal))
+	var desired:=Basis(Vector3.LEFT,Vector3.DOWN,Vector3.BACK)
+	var rotation:=desired*source.inverse()
+	var wrist:Vector3=contact-rotation*(support_socket-heads.hand_l)
+	var hand:=_ik("upper_","fore_","l",shoulder,wrist,pole)
+	globals.hand_l=Transform3D(rotation*rest.hand_l.basis,hand)

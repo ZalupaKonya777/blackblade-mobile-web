@@ -221,8 +221,8 @@ func _physics_process(dt:float) -> void:
 		var side:="l" if step_index%2==0 else "r"
 		var contact:Vector3=rig.motion.to_global(rig.feet.get(side,Vector3.ZERO))
 		if G.audio:
-			G.audio.play("step",contact,-22 if not sprinting else -19,randf_range(.92,1.08))
-			G.audio.play("boot_land",contact,-24 if not sprinting else -20)
+			G.audio.play("step",contact,-7 if not sprinting else -4,randf_range(.92,1.08))
+			G.audio.play("boot_land",contact,-14 if not sprinting else -10)
 		if sprinting and G.fx:G.fx.ground_contact(contact,move_dir,.20)
 
 func _command(cmd:String) -> bool:
@@ -291,7 +291,7 @@ func _advance_attack(dt:float) -> void:
 	if action=="jump_attack" and not is_on_floor():velocity.x=air_velocity.x;velocity.z=air_velocity.z
 	if t>=float(m.wind)-.04 and not attack_events.has("swing"):
 		attack_events.swing=true
-		if G.audio:G.audio.play("swing",rig.blade()[0],-5,.74 if action in ["heavy","counter","jump_attack"] else .92)
+		if G.audio:G.audio.play("knight_heavy" if action in ["heavy","counter","jump_attack"] else "knight_swing",rig.blade()[0],-3,1.0)
 	if queue=="dodge" and t>=float(m.dodge):
 		if _command("dodge"):queue=""
 	elif queue in ["light","heavy"] and t>=float(m.chain):
@@ -362,7 +362,7 @@ func receive_hit(damage:float, source:Vector3, posture:=60.0, cursed:=false, par
 			_begin("hurt");duration=.58 if posture<100 else .92;hurt_cancel=.32 if posture<100 else .48
 			hurt_speed=3.0 if posture<100 else 5.1
 		rig.impact(.055 if posture<100 else .10,from)
-		if G.audio:G.audio.play("hit",global_position,-5)
+		if G.audio:G.audio.play("impact_knight",global_position,-3)
 		if G.fx:G.fx.burst(global_position+Vector3.UP,Color(.65,.06,.04),12,2)
 	hp-=damage;damage_timer=0;G.stats.taken+=damage
 	damage_grace=FightBalance.HIT_GRACE

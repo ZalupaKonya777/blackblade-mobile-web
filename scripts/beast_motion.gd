@@ -126,5 +126,17 @@ static func sample(action:String,time:float,clock:float) -> Dictionary:
 	elif action=="dead":
 		var collapse:=smoothstep(.08,1.55,time)
 		result.height=lerpf(.33,.18,collapse);result.lean=lerpf(1.12,1.35,collapse);result.bank=-.96*collapse;result.twist=-.30*collapse;result.paw_weight=1;result.hand_y=lerpf(.68,.16,collapse);result.blade_pitch=lerpf(-.58,-.10,collapse);result.blade_yaw=lerpf(-.25,-1.1,collapse);result.head_pitch=.40*collapse
+	# The hips load first, the chest follows, and the head catches up after impact.
+	# Existing move identities and all damage windows remain authoritative.
+	if TRACKS.has(action):
+		var m:Dictionary=BeastMoves.ATTACKS[action]
+		for h in m.hits:
+			var anticipation:=exp(-pow((time-(float(h[0])-.13))/.14,2))
+			var impact:=exp(-pow((time-float(h[1]))/.10,2))
+			var recoil:=exp(-maxf(0,time-float(h[1]))*8)*sin(maxf(0,time-float(h[1]))*17)
+			result.height-=anticipation*.012+impact*.016
+			result.head_pitch-=anticipation*.045
+			result.head_pitch+=recoil*.055
+			result.lean+=impact*.025-recoil*.018
 	result.height+=(.035+sin(clock*1.7)*.003)*(1-float(result.flight))
 	return result

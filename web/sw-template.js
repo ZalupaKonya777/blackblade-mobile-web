@@ -11,7 +11,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
   const name = url.pathname.split('/').pop();
-  if (!(SHELL.some(path => new URL(path, self.registration.scope).pathname === url.pathname) || url.pathname.includes('/data/'))) return;
+  if (!(SHELL.some(path => new URL(path, self.registration.scope).pathname === url.pathname) || url.pathname.includes('/data/') || url.pathname.includes('/audio/'))) return;
   const immutable = url.pathname.includes('/data/') || name.startsWith('engine.');
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);

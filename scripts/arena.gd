@@ -16,6 +16,7 @@ var fill_light:DirectionalLight3D
 var detail_nodes:Array=[]
 var reflection_sky:Sky
 var skylight:OmniLight3D
+var static_shadow_nodes:Array=[]
 
 func _ready() -> void:
 	G.arena=self
@@ -38,7 +39,7 @@ func _material(color:Color,rough:float) -> StandardMaterial3D:
 func _environment() -> void:
 	var world:=WorldEnvironment.new();env=Environment.new()
 	env.background_mode=Environment.BG_COLOR;env.background_color=Color(.022,.029,.040)
-	env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR;env.ambient_light_color=Color(.53,.61,.73);env.ambient_light_energy=.28
+	env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR;env.ambient_light_color=Color(.53,.61,.73);env.ambient_light_energy=.37
 	reflection_sky=Sky.new()
 	if G.mobile:
 		# A small procedural radiance map works in WebGL 2 without unsupported
@@ -160,10 +161,10 @@ func _architecture() -> void:
 	for h in [7.15,13.8,16.0]:_torus(19.35,.46,h,trim)
 
 func _lighting() -> void:
-	moon=DirectionalLight3D.new();moon.light_color=Color(.76,.85,1);moon.light_energy=1.05;moon.rotation_degrees=Vector3(-54,-34,0)
+	moon=DirectionalLight3D.new();moon.light_color=Color(.76,.85,1);moon.light_energy=1.15;moon.light_cull_mask=3;moon.rotation_degrees=Vector3(-54,-34,0)
 	moon.shadow_enabled=true;moon.shadow_bias=.10;moon.shadow_normal_bias=1.1;moon.directional_shadow_max_distance=34;moon.directional_shadow_mode=DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS;moon.directional_shadow_blend_splits=true;add_child(moon)
-	fill_light=DirectionalLight3D.new();fill_light.light_color=Color(1,.78,.53);fill_light.light_energy=.26;fill_light.rotation_degrees=Vector3(-24,140,0);add_child(fill_light)
-	skylight=OmniLight3D.new();skylight.position=Vector3(0,10,0);skylight.omni_range=28;skylight.light_energy=1.0;skylight.light_color=Color(.64,.75,.96);add_child(skylight)
+	fill_light=DirectionalLight3D.new();fill_light.light_color=Color(1,.78,.53);fill_light.light_energy=.40;fill_light.light_cull_mask=2;fill_light.rotation_degrees=Vector3(-24,140,0);add_child(fill_light)
+	skylight=OmniLight3D.new();skylight.position=Vector3(0,10,0);skylight.omni_range=28;skylight.light_energy=1.0;skylight.light_cull_mask=1;skylight.light_color=Color(.64,.75,.96);add_child(skylight)
 	for i in 16:
 		var a:=TAU*(i+.5)/16;var dir:=Vector3(sin(a),0,cos(a))
 		_brazier(dir*17.8,1.35)
@@ -186,7 +187,7 @@ func _brazier(pos:Vector3,height:float) -> void:
 	halo.albedo_texture=load("res://assets/textures/light_halo.png");halo.albedo_color=Color(.20,.49,1,.28)
 	var glow:=_mesh(halo_mesh,Vector3(0,height+.31,0),halo,root);glow.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var light:=OmniLight3D.new();light.position=Vector3(0,height+.40,0);light.omni_range=6;light.light_color=Color(.29,.59,1);light.light_energy=2.0
-	root.add_child(light);lights.append(light)
+	light.light_cull_mask=1;root.add_child(light);lights.append(light)
 
 func _beam(a:Vector3,b:Vector3,r:float,mat:Material) -> void:
 	var mi:=_cyl((a+b)*.5,r,a.distance_to(b),mat)
@@ -264,7 +265,7 @@ func _inner_pillars() -> void:
 	for v in [Vector3(-10,0,-7),Vector3(10,0,-7),Vector3(-11,0,7),Vector3(11,0,7)]:
 		var h:=3.4 if v.z>0 else 4.7
 		_box(v+Vector3.UP*.20,Vector3(2.1,.4,2.1),trim,null,true)
-		_box(v+Vector3.UP*(h*.5+.4),Vector3(1.0,h,1.1),stone,null,true)
+		_box(v+Vector3.UP*(h*.5+.4),Vector3(1.0,h,1.1),stone,null,true).set_meta("close_shadow",true)
 		for sx in [-.40,.40]:_cyl(v+Vector3(sx,h*.5+.4,-.5),.12,h,trim)
 		_box(v+Vector3.UP*(h+.5),Vector3(1.45,.25,1.55),trim)
 		for j in 5:
@@ -274,6 +275,8 @@ func _inner_pillars() -> void:
 func rage(on:bool) -> void:
 	var tw:=create_tween();tw.set_parallel(true)
 	tw.tween_property(moon,"light_color",Color(.90,.74,.76) if on else Color(.81,.87,1),2.0)
+	tw.tween_property(fill_light,"light_color",Color(1,.35,.23) if on else Color(1,.78,.53),2.0)
+	tw.tween_property(env,"fog_light_color",Color(.15,.085,.11) if on else Color(.095,.118,.15),2.0)
 	tw.tween_property(floor_mat,"albedo_color",Color(.62,.57,.56) if on else Color(.65,.64,.61),2.0)
 
 func _process(dt:float) -> void:
@@ -284,7 +287,7 @@ func _merge_architecture() -> void:
 	var groups:={}
 	var materials:={}
 	for mi in find_children("*","MeshInstance3D",true,false):
-		if mi.skin!=null:continue
+		if mi.skin!=null or mi.get_meta("close_shadow",false):continue
 		if mi.material_override not in [stone,trim,dark,brass] or not mi.visible:continue
 		var p:Vector3=mi.global_position
 		var sector:=int(floor((atan2(p.x,p.z)+PI)/TAU*8))
@@ -295,7 +298,7 @@ func _merge_architecture() -> void:
 		mi.visible=false
 	for key in groups:
 		var m:Mesh=groups[key].commit()
-		_mesh(m,Vector3.ZERO,materials[key])
+		static_shadow_nodes.append(_mesh(m,Vector3.ZERO,materials[key]))
 
 func _tiles() -> void:
 	var under:=_material(Color(.06,.08,.11),.9)
@@ -343,6 +346,9 @@ func apply_quality() -> void:
 	env.reflected_light_source=Environment.REFLECTION_SOURCE_SKY
 	env.sky=reflection_sky
 	moon.shadow_enabled=quality>0
+	moon.directional_shadow_max_distance=36.0 if quality==2 else 24.0
+	RenderingServer.directional_shadow_atlas_set_size(2048 if quality==2 else 1024,true)
+	for mesh in static_shadow_nodes:mesh.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_ON if quality==2 else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	for i in lights.size():lights[i].visible=quality>0 and i%(2 if quality==2 else 4)==0
 	for i in detail_nodes.size():detail_nodes[i].visible=quality>0 and (quality==2 or i%2==0)
 	get_viewport().scaling_3d_scale=1.0

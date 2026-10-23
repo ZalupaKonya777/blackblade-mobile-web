@@ -29,7 +29,7 @@ if not args.skip_export:
     log = ROOT/'artifacts/web_export.log'
     log.parent.mkdir(exist_ok=True)
     with log.open('w') as out:
-        if any(not (ROOT/path).is_file() for path in ['assets/characters/boss_surface.jpg.import','assets/characters/boss_mobile.glb.import']):
+        if any(not (ROOT/path).is_file() for path in ['assets/characters/boss_surface.jpg.import','assets/characters/boss_mobile.glb.import','assets/characters/knight_mobile.glb.import']):
             subprocess.run(['godot','--headless','--editor','--path',str(ROOT),'--quit'],
                            cwd=ROOT, env=env, stdout=out, stderr=subprocess.STDOUT, check=True)
         configure()
@@ -52,6 +52,7 @@ for name in ['Cormorant.ttf','Inter.ttf']:
     shutil.copy2(ROOT/'assets/fonts'/name, dest/'fonts'/name)
 shutil.copy2(ROOT/'icon.svg', dest/'icon.svg')
 shutil.copy2(ROOT/'CREDITS.txt', dest/'CREDITS.txt')
+shutil.copytree(ROOT/'assets/audio/battle', dest/'audio')
 shutil.copytree(ROOT/'LICENSES', dest/'LICENSES', dirs_exist_ok=True)
 for path in raw.glob('game.*'):
     if path.name not in ['game.wasm','game.pck','game.js','game.html']:
@@ -75,8 +76,10 @@ def encode(name):
     return {'bytes':len(data),'compressedBytes':len(compressed),'sha256':hashlib.sha256(data).hexdigest(),'parts':parts}
 
 manifest = {'engine':encode('game.wasm'),'pack':encode('game.pck'),'script':script_name,'threaded':False}
-manifest['downloadBytes'] = manifest['engine']['compressedBytes']+manifest['pack']['compressedBytes']
-inputs = b''.join((ROOT/'web'/name).read_bytes() for name in ['app.js','style.css','index.html','sw-template.js','assets/poster.png'])+json.dumps(manifest,sort_keys=True).encode()
+audio_files=sorted((dest/'audio').glob('*'))
+manifest['audio']={'bytes':sum(p.stat().st_size for p in audio_files),'sha256':hashlib.sha256(b''.join(p.read_bytes() for p in audio_files)).hexdigest(),'files':len(audio_files)}
+manifest['downloadBytes'] = manifest['audio']['bytes']+ manifest['engine']['compressedBytes']+manifest['pack']['compressedBytes']
+inputs = b''.join((ROOT/'web'/name).read_bytes() for name in ['app.js','sound.js','style.css','index.html','sw-template.js','assets/poster.png'])+json.dumps(manifest,sort_keys=True).encode()
 manifest['version'] = hashlib.sha256(inputs).hexdigest()[:16]
 (dest/'runtime.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
 # Updating an installed PWA must not reuse the previous unversioned JS/CSS
@@ -85,7 +88,7 @@ html=(dest/'index.html').read_text()
 html=html.replace('href="style.css"',f'href="style.css?v={manifest["version"]}"')
 html=html.replace('src="app.js"',f'src="app.js?v={manifest["version"]}"')
 (dest/'index.html').write_text(html)
-shell = ['./','index.html','app.js','style.css','manifest.webmanifest','icon.svg','runtime.json',script_name,
+shell = ['./','index.html','app.js','sound.js','style.css','manifest.webmanifest','icon.svg','runtime.json',script_name,
          'assets/poster.png','fonts/Inter.ttf','fonts/Cormorant.ttf','game.audio.worklet.js']
 shell = [n for n in shell if n == './' or (dest/n).is_file()]
 sw = (ROOT/'web/sw-template.js').read_text().replace('__VERSION__',manifest['version']).replace('__SHELL__',json.dumps(shell))

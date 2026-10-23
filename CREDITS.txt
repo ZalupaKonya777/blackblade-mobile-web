@@ -46,3 +46,8 @@ Elden Ring и Maliketh — названия FromSoftware / Bandai Namco. Это 
 fflate 0.8.3 — Arjun Barrett, MIT, используется как резервная распаковка gzip.
 https://github.com/101arrowz/fflate
 Лицензия приложена в web/vendor/fflate-LICENSE.txt и dist/vendor/fflate-LICENSE.txt.
+
+BATTLE AUDIO
+Kenney Impact Sounds and RPG Audio: CC0 (https://kenney.nl/assets).
+Original sound design, creature layers and two-phase composition: CC0.
+Full sources, transformations and licenses: LICENSES/Battle-Audio-Sources.txt.
