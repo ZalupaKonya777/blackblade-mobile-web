@@ -1,44 +1,64 @@
 {
   "engine": {
     "bytes": 35376909,
-    "compressedBytes": 7975981,
+    "compressedBytes": 8022304,
     "sha256": "fe5cebc590758c10bc4469be5a591e28edbde5ec8f458f21baeb83db50d028b9",
     "parts": [
       {
-        "url": "data/game.wasm-00.e61d3f9a465a.bin",
-        "bytes": 7975981
+        "url": "data/game.wasm-00.ea06cfd234f8.bin",
+        "bytes": 8022304
       }
     ]
   },
   "pack": {
-    "bytes": 50250240,
-    "compressedBytes": 34207586,
-    "sha256": "3216275509368b09b7a33f6426416f9f8ed32699f83e1136e7f351808c99505c",
+    "bytes": 121126384,
+    "compressedBytes": 80434327,
+    "sha256": "a9dd50468df6aeabe2b0d57f4e3c57960bec9ac00e619d7ad7228ed09b23cced",
     "parts": [
       {
-        "url": "data/game.pck-00.cc56d8c0aaf4.bin",
+        "url": "data/game.pck-00.97eed79e1496.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-01.16b080e420cd.bin",
+        "url": "data/game.pck-01.1adbe895157e.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-02.ca2737c69749.bin",
+        "url": "data/game.pck-02.7f15a078f9cc.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-03.6a9641a7db9c.bin",
+        "url": "data/game.pck-03.d6b2dfdacf76.bin",
         "bytes": 8388608
       },
       {
-        "url": "data/game.pck-04.3470df9d19ff.bin",
-        "bytes": 653154
+        "url": "data/game.pck-04.cfcfbaac93d7.bin",
+        "bytes": 8388608
+      },
+      {
+        "url": "data/game.pck-05.6ff2291b469a.bin",
+        "bytes": 8388608
+      },
+      {
+        "url": "data/game.pck-06.2637ecde735a.bin",
+        "bytes": 8388608
+      },
+      {
+        "url": "data/game.pck-07.7ee78822ca4f.bin",
+        "bytes": 8388608
+      },
+      {
+        "url": "data/game.pck-08.c003dd128fbe.bin",
+        "bytes": 8388608
+      },
+      {
+        "url": "data/game.pck-09.5da74e7788cb.bin",
+        "bytes": 4936855
       }
     ]
   },
   "script": "engine.8b649683883a.js",
   "threaded": false,
-  "downloadBytes": 42183567,
-  "version": "e27a84df9f8e830d"
+  "downloadBytes": 88456631,
+  "version": "29f69fea55a3fc75"
 }

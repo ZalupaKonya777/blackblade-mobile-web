@@ -14,6 +14,17 @@ let stickPointer = null;
 let lookPointer = null;
 let lookPoint = null;
 const audioContexts = new Set();
+const graphicsProfiles = [
+  { name: 'Плавность', dpr: 1.25, width: 1440, height: 864 },
+  { name: 'Высокая · HD', dpr: 2, width: 2304, height: 1296 },
+  { name: 'Максимальная', dpr: 2.5, width: 2880, height: 1620 },
+];
+let graphicsQuality = 1;
+try {
+  const saved = Number(localStorage.getItem('blackblade-visual-quality-v2') ?? 1);
+  if (Number.isInteger(saved) && graphicsProfiles[saved]) graphicsQuality = saved;
+} catch { /* Storage can be unavailable in a private browsing session. */ }
+$('graphics-quality').value = String(graphicsQuality);
 
 // Safari requires resume() to run inside a real user gesture, including when
 // that gesture belongs to an HTML control rather than to Godot's canvas.
@@ -63,6 +74,8 @@ function orientation() {
 window.BlackbladeUI = {
   get state() { return lastState; },
   get audioStates() { return [...audioContexts].map(context => context.state); },
+  get graphics() { return { quality: graphicsQuality, name: graphicsProfiles[graphicsQuality].name,
+    width: canvas.width, height: canvas.height, dpr: devicePixelRatio }; },
   ready() {
     engineReady = true;
     document.body.classList.add('loaded');
@@ -71,6 +84,9 @@ window.BlackbladeUI = {
     $('training').hidden = false;
     $('progress-track').hidden = true;
     $('load-status').textContent = 'Храм открыт. Выбери бой или тренировку.';
+    // ready() runs inside Godot's initialisation callback. Do not re-enter
+    // WebAssembly to rebuild viewports while the renderer is being created.
+    if (graphicsQuality !== 1) setTimeout(() => send({ type: 'setting', key: 'quality', value: graphicsQuality }), 0);
   },
   update(encoded) {
     const state = JSON.parse(encoded);
@@ -210,11 +226,14 @@ canvas.addEventListener('pointerup', event => { if (event.pointerId === lookPoin
 canvas.addEventListener('pointercancel', cancelControls);
 
 function resizeCanvas() {
-  // Keep the retina screen's CSS sharp and bound only the 3D drawing buffer.
+  // CSS pixels are not display pixels on an iPhone. Render at retina density,
+  // retaining a bounded GPU budget and a deliberate user-selected fallback.
   const width = window.innerWidth, height = window.innerHeight;
-  const scale = Math.min(1, 1100 / width, 650 / height);
-  canvas.width = Math.max(320, Math.round(width * scale));
-  canvas.height = Math.max(180, Math.round(height * scale));
+  const profile = graphicsProfiles[graphicsQuality];
+  const scale = Math.min(devicePixelRatio || 1, profile.dpr, profile.width / width, profile.height / height);
+  const w = Math.max(320, Math.round(width * scale)), h = Math.max(180, Math.round(height * scale));
+  if (canvas.width !== w) canvas.width = w;
+  if (canvas.height !== h) canvas.height = h;
   orientation();
 }
 window.addEventListener('resize', resizeCanvas);
@@ -233,6 +252,12 @@ for (const id of ['to-title', 'result-home']) $(id).addEventListener('click', ()
 $('change-phase').addEventListener('click', () => send({ type: 'phase' }));
 $('volume').addEventListener('input', event => send({ type: 'setting', key: 'volume', value: Number(event.target.value) }));
 $('shake').addEventListener('change', event => send({ type: 'setting', key: 'shake', value: event.target.checked }));
+$('graphics-quality').addEventListener('change', event => {
+  graphicsQuality = Number(event.target.value);
+  try { localStorage.setItem('blackblade-visual-quality-v2', String(graphicsQuality)); } catch {}
+  resizeCanvas();
+  send({ type: 'setting', key: 'quality', value: graphicsQuality });
+});
 $('reload').addEventListener('click', () => location.reload());
 $('home-help-toggle').addEventListener('click', () => {
   $('home-help').hidden = !$('home-help').hidden;
@@ -313,7 +338,7 @@ async function loadGame() {
       return originalFetch.call(this, input, init);
     };
     const engine = new Engine({ canvas, executable: 'game', canvasResizePolicy: 0, focusCanvas: true,
-      persistentPaths: ['/userfs'], args: ['--main-pack', 'game.pck'], onExit: code => {
+      persistentPaths: ['/userfs'], args: ['--main-pack', 'game.pck', ...(new URLSearchParams(location.search).has('qa') ? ['--', '--qa-controls'] : [])], onExit: code => {
         if (code) showError(new Error('Игра завершилась. Попробуй открыть храм заново.'));
       },
       onPrintError: text => console.error('[Godot]', text),

@@ -15,6 +15,7 @@ var radius:=19.0
 var fill_light:DirectionalLight3D
 var detail_nodes:Array=[]
 var reflection_sky:Sky
+var skylight:OmniLight3D
 
 func _ready() -> void:
 	G.arena=self
@@ -37,14 +38,21 @@ func _material(color:Color,rough:float) -> StandardMaterial3D:
 func _environment() -> void:
 	var world:=WorldEnvironment.new();env=Environment.new()
 	env.background_mode=Environment.BG_COLOR;env.background_color=Color(.022,.029,.040)
-	env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR;env.ambient_light_color=Color(.57,.61,.68);env.ambient_light_energy=.37
+	env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR;env.ambient_light_color=Color(.53,.61,.73);env.ambient_light_energy=.28
 	reflection_sky=Sky.new()
-	if not G.mobile:
+	if G.mobile:
+		# A small procedural radiance map works in WebGL 2 without unsupported
+		# HDR texture formats and gives steel broad, stable reflected highlights.
+		var sky_material:=ShaderMaterial.new();sky_material.shader=load("res://shaders/cathedral_sky.gdshader")
+		reflection_sky.sky_material=sky_material
+	else:
 		var panorama:=PanoramaSkyMaterial.new();panorama.panorama=load("res://assets/textures/cathedral_reflection.hdr");panorama.energy_multiplier=.30;reflection_sky.sky_material=panorama
-	reflection_sky.radiance_size=Sky.RADIANCE_SIZE_64;reflection_sky.process_mode=Sky.PROCESS_MODE_REALTIME
+	# The realtime filter overrides small maps to 256px. A static 32px map is
+	# enough for these broad cathedral highlights and avoids that startup cost.
+	reflection_sky.radiance_size=Sky.RADIANCE_SIZE_32;reflection_sky.process_mode=Sky.PROCESS_MODE_QUALITY
 	env.reflected_light_source=Environment.REFLECTION_SOURCE_DISABLED
 	env.tonemap_mode=Environment.TONE_MAPPER_FILMIC;env.tonemap_exposure=1.0
-	env.fog_enabled=true;env.fog_light_color=Color(.095,.118,.15);env.fog_density=.0105
+	env.fog_enabled=true;env.fog_light_color=Color(.095,.118,.15);env.fog_density=.014
 	env.fog_height=-1;env.fog_height_density=.045
 	world.environment=env;add_child(world)
 
@@ -72,8 +80,8 @@ func _torus(rad:float,width:float,y:float,mat:Material) -> MeshInstance3D:
 func _floor() -> void:
 	var cm:=CylinderMesh.new();cm.top_radius=21;cm.bottom_radius=21;cm.height=.6;cm.radial_segments=128
 	floor_mat=_material(Color(.37,.43,.53),.55)
-	floor_mat.albedo_texture=load("res://assets/textures/floor_color.jpg");floor_mat.normal_enabled=true;floor_mat.normal_texture=load("res://assets/textures/floor_normal.jpg");floor_mat.uv1_scale=Vector3(18,18,18)
-	_mesh(cm,Vector3(0,-.30,0),floor_mat)
+	var base_floor:=_mesh(cm,Vector3(0,-.30,0),floor_mat)
+	base_floor.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_box(Vector3(0,-.50,0),Vector3(100,1,100),stone,null,true).visible=false
 	for i in 3:
 		_torus(19.0+i*.35,.52,.06+i*.10,trim)
@@ -152,10 +160,10 @@ func _architecture() -> void:
 	for h in [7.15,13.8,16.0]:_torus(19.35,.46,h,trim)
 
 func _lighting() -> void:
-	moon=DirectionalLight3D.new();moon.light_color=Color(.81,.87,1);moon.light_energy=.84;moon.rotation_degrees=Vector3(-54,-34,0)
-	moon.shadow_enabled=true;moon.shadow_bias=.035;moon.shadow_normal_bias=1.2;moon.directional_shadow_max_distance=48;moon.directional_shadow_mode=DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS;add_child(moon)
-	fill_light=DirectionalLight3D.new();fill_light.light_color=Color(1,.80,.57);fill_light.light_energy=.18;fill_light.rotation_degrees=Vector3(-24,140,0);add_child(fill_light)
-	var sky:=OmniLight3D.new();sky.position=Vector3(0,10,0);sky.omni_range=28;sky.light_energy=.85;sky.light_color=Color(.67,.76,.94);add_child(sky)
+	moon=DirectionalLight3D.new();moon.light_color=Color(.76,.85,1);moon.light_energy=1.05;moon.rotation_degrees=Vector3(-54,-34,0)
+	moon.shadow_enabled=true;moon.shadow_bias=.10;moon.shadow_normal_bias=1.1;moon.directional_shadow_max_distance=34;moon.directional_shadow_mode=DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS;moon.directional_shadow_blend_splits=true;add_child(moon)
+	fill_light=DirectionalLight3D.new();fill_light.light_color=Color(1,.78,.53);fill_light.light_energy=.26;fill_light.rotation_degrees=Vector3(-24,140,0);add_child(fill_light)
+	skylight=OmniLight3D.new();skylight.position=Vector3(0,10,0);skylight.omni_range=28;skylight.light_energy=1.0;skylight.light_color=Color(.64,.75,.96);add_child(skylight)
 	for i in 16:
 		var a:=TAU*(i+.5)/16;var dir:=Vector3(sin(a),0,cos(a))
 		_brazier(dir*17.8,1.35)
@@ -270,7 +278,7 @@ func rage(on:bool) -> void:
 
 func _process(dt:float) -> void:
 	time+=dt
-	for i in lights.size():lights[i].light_energy=2.2+sin(time*7+i)*.24+sin(time*17+i*.8)*.12
+	for i in lights.size():lights[i].light_energy=2.2+sin(time*3.7+i)*.12+sin(time*9+i*.8)*.06
 
 func _merge_architecture() -> void:
 	var groups:={}
@@ -313,7 +321,11 @@ func _tiles() -> void:
 				var p0:Vector3=points[edge];var p1:Vector3=points[(edge+1)%4]
 				var q0:=p0-Vector3.UP*.026;var q1:=p1-Vector3.UP*.026
 				for v in [p0,q0,p1,p1,q0,q1]:st.set_uv(Vector2(v.x,v.z)*.40);st.add_vertex(v)
-	st.generate_normals();st.generate_tangents();_mesh(st.commit(),Vector3.ZERO,floor_mat)
+	st.generate_normals();st.generate_tangents()
+	var paving:=_mesh(st.commit(),Vector3.ZERO,floor_mat)
+	# Flat paving receives character shadows, but its millimetre seams must not
+	# cast quantised self-shadows across the same plane on a phone shadow map.
+	paving.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	# Eight-point inlaid seal at the centre of the circular paving.
 	var star:=SurfaceTool.new();star.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in 16:
@@ -325,31 +337,23 @@ func _tiles() -> void:
 	star.generate_normals();_mesh(star.commit(),Vector3.ZERO,brass)
 
 func apply_quality() -> void:
-	var quality:int=G.settings.get("quality",1)
+	var quality:int=clampi(int(G.settings.get("quality",1)),0,2)
 	if "--low" in OS.get_cmdline_user_args():quality=0
 	if "--beauty" in OS.get_cmdline_user_args():quality=1
-	env.reflected_light_source=Environment.REFLECTION_SOURCE_SKY if quality>0 else Environment.REFLECTION_SOURCE_DISABLED
-	env.sky=reflection_sky if quality>0 else null
+	env.reflected_light_source=Environment.REFLECTION_SOURCE_SKY
+	env.sky=reflection_sky
 	moon.shadow_enabled=quality>0
-	for l in lights:l.visible=quality>0
-	for l in detail_nodes:l.visible=quality>0
-	get_viewport().scaling_3d_scale=.85 if quality==0 else 1.0
-	get_viewport().msaa_3d=Viewport.MSAA_DISABLED if quality==0 else Viewport.MSAA_4X
-	stone.normal_enabled=quality>0
-	trim.normal_enabled=quality>0
-	stone.uv1_triplanar=quality>0;trim.uv1_triplanar=quality>0
-	stone.roughness_texture=load("res://assets/textures/masonry_orm.png") if quality>0 else null
-	var software:=RenderingServer.get_video_adapter_name().to_lower().contains("llvmpipe")
-	var filter:=BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS if software or quality==0 else BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	for i in lights.size():lights[i].visible=quality>0 and i%(2 if quality==2 else 4)==0
+	for i in detail_nodes.size():detail_nodes[i].visible=quality>0 and (quality==2 or i%2==0)
+	get_viewport().scaling_3d_scale=1.0
+	get_viewport().msaa_3d=Viewport.MSAA_4X if quality==2 else Viewport.MSAA_2X
+	stone.normal_enabled=true;trim.normal_enabled=true
+	stone.uv1_triplanar=true;trim.uv1_triplanar=true
+	stone.roughness_texture=load("res://assets/textures/masonry_orm.png")
+	var filter:=BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	stone.texture_filter=filter;trim.texture_filter=filter
 	if floor_mat is StandardMaterial3D:floor_mat.texture_filter=filter
-	if floor_mat is StandardMaterial3D:floor_mat.normal_enabled=quality>0
-	if G.mobile:
-		# Preserve the stone response; save the phone's budget on shadows and fill lights.
-		moon.shadow_enabled=false
-		for l in lights:l.visible=false
-		for l in detail_nodes:l.visible=false
-		get_viewport().msaa_3d=Viewport.MSAA_DISABLED
-		get_viewport().scaling_3d_scale=.85
-		stone.normal_enabled=true;trim.normal_enabled=true
-		if floor_mat is StandardMaterial3D:floor_mat.normal_enabled=true
+	if floor_mat is StandardMaterial3D:
+		floor_mat.normal_enabled=true
+		floor_mat.ao_enabled=true;floor_mat.ao_texture=floor_mat.roughness_texture
+		floor_mat.ao_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_RED;floor_mat.ao_light_affect=.25

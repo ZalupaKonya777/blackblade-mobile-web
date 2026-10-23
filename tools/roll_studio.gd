@@ -49,10 +49,11 @@ func audit_mesh() -> Dictionary:
 			var bones:PackedInt32Array=arr[Mesh.ARRAY_BONES]
 			var weights:PackedFloat32Array=arr[Mesh.ARRAY_WEIGHTS]
 			if bones.is_empty():continue
+			var influences:=bones.size()/vertices.size()
 			for v in vertices.size():
 				var point:=Vector3.ZERO;var is_head:=false;var is_cloth:=false
-				for k in 4:
-					var bi:int=bones[v*4+k];var w:float=weights[v*4+k]
+				for k in influences:
+					var bi:int=bones[v*influences+k];var w:float=weights[v*influences+k]
 					point+=(transforms[bi]*vertices[v])*w
 					var bone:int=mi.skin.get_bind_bone(bi)
 					if bone<0:bone=rig.skel.find_bone(mi.skin.get_bind_name(bi))

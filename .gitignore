@@ -8,4 +8,7 @@ __pycache__/
 .DS_Store
 node_modules/
 .sites-runtime/
+assets/characters/boss_mobile_*_basecolor.jpg
+assets/characters/boss_mobile_*_normal.png
+assets/characters/boss_mobile_*_rm.jpg
 

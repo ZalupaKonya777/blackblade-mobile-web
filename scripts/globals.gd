@@ -33,7 +33,9 @@ func _ready() -> void:
 		for k in settings:
 			settings[k] = cfg.get_value("settings", k, settings[k])
 	if "--beauty" in OS.get_cmdline_user_args():settings.quality=1
-	if mobile:settings.quality=0
+	# Mobile uses the same materials. Only resolution, shadows and light count
+	# vary by quality; a phone must not silently select the old flat renderer.
+	if mobile:settings.quality=1
 
 func save() -> void:
 	var cfg := ConfigFile.new()

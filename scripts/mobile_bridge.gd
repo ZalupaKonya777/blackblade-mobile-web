@@ -69,6 +69,11 @@ func _message(args:Array) -> void:
 			_release_all()
 			if G.main.phase=="fight" and not get_tree().paused:G.ui.open_pause()
 		"cancel":_release_all()
+		"qa_dummy":
+			# Repeatable training target for input tests; normal play has no flag.
+			if "--qa-controls" in OS.get_cmdline_user_args() and G.training and G.main.phase=="fight":
+				G.boss.ai_enabled=false;G.boss.state="idle";G.boss.attack="";G.boss.t=0
+				G.boss.velocity=Vector3.ZERO;G.boss.global_position=Vector3(0,.05,-12)
 		"phase":
 			if G.training and G.main.phase=="fight":
 				G.boss.set_training_phase();G.arena.rage(G.boss.phase==2);G.fx.reset()
@@ -76,6 +81,7 @@ func _message(args:Array) -> void:
 			var key:String=data.get("key","")
 			if key in ["volume","music"]:G.settings[key]=clampf(float(data.get("value",0)),0,1)
 			elif key=="shake":G.settings.shake=bool(data.get("value",true))
+			elif key=="quality":G.settings.quality=clampi(int(data.get("value",1)),0,2)
 			else:return
 			G.save()
 	_send_state()
@@ -95,5 +101,8 @@ func _send_state() -> void:
 		"charge":p.charge_time/FightBalance.CHARGE_TIME,"charged":p.charged,"counter":p.last_block<.8,
 		"rolls":G.stats.rolls,"evades":G.stats.evades,"hits":G.stats.hits,"damage":G.stats.damage,
 		"elapsed":G.elapsed,"fps":Engine.get_frames_per_second(),"curse":p.dd_timer,
-		"volume":G.settings.volume,"music":G.settings.music,"shake":G.settings.shake}
+		"volume":G.settings.volume,"music":G.settings.music,"shake":G.settings.shake,
+		"quality":G.settings.quality,"renderScale":get_viewport().scaling_3d_scale,"msaa":get_viewport().msaa_3d,
+		"shadows":G.arena.moon.shadow_enabled,"bossX":b.position.x,"bossZ":b.position.z,"bossState":b.state,"bossAttack":b.attack,
+		"bossAI":b.ai_enabled}
 	browser.BlackbladeUI.update(JSON.stringify(data))

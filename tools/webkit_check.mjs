@@ -19,6 +19,7 @@ try {
   });
   const context = await browser.newContext({ viewport:{width:844,height:390}, deviceScaleFactor:2, isMobile:true, hasTouch:true, serviceWorkers:'block' });
   page = await context.newPage();
+  page.setDefaultTimeout(120000);
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type()==='error') { logs.push(message.text());console.log('WEBKIT ERROR',message.text()); } });
   await page.goto('http://127.0.0.1:8793/?qa=1',{waitUntil:'networkidle',timeout:60000});
@@ -31,19 +32,30 @@ try {
   await page.getByRole('button',{name:/Войти в храм/}).tap();
   await page.waitForFunction(()=>window.BlackbladeUI?.state?.phase==='title'&&typeof window.BlackbladeNative==='function',null,{timeout:300000});
   check('WebKit boots the actual Godot Web game',true);
-  await page.getByRole('button',{name:'Тренировка',exact:true}).tap();
+  check('WebKit selects HD rendering with antialiasing',await page.evaluate(()=>window.BlackbladeUI.graphics.width===1688&&window.BlackbladeUI.state.msaa===1&&window.BlackbladeUI.state.renderScale===1));
+  // Input/compatibility probes use a bounded software-renderer buffer. The
+  // separate native review captures full-resolution character/arena poses.
+  await page.evaluate(()=>{
+    const quality=document.getElementById('graphics-quality');quality.value='0';quality.dispatchEvent(new Event('change'));
+    game.width=480;game.height=222;
+  });
+  await page.waitForFunction(()=>window.BlackbladeUI.state.quality===0,null,{timeout:120000});
+  // Linux WPE can stall while acknowledging a synthetic tap over a WebGL
+  // frame. Use its trusted pointer protocol for these two bridge checks;
+  // concurrent touchscreen input is exercised separately in Chromium.
+  await page.getByRole('button',{name:'Тренировка',exact:true}).click();
   await page.waitForFunction(()=>window.BlackbladeUI?.state?.phase==='fight',null,{timeout:120000});
-  check('WebKit touch starts training',true);
+  check('WebKit pointer starts training',true);
   await page.screenshot({path:new URL('artifacts/mobile-webkit.png',root).pathname,scale:'css'});
-  await page.getByRole('button',{name:'Быстрый удар',exact:true}).tap();
+  await page.getByRole('button',{name:'Быстрый удар',exact:true}).click();
   await page.waitForFunction(()=>window.BlackbladeUI.state.action==='light',null,{timeout:60000});
-  check('WebKit touch reaches native attack',true);
+  check('WebKit pointer reaches native attack',true);
   check('WebKit audio unlocked',await page.evaluate(()=>window.BlackbladeUI.audioStates.includes('running')));
   const unexpected=logs.filter(text=>!text.includes('glBlitFramebuffer: Read and write color attachments cannot be the same image.'));
   check('WebKit has no JavaScript, script or resource failures',errors.length===0&&unexpected.length===0,{errors,unexpected});
 } catch(error) { failure=String(error);console.log('WEBKIT CHECK FAILED',failure); }
 finally {
-  await writeFile(new URL('artifacts/webkit_check.json',root),JSON.stringify({checks,failures:failure?1:0,failure,errors,logs,rendererWarning:{messages:logs.filter(text=>text.includes('glBlitFramebuffer: Read and write color attachments cannot be the same image.')).length,upstreamReport:'https://github.com/godotengine/godot/issues/122816',note:'Recorded, not suppressed in the game. Known same-image self-blit report also reproduces in a blank Godot Web project; visual gameplay and input are checked separately.'},note:'Linux Playwright WebKit with mobile touch emulation. Not a physical iPhone.'},null,2));
+  await writeFile(new URL('artifacts/webkit_check.json',root),JSON.stringify({checks,failures:failure?1:0,failure,errors,logs,rendererWarning:{messages:logs.filter(text=>text.includes('glBlitFramebuffer: Read and write color attachments cannot be the same image.')).length,upstreamReport:'https://github.com/godotengine/godot/issues/122816',note:'Recorded, not suppressed in the game. Known same-image self-blit report also reproduces in a blank Godot Web project; visual gameplay and input are checked separately.'},note:'Linux Playwright WebKit, mobile viewport. Initial touch loads the engine; trusted mouse-pointer protocol checks fight entry and attack because WPE synthetic tap acknowledgement timed out. Chromium tests concurrent touch. Not a physical iPhone or a phone performance measurement.'},null,2));
   if(browser)await browser.close();
 }
 if(failure)process.exitCode=1;

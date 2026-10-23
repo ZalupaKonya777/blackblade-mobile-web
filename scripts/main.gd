@@ -34,6 +34,10 @@ func _ready() -> void:
 		var reel=load("res://tools/showcase.gd").new();add_child(reel)
 	if "--capture" in OS.get_cmdline_user_args():
 		var capture=load("res://tools/capture.gd").new();add_child(capture)
+	if "--visual-review" in OS.get_cmdline_user_args():
+		var review=load("res://tools/visual_review.gd").new();add_child(review)
+	if "--skin-audit" in OS.get_cmdline_user_args():
+		var review=load("res://tools/skin_audit.gd").new();add_child(review)
 	if "--roll-review" in OS.get_cmdline_user_args():
 		var review=load("res://tools/roll_review.gd").new();add_child(review)
 	if "--polish-showcase" in OS.get_cmdline_user_args():

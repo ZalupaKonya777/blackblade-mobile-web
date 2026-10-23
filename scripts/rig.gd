@@ -40,7 +40,7 @@ var breathing := 0.0
 var contact_probes:Array=[]
 var roll_feet_world:={}
 var previous_roll_phase:=-1.0
-var body_materials:Array[StandardMaterial3D]=[]
+var body_materials:Array[ShaderMaterial]=[]
 var beast_pose:Dictionary={}
 var beast_blend_from:Dictionary={}
 var beast_blend_time:=0.0
@@ -64,7 +64,7 @@ func setup(p_kind: String) -> void:
 	unit = 1.0 if kind == "knight" else 2.05
 	motion = Node3D.new()
 	add_child(motion)
-	model = load("res://assets/characters/"+kind+".glb").instantiate()
+	model = load("res://assets/characters/"+("boss_mobile" if kind=="boss" else kind)+".glb").instantiate()
 	motion.add_child(model)
 	skel = _skeleton(model)
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/characters/"+kind+".json"))
@@ -88,16 +88,17 @@ func setup(p_kind: String) -> void:
 	for mi in model.find_children("*","MeshInstance3D",true,false):
 		mi.extra_cull_margin = 5.0
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-		var base:Material=mi.get_active_material(0)
-		if base is StandardMaterial3D:
-			var mat:StandardMaterial3D=base.duplicate()
-			mat.metallic=1.0 if int(G.settings.get("quality",1))>0 else .48
-			mat.metallic_texture=load("res://assets/characters/"+kind+"_armor_orm.png");mat.metallic_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_BLUE
-			mat.albedo_texture=load("res://assets/characters/"+kind+"_surface.jpg")
-			mat.roughness=1.0;mat.roughness_texture=mat.metallic_texture;mat.roughness_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_GREEN
-			mat.normal_scale=.62 if kind=="knight" else .52
-			mi.material_override=mat
-			body_materials.append(mat)
+		# Keep the supplied silhouette stable when a limb approaches the camera.
+		mi.lod_bias=128.0
+		var mat:=ShaderMaterial.new();mat.shader=load("res://shaders/character.gdshader")
+		mat.set_shader_parameter("surface",load("res://assets/characters/"+kind+"_surface.jpg"))
+		mat.set_shader_parameter("armor",load("res://assets/characters/"+kind+"_armor_orm.png"))
+		var normal_path:="res://assets/characters/"+kind+("_medieval_knight_3d_model_normal.png" if kind=="knight" else "_dark_fantasy_creature_3d_model_normal.png")
+		mat.set_shader_parameter("normal_map",load(normal_path))
+		mat.set_shader_parameter("normal_strength",.48 if kind=="knight" else .34)
+		mat.set_shader_parameter("metal_strength",.94 if kind=="knight" else .72)
+		mat.set_shader_parameter("minimum_roughness",.30 if kind=="knight" else .44)
+		mi.material_override=mat;body_materials.append(mat)
 	if kind=="knight" and FileAccess.file_exists("res://assets/characters/knight_contacts.json"):
 		var probes:Array=JSON.parse_string(FileAccess.get_file_as_string("res://assets/characters/knight_contacts.json"))
 		for probe in probes:
@@ -122,13 +123,8 @@ func apply_quality() -> void:
 	var quality:int=G.settings.get("quality",1)
 	if "--low" in OS.get_cmdline_user_args():quality=0
 	if "--beauty" in OS.get_cmdline_user_args():quality=1
-	for mat in body_materials:
-		mat.normal_enabled=quality>0
-		mat.metallic=1.0 if quality>0 else .12
-		mat.roughness=1.0 if quality>0 else .70
-		var packed:Texture2D=load("res://assets/characters/"+kind+"_armor_orm.png")
-		mat.metallic_texture=packed if quality>0 else null
-		mat.roughness_texture=packed if quality>0 else null
+	# Material detail and specular filtering stay enabled even in performance mode.
+	for mi in model.find_children("*","MeshInstance3D",true,false):mi.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 
 func _skeleton(n: Node) -> Skeleton3D:
 	if n is Skeleton3D: return n

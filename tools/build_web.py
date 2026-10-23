@@ -5,6 +5,7 @@ are never read by the build. --skip-export only rebuilds the HTML shell.
 """
 from pathlib import Path
 import argparse, gzip, hashlib, json, os, shutil, subprocess
+from texture_imports import configure
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -28,6 +29,10 @@ if not args.skip_export:
     log = ROOT/'artifacts/web_export.log'
     log.parent.mkdir(exist_ok=True)
     with log.open('w') as out:
+        if any(not (ROOT/path).is_file() for path in ['assets/characters/boss_surface.jpg.import','assets/characters/boss_mobile.glb.import']):
+            subprocess.run(['godot','--headless','--editor','--path',str(ROOT),'--quit'],
+                           cwd=ROOT, env=env, stdout=out, stderr=subprocess.STDOUT, check=True)
+        configure()
         subprocess.run(['godot','--headless','--path',str(ROOT),'--export-release','Web Mobile',str(raw/'game.html')],
                        cwd=ROOT, env=env, stdout=out, stderr=subprocess.STDOUT, check=True)
     text = log.read_text()
@@ -57,7 +62,7 @@ script_name = 'engine.'+hashlib.sha256(script).hexdigest()[:12]+'.js'
 
 def encode(name):
     data = (raw/name).read_bytes()
-    compressed = gzip.compress(data, compresslevel=9, mtime=0)
+    compressed = gzip.compress(data, compresslevel=6, mtime=0)
     parts = []
     # Each file stays well below static-host per-file limits. Safari receives
     # an ordinary ArrayBuffer and never needs SharedArrayBuffer or COOP/COEP.
@@ -71,9 +76,15 @@ def encode(name):
 
 manifest = {'engine':encode('game.wasm'),'pack':encode('game.pck'),'script':script_name,'threaded':False}
 manifest['downloadBytes'] = manifest['engine']['compressedBytes']+manifest['pack']['compressedBytes']
-inputs = (ROOT/'web/app.js').read_bytes()+(ROOT/'web/style.css').read_bytes()+json.dumps(manifest,sort_keys=True).encode()
+inputs = b''.join((ROOT/'web'/name).read_bytes() for name in ['app.js','style.css','index.html','sw-template.js','assets/poster.png'])+json.dumps(manifest,sort_keys=True).encode()
 manifest['version'] = hashlib.sha256(inputs).hexdigest()[:16]
 (dest/'runtime.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
+# Updating an installed PWA must not reuse the previous unversioned JS/CSS
+# from the HTTP cache before the new service worker takes control.
+html=(dest/'index.html').read_text()
+html=html.replace('href="style.css"',f'href="style.css?v={manifest["version"]}"')
+html=html.replace('src="app.js"',f'src="app.js?v={manifest["version"]}"')
+(dest/'index.html').write_text(html)
 shell = ['./','index.html','app.js','style.css','manifest.webmanifest','icon.svg','runtime.json',script_name,
          'assets/poster.png','fonts/Inter.ttf','fonts/Cormorant.ttf','game.audio.worklet.js']
 shell = [n for n in shell if n == './' or (dest/n).is_file()]

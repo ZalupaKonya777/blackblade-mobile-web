@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="game.apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=29f69fea55a3fc75">
 </head>
 <body>
   <canvas id="game" tabindex="0" aria-label="Арена Храма затмения"></canvas>
@@ -93,6 +93,7 @@
     <div class="menu-card">
       <div class="eyebrow">У ГРАНИЦЫ ТЬМЫ</div><h2>Передышка</h2>
       <button id="resume" class="primary" type="button">Продолжить бой <span>→</span></button>
+      <div class="settings-row"><label for="graphics-quality">Графика</label><select id="graphics-quality"><option value="0">Плавность</option><option value="1" selected>Высокая · HD</option><option value="2">Максимальная</option></select></div>
       <div class="settings-row"><label for="volume">Звук</label><input id="volume" type="range" min="0" max="1" step="0.05" value="0.75"></div>
       <div class="settings-row"><label for="shake">Отдача камеры</label><input id="shake" type="checkbox" checked></div>
       <button id="change-phase" class="secondary" type="button" hidden>Сменить фазу босса</button>
@@ -110,6 +111,6 @@
 
   <div id="rotate" class="screen rotate-screen" hidden><div class="phone-outline" aria-hidden="true">↻</div><h2>Разверни телефон</h2><p>Храм открыт в горизонтальном положении.</p></div>
   <div id="error" class="screen error-screen" hidden><div class="menu-card"><div class="eyebrow">СВЯЗЬ С ХРАМОМ ПРЕРВАНА</div><h2>Не удалось войти</h2><p id="error-text"></p><button id="reload" class="primary" type="button">Попробовать снова <span>↻</span></button></div></div>
-  <script type="module" src="app.js"></script>
+  <script type="module" src="app.js?v=29f69fea55a3fc75"></script>
 </body>
 </html>
