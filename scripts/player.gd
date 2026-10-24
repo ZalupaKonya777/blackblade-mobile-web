@@ -199,6 +199,7 @@ func _physics_process(dt:float) -> void:
 	rig.rotation.y=yaw
 	var crouch:=smoothstep(.03,.16,t/roll_duration)*(1-smoothstep(.76,.98,t/roll_duration)) if state=="roll" else 0.0
 	body_capsule.height=lerpf(1.60,.80,crouch);body_shape.position.y=body_capsule.height*.5
+	var motor_before:=global_position
 	move_and_slide()
 	if G.arena:
 		var flat:=Vector2(global_position.x,global_position.z)
@@ -210,7 +211,11 @@ func _physics_process(dt:float) -> void:
 	if state=="attack":anim=action;anim_t=t
 	elif state=="roll" and anim!="roll":anim="roll";anim_t=t*.70/roll_duration
 	elif state=="hurt":anim="hurt";anim_t=t
-	rig.pose(anim,anim_t,dt,stride,move_dir.rotated(Vector3.UP,-yaw),combo)
+	var pose_direction:=move_dir
+	if state in ["idle","move"]:
+		var actual_motion:=G.flat(global_position-motor_before)/dt
+		stride=actual_motion.length();pose_direction=actual_motion.normalized()
+	rig.pose(anim,anim_t,dt,stride,pose_direction.rotated(Vector3.UP,-yaw),combo)
 	var blade:=rig.blade()
 	if state=="attack":_hit(blade)
 	if G.fx:G.fx.trail("player",blade,state=="attack" and KnightMoves.active(action,combo,t),Color(.65,.82,1,.24))

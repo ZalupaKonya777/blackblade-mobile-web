@@ -31,6 +31,9 @@ var foot_plants := {}
 var foot_swing := {}
 var cloth_points := {}
 var cloth_previous := {}
+var cloth_last_frame:=Transform3D.IDENTITY
+var cloth_has_frame:=false
+var cloth_root_velocity:=Vector3.ZERO
 var roll_phase := 0.0
 var roll_support := "feet"
 var roll_ground_clearance := 0.0
@@ -75,6 +78,15 @@ var source_shoulder:=Vector3.ZERO
 var source_tip:=Vector3.ZERO
 var weapon_scale:=1.0
 var source_frame:=Basis.IDENTITY
+const GroundGaitScript=preload("res://scripts/ground_gait.gd")
+var ground_solver=GroundGaitScript.new()
+var ground_blend:=0.0
+var ground_frequency:=1.0
+var walk_contacts:Dictionary={}
+var ground_locomotion:=false
+var ground_was_moving:=false
+var beast_body_support:=Vector3.ZERO
+var locomotion_height:=.95
 
 func setup(p_kind: String) -> void:
 	kind = p_kind
@@ -212,9 +224,19 @@ func pose(action: String, t: float, dt: float, speed: float, direction: Vector3,
 			for mesh in grip_shapes:mesh.set_blend_shape_value(0,left_grip_blend)
 	recoil_velocity+=(-recoil*210.0-recoil_velocity*24.0)*dt
 	recoil+=recoil_velocity*dt
-	gait += dt*(TAU*clampf(speed/2.25,.65,2.9) if kind=="knight" else TAU*clampf(speed/1.75,.50,2.7))*float(speed>.05)
+	var locomoting:=action in ["idle","move","guard"]
+	if not initialized:ground_was_moving=false
+	ground_frequency=(.90+speed*.28) if kind=="knight" else (.72+speed*.22)
+	if locomoting and speed>.08 and not ground_was_moving:
+		gait=(.62 if kind=="knight" else (0.0 if direction.z<-.3 or direction.x<-.5 else .43))*TAU
+	ground_was_moving=locomoting and speed>.08
+	if locomoting:gait+=dt*TAU*ground_frequency*clampf(speed/.35,0,1)
+	ground_blend=move_toward(ground_blend,1.0 if locomoting and speed>.08 else 0.0,dt*5.5)
 	globals.clear()
 	if not initialized:
+		ground_solver.reset();walk_contacts.clear();ground_blend=0.0
+		beast_body_support=Vector3.ZERO
+		cloth_has_frame=false;cloth_root_velocity=Vector3.ZERO
 		recoil=Vector3.ZERO;recoil_velocity=Vector3.ZERO;hand_frames.clear()
 		cloth_points.clear();cloth_previous.clear();foot_plants.clear();foot_swing.clear()
 		beast_plants.clear();beast_swings.clear();beast_pose.clear();beast_contacts.clear();beast_blend_from.clear();beast_step_cycles.clear();beast_releases.clear();beast_contact_targets.clear()
@@ -228,6 +250,10 @@ func pose(action: String, t: float, dt: float, speed: float, direction: Vector3,
 		return
 	if kind=="knight" and KnightMoves.is_attack(action):
 		_pose_weapon(action,t,dt,variant)
+		last_action=action
+		return
+	if kind=="knight" and locomoting:
+		_pose_locomotion(action,dt,speed,direction)
 		last_action=action
 		return
 	var p := Vector3(0,0.95,0)*unit
@@ -368,7 +394,7 @@ func _commit(action:String,dt:float,sword:Vector3) -> void:
 	# Smooth local transforms while maintaining a deterministic animation clock.
 	var alpha:=1.0-exp(-pose_blend*dt)
 	if action in ["light","heavy","charged","combo","sweep","overhead"]:alpha=1.0-exp(-25.0*dt)
-	if action=="roll" or kind=="boss" or KnightMoves.is_attack(action):alpha=1.0
+	if action=="roll" or kind=="boss" or KnightMoves.is_attack(action) or action in ["idle","move","guard"]:alpha=1.0
 	if not initialized:alpha=1
 	for i in skel.get_bone_count():
 		var bn:=String(skel.get_bone_name(i))
@@ -396,28 +422,102 @@ func _commit(action:String,dt:float,sword:Vector3) -> void:
 
 func _locomotion_foot(side:String,dt:float,speed:float,direction:Vector3) -> Vector3:
 	var phase:=fposmod(gait/TAU+(.0 if side=="l" else .5),1.0)
-	var stance:=.59
-	var sx:=.155 if side=="l" else -.155
+	var run:=smoothstep(1.2,3.0,speed)
+	var stance:=lerpf(.62,.43,run)-smoothstep(4.5,6,speed)*.045
 	var d:=direction.normalized()
-	if d.length()<.1:d=Vector3(0,0,1)
-	var reach:=clampf(speed*.13,.20,.66)
+	if d.length()<.1:d=Vector3.BACK
+	var sx:=.155 if side=="l" else -.155
 	var home:=Vector3(sx,.108,.045)
-	if phase<stance:
-		if not foot_plants.has(side):
-			foot_plants[side]=to_global(home+d*reach)
-		foot_swing[side]=foot_plants[side]
-		var planted:Vector3=to_local(foot_plants[side]);planted.y=.108
-		if G.flat(planted-home).length()>reach*1.9:
-			planted=home-d*reach
-			foot_plants[side]=to_global(planted)
-		return planted
-	foot_plants.erase(side)
-	var u:float=(phase-stance)/(1-stance)
-	var from:Vector3=to_local(foot_swing.get(side,to_global(home-d*reach)))
-	var end:=home+d*reach
-	var foot:=from.lerp(end,smoothstep(0,1,u))
-	foot.y=.108+sin(u*PI)*(.15+speed*.012)
-	return foot
+	var seed:=skel.to_global(skel.get_bone_global_pose(ids["foot_"+side]).origin)
+	var toe_yaw:=clampf(atan2(d.x,absf(d.z)+.01)*.28,-.40,.40)
+	var heading:Vector3=global_basis.orthonormalized()*Vector3(sin(toe_yaw),0,cos(toe_yaw))
+	var velocity:Vector3=global_basis.orthonormalized()*d*speed
+	var sample:Dictionary=ground_solver.sample(side,home,global_transform,velocity,phase,stance,ground_frequency,dt,lerpf(.075,.15,run),speed>.06,seed,heading)
+	walk_contacts[side]=sample
+	if sample.grounded:foot_plants[side]=sample.world
+	else:foot_plants.erase(side)
+	return sample.position
+
+func _pose_locomotion(action:String,dt:float,speed:float,direction:Vector3) -> void:
+	motion.transform=Transform3D.IDENTITY
+	if last_action not in ["idle","move","guard"]:
+		ground_solver.reset();locomotion_height=skel.get_bone_global_pose(ids.pelvis).origin.y
+	var run:=smoothstep(1.2,3.0,speed)
+	var sprint:=smoothstep(4.8,6.0,speed)
+	var amount:=ground_blend
+	var d:=direction.normalized()
+	if d.length()<.1:d=Vector3.BACK
+	var targets:={"l":_locomotion_foot("l",dt,speed,d),"r":_locomotion_foot("r",dt,speed,d)}
+	var walk_height:=lerpf(.935,.875,smoothstep(.4,1.6,speed))
+	var p:=Vector3(sin(gait)*.014*amount,lerpf(.95,lerpf(walk_height,.825,run),amount),0)
+	p.y+=cos(gait*2)*lerpf(-.008,.012,run)*amount+sin(clock*2.1)*.003*(1-amount)
+	var pelvis_yaw:=sin(gait)*.060*amount
+	var chest_yaw:=-sin(gait)*.055*amount
+	var bank:=sin(gait)*.024*amount
+	var lean:=.08+(.12*run+.015)*amount
+	var pelvis_bs:=Basis(Vector3.FORWARD,bank*.65+recoil.z*.35)*Basis(Vector3.UP,pelvis_yaw+recoil.y*.35)*Basis(Vector3.RIGHT,.025+recoil.x*.35)
+	var chest_bs:=Basis(Vector3.FORWARD,bank+recoil.z)*Basis(Vector3.UP,chest_yaw+recoil.y)*Basis(Vector3.RIGHT,lean+recoil.x)
+	# Keep a real bend in the support knee instead of clamping an unreachable
+	# ankle in mid-air. Speed/cadence now determine the stance travel together.
+	var foot_rotations:={}
+	for side in ["l","r"]:
+		var contact:Dictionary=walk_contacts[side]
+		var u:float=contact.stance_u
+		var pitch:float=(-.13*(1-smoothstep(0,.18,u))+.27*smoothstep(.68,1,u))*amount
+		if not contact.grounded:pitch=lerpf(.24,-.13,smoothstep(.06,.90,float(contact.swing_u)))*amount
+		var axis:Vector3=(tails["foot_"+side]-heads["foot_"+side]).normalized()
+		var rest_flat:=Basis(Quaternion(axis,Vector3(0,-.035,.15).normalized()))
+		var flat:=Basis(Vector3.UP,float(contact.yaw))*rest_flat
+		var rot:=Basis(Vector3.UP,float(contact.yaw))*Basis(Vector3.RIGHT,pitch)*rest_flat
+		var pivot:=Vector3(0,-.080,.15 if pitch>=0 else -.025)
+		targets[side]+=flat*pivot-rot*pivot;foot_rotations[side]=rot
+		var hip_offset:Vector3=pelvis_bs*(heads["thigh_"+side]-heads.pelvis)
+		var delta:=G.flat(p+hip_offset-Vector3(targets[side]))
+		var reach:float=(lengths["thigh_"+side]+lengths["shin_"+side])*.982
+		var ceiling:float=Vector3(targets[side]).y+sqrt(maxf(.01,reach*reach-delta.length_squared()))-hip_offset.y
+		if contact.grounded:p.y=minf(p.y,maxf(.72,ceiling))
+	# Unloading a support knee raises the torso progressively. An airborne
+	# ankle must not drag the pelvis after its nominal swing landmark.
+	if not initialized:locomotion_height=p.y
+	locomotion_height=minf(p.y,locomotion_height+dt*1.10);p.y=locomotion_height
+	_oriented("root",Vector3.ZERO,Basis.IDENTITY)
+	var spine:=p
+	for bone in ["pelvis","spine1","spine2","neck","head"]:
+		var bs:=pelvis_bs
+		if bone=="spine1":bs=pelvis_bs.slerp(chest_bs,.5)
+		elif bone=="spine2":bs=chest_bs
+		elif bone in ["neck","head"]:bs=Basis(Vector3.UP,chest_yaw*.18)*Basis(Vector3.RIGHT,.035)
+		_oriented(bone,spine,bs);spine+=bs*(tails[bone]-heads[bone])
+	for side in ["l","r"]:
+		var sx:=1.0 if side=="l" else -1.0
+		var hip:Vector3=p+pelvis_bs*(heads["thigh_"+side]-heads.pelvis)
+		var knee_pole:=Vector3(sx*.10,0,1)
+		knee_pole=Basis(Vector3.UP,clampf(atan2(d.x,absf(d.z)+.01)*.45,-.55,.55))*knee_pole
+		var ankle:=_ik("thigh_","shin_",side,hip,targets[side],knee_pole)
+		_oriented("foot_"+side,ankle,foot_rotations[side]);feet[side]=ankle
+	var chest:Vector3=globals.spine2.origin
+	var left_local:=Vector3(.28,-.18,.15-sin(gait)*lerpf(.065,.12,run)*amount)
+	var right_local:=Vector3(-.29,-.17+sin(gait)*.012*amount,.13+sin(gait)*.035*amount)
+	var sword:Vector3=chest_bs*Vector3(-.10,-.70,.72).normalized()
+	if sprint>.01:
+		left_local=left_local.lerp(Vector3(.27,-.07,.17+sin(gait)*.12),sprint)
+		right_local=right_local.lerp(Vector3(-.27,-.065,.14),sprint)
+		sword=sword.lerp(chest_bs*Vector3(-.15,.72,-.68).normalized(),sprint).normalized()
+	if action=="guard":
+		left_local=Vector3(.12,.07,.32);right_local=Vector3(-.17,-.01,.35)
+		sword=chest_bs*Vector3(.25,.85,-.2).normalized()
+	for side in ["r","l"]:
+		var sx:=1.0 if side=="l" else -1.0
+		var shoulder:Vector3=globals.spine2*rest.spine2.affine_inverse()*heads["upper_"+side]
+		var hand_target:Vector3=chest+chest_bs*(right_local if side=="r" else left_local)
+		var pole:=chest_bs*Vector3(sx*.60,-.15,-.7)
+		if side=="r":_grasp(side,shoulder,hand_target,sword,pole)
+		else:
+			var hand:=_ik("upper_","fore_",side,shoulder,hand_target,pole)
+			var forearm:Vector3=(hand-globals.fore_l.origin).normalized()
+			_put("hand_l",hand,hand+forearm.lerp(chest_bs*Vector3(0,-1,.15).normalized(),.25).normalized()*lengths.hand_l)
+	_cloth(dt,p,chest_bs)
+	_commit(action,dt,sword)
 
 func impact(weight:float,world_direction:Vector3) -> void:
 	var local:=global_basis.orthonormalized().inverse()*world_direction
@@ -513,6 +613,29 @@ func _beast_contact(id:String,home:Vector3,phase_offset:float,dt:float,speed:flo
 	# Stance contacts stay in world space. A separate swing brings them forward.
 	var xf:=motion.global_transform
 	var desired_world:=xf*home
+	if ground_locomotion:
+		var offset:float={"l":.37,"r":.10,"paw":.60}[id]
+		var phase:=fposmod(gait/TAU+offset,1.0)
+		var d:=direction.normalized()
+		if d.length()<.1:d=Vector3.BACK
+		var heading_yaw:=clampf(atan2(d.x,absf(d.z)+.01)*.22,-.34,.34)
+		var heading:=xf.basis.orthonormalized()*Vector3(sin(heading_yaw),0,cos(heading_yaw))
+		var velocity:=xf.basis.orthonormalized()*d*speed
+		var bone:="hand_l" if id=="paw" else "foot_"+id
+		var actual:Transform3D=skel.get_bone_global_pose(ids[bone])
+		var seed:=skel.to_global(actual.origin)
+		if id=="paw":seed=skel.to_global(actual*rest.hand_l.affine_inverse()*support_socket)
+		if not initialized:seed=desired_world
+		var lift:float=(.075 if id=="paw" else .09)*unit*xf.basis.get_scale().y*lerpf(.55,1.0,smoothstep(.3,3.0,speed))
+		var fast:=smoothstep(3.4,5.2,speed)
+		var stance:=lerpf(.60,.58,fast) if id=="paw" else lerpf(.80,.77,fast)
+		var sample:Dictionary=ground_solver.sample(id,home,xf,velocity,phase,stance,ground_frequency,dt,lift,speed>.08,seed,heading,true)
+		walk_contacts[id]=sample
+		if sample.grounded:beast_plants[id]=sample.world
+		else:beast_plants.erase(id)
+		if sample.landed and G.audio:G.audio.play("boss_step",sample.world,-5 if id=="paw" else -9,1.0 if id=="paw" else .93)
+		beast_contact_targets[id]=sample.world
+		return sample.position
 	if weight<.999:
 		if not beast_releases.has(id):
 			var anchor:Vector3=beast_plants.get(id,beast_contact_targets.get(id,desired_world))
@@ -570,6 +693,9 @@ func _beast_contact(id:String,home:Vector3,phase_offset:float,dt:float,speed:flo
 
 func _pose_beast(action:String,t:float,dt:float,speed:float,direction:Vector3) -> void:
 	motion.transform=Transform3D.IDENTITY
+	ground_locomotion=action in ["idle","move"]
+	if ground_locomotion and last_action not in ["idle","move"]:
+		ground_solver.reset();beast_body_support=Vector3.ZERO
 	var target:Dictionary=BeastMotion.sample(action,t,clock)
 	if last_action!=action and not beast_pose.is_empty():
 		beast_blend_from=beast_pose.duplicate();beast_blend_time=0
@@ -582,17 +708,19 @@ func _pose_beast(action:String,t:float,dt:float,speed:float,direction:Vector3) -
 	var moving:=action in ["idle","move"] and speed>.12
 	var root_shift:=Vector3(float(target.get("root_x",0)),0,float(target.get("root_z",0)))*unit
 	var p:=Vector3(root_shift.x,float(target.height)*unit,-.15*unit+root_shift.z)
-	if moving:
-		p.y+=sin(gait*2-.45)*minf(.030,speed*.009)*unit
-		p.z+=sin(gait-.4)*.025*unit
-		p.x+=sin(gait)*.018*unit
+	if ground_locomotion and ground_blend>.001:
+		p.y+=.026*unit*ground_blend
+		p.y+=sin(gait*3-.45)*.009*unit*ground_blend
+		p.z+=sin(gait*3-.4)*.010*unit*ground_blend
+		p.x+=sin(gait)*.016*unit*ground_blend
 	var lean:float=target.lean+recoil.x
 	var twist:float=target.twist+sin(clock*1.3)*.012*(1-flight)+recoil.y
 	var bank:float=target.bank+recoil.z
-	if moving:
-		bank+=sin(gait+.5)*.045
-		twist+=sin(gait-.2)*.055
-		lean+=sin(gait*2+.3)*.018
+	if ground_locomotion and ground_blend>.001:
+		lean+=.07*ground_blend
+		bank+=sin(gait+.5)*.028*ground_blend
+		twist+=sin(gait-.2)*.034*ground_blend
+		lean+=sin(gait*3+.3)*.010*ground_blend
 	var pelvis_yaw:=twist*.35+float(target.get("pelvis_yaw",0))
 	var chest_yaw:=twist+float(target.get("chest_yaw",0))
 	var body:=Basis(Vector3.FORWARD,bank)*Basis(Vector3.UP,chest_yaw)*Basis(Vector3.RIGHT,lean+.06)
@@ -611,6 +739,7 @@ func _pose_beast(action:String,t:float,dt:float,speed:float,direction:Vector3) -
 		var end:Vector3=spine+bs*(tails[bn]-heads[bn])
 		_oriented(bn,spine,bs);spine=end
 	var left:=Vector3(target.paw_x,0,target.paw_z)*unit
+	if ground_locomotion:left.z=lerpf(left.z,.32*unit,ground_blend)
 	left.y=(.045-motion.global_position.y)/maxf(.1,motion.global_basis.get_scale().y)
 	left.y+=((1-float(target.paw_weight))*.44+float(target.get("paw_y",0))+flight*.12)*unit
 	left.z-=flight*.17*unit
@@ -619,19 +748,29 @@ func _pose_beast(action:String,t:float,dt:float,speed:float,direction:Vector3) -
 	if float(target.paw_weight)>.92 and flight<.08:
 		var shoulder:Vector3=globals.spine2*rest.spine2.affine_inverse()*heads.upper_l
 		var reach:float=lengths.upper_l+lengths.fore_l-.025
-		var wrist:Vector3=left-_paw_rotation()*(support_socket-heads.hand_l)
+		var support_goal:=left
+		if ground_locomotion and not bool(walk_contacts.paw.grounded):
+			var landing:Vector3=motion.to_local(walk_contacts.paw.landing)
+			support_goal=support_goal.lerp(landing,smoothstep(.15,.70,float(walk_contacts.paw.swing_u)))
+		var wrist:Vector3=support_goal-_paw_rotation()*(support_socket-heads.hand_l)
 		var to_paw:=G.flat(wrist-shoulder)
-		var shift:=to_paw.normalized()*minf(.065*unit,maxf(0,to_paw.length()-reach*.90))
-		if shift.length_squared()>.000001:
-			p+=shift;shoulder+=shift
-			for bone in globals:
-				if bone!="root":globals[bone].origin+=shift
-		var horizontal:=G.flat(shoulder-wrist).length()
-		var support_drop:=minf(.08*unit,maxf(0,shoulder.y-wrist.y-sqrt(maxf(.01,reach*reach-horizontal*horizontal))))
-		if support_drop>0:
-			p.y-=support_drop
-			for bone in globals:
-				if bone!="root":globals[bone].origin.y-=support_drop
+		var shift:=to_paw.normalized()*minf((.12 if ground_locomotion else .065)*unit,maxf(0,to_paw.length()-reach*.86))
+		var horizontal:=G.flat(shoulder+shift-wrist).length()
+		var support_drop:=minf((.14 if ground_locomotion else .08)*unit,maxf(0,shoulder.y-wrist.y-sqrt(maxf(.01,reach*reach-horizontal*horizontal))))
+		var support_delta:=shift+Vector3.DOWN*support_drop
+		if ground_locomotion:
+			var contact:Dictionary=walk_contacts.paw
+			var weight:float=contact.load
+			support_delta=beast_body_support.lerp(support_delta*weight,1-exp(-14*dt))
+			if contact.grounded:
+				# Minimal whole-body correction makes the palm reachable without
+				# stretching a forearm or translating the wrist off its elbow.
+				var vector:=wrist-(shoulder+support_delta)
+				if vector.length()>reach:support_delta+=vector.normalized()*(vector.length()-reach)
+			beast_body_support=support_delta
+		p+=support_delta
+		for bone in globals:
+			if bone!="root":globals[bone].origin+=support_delta
 	var a:float=target.blade_yaw
 	var pitch:float=target.blade_pitch
 	var sword:=Vector3(sin(a)*cos(pitch),sin(pitch),cos(a)*cos(pitch))
@@ -649,7 +788,7 @@ func _pose_beast(action:String,t:float,dt:float,speed:float,direction:Vector3) -
 	for side in ["l","r"]:
 		var sx:=1.0 if side=="l" else -1.0
 		var foot:=Vector3(sx*.24*float(target.spread),.125,target.foot_lz if side=="l" else target.foot_rz)*unit
-		if moving:foot.z+=.18*unit
+		if ground_locomotion:foot.z=lerpf(foot.z,-.36*unit,ground_blend)
 		foot.y+=flight*(.37 if side=="l" else .31)*unit
 		foot.z+=flight*(.24 if side=="l" else -.12)*unit
 		var foot_lift:float=target.get("foot_lift_"+side,0)
@@ -659,13 +798,19 @@ func _pose_beast(action:String,t:float,dt:float,speed:float,direction:Vector3) -
 		foot=_beast_contact(side,foot,0 if side=="l" else .5,dt,speed if moving else 0.0,direction,0.0 if foot_lift>.002 else 1-flight)
 		var hip:Vector3=p+pelvis_bs*(heads["thigh_"+side]-heads.pelvis)
 		var foot_yaw:float=target.get("foot_yaw_"+side,0)
+		if ground_locomotion and walk_contacts.has(side):foot_yaw=walk_contacts[side].yaw
 		var heel:=float(target.get("body_drive",0))*.12 if foot_lift<.002 and flight<.05 else 0.0
 		var rest_axis:Vector3=(tails["foot_"+side]-heads["foot_"+side]).normalized()
 		var flat:=Basis(Quaternion(rest_axis,Vector3(0,-.035,.15).normalized()))
 		var rot:=Basis(Vector3.UP,foot_yaw)*Basis(Vector3.RIGHT,heel)*flat
 		var ball:=Vector3(0,-.080,.15)*unit
-		var ankle_target:=foot+flat*ball-rot*ball
-		var ankle:=_ik("thigh_","shin_",side,hip,ankle_target,pelvis_bs*Vector3(sx*.40,.75,.65))
+		var baseline_flat:=Basis(Vector3.UP,foot_yaw)*flat if ground_locomotion else flat
+		var ankle_target:=foot+baseline_flat*ball-rot*ball
+		var knee_pole:=pelvis_bs*Vector3(sx*.40,.75,.65)
+		if ground_locomotion:
+			var travel_yaw:=clampf(atan2(direction.x,absf(direction.z)+.01)*.35,-.45,.45)
+			knee_pole=Basis(Vector3.UP,pelvis_yaw+travel_yaw)*Vector3(sx*.10,.60,1.0)
+		var ankle:=_ik("thigh_","shin_",side,hip,ankle_target,knee_pole)
 		_oriented("foot_"+side,ankle,rot)
 		feet[side]=ankle
 		beast_contacts[side]=motion.to_global(ankle)
@@ -794,6 +939,16 @@ func _cloth(dt:float,p:Vector3,body:Basis) -> void:
 	var xf:=motion.global_transform
 	var inv:=xf.affine_inverse()
 	var h:=minf(dt,1.0/30.0)
+	var inertia:=Vector3.ZERO
+	if cloth_has_frame:
+		var transport:=xf*cloth_last_frame.affine_inverse()
+		for key in cloth_points:
+			cloth_points[key]=transport*Vector3(cloth_points[key])
+			cloth_previous[key]=transport*Vector3(cloth_previous[key])
+		var velocity:Vector3=(xf.origin-cloth_last_frame.origin)/maxf(dt,.001)
+		inertia=-(velocity-cloth_root_velocity)/maxf(dt,.001)
+		inertia=inertia.limit_length(25)*.16;cloth_root_velocity=velocity
+	cloth_last_frame=xf;cloth_has_frame=true
 	for ci in 5:
 		var anchor:=_point(heads["cape_%d_0"%ci],p,body)
 		var parent_id:int=skel.get_bone_parent(ids["cape_%d_0"%ci])
@@ -809,7 +964,7 @@ func _cloth(dt:float,p:Vector3,body:Basis) -> void:
 			var previous:Vector3=cloth_previous.get(key,current)
 			if current.distance_to(ends[0])>2.3*unit:current=seed;previous=seed
 			var wind:=Vector3(sin(clock*1.7+ci*.4)*.35,0,-.35)*unit
-			var next:=current+(current-previous)*exp(-7*h)+(Vector3.DOWN*12+wind)*h*h
+			var next:=current+(current-previous)*exp(-9*h)+(Vector3.DOWN*12+wind+inertia)*h*h
 			cloth_previous[key]=current
 			ends.append(next)
 		for iteration in (3 if G.mobile else 5):

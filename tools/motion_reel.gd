@@ -123,6 +123,7 @@ func _process(_dt:float) -> void:
 		var frame_path:="%s/frame_%05d.png"%[clip_dir,clip_frame]
 		get_viewport().get_texture().get_image().save_png(frame_path)
 	clip_frame+=1
+	if clip_frame%15==0:print("REEL FRAME ",clip.kind," ",clip.id," ",clip_frame,"/",frame_count)
 	if clip_frame>=frame_count:
 		manifest.clips.append({"kind":clip.kind,"id":clip.id,"view":clip.view,"frames":frame_count,"directory":ProjectSettings.globalize_path(clip_dir),"fps":FPS})
 		var file:=FileAccess.open(manifest_path,FileAccess.WRITE);file.store_string(JSON.stringify(manifest,"  "));file.close()
