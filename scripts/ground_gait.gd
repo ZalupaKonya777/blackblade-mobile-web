@@ -5,7 +5,7 @@ var feet:Dictionary={}
 static func blend_phase(u:float) -> float:
 	u=clampf(u,0,1);return u*u*u*(10+u*(-15+u*6))
 func reset() -> void:feet.clear()
-func sample(id:String,home:Vector3,xf:Transform3D,velocity:Vector3,phase:float,stance:float,frequency:float,dt:float,lift:float,moving:bool,seed:Vector3,heading:Vector3,exclusive:=false) -> Dictionary:
+func sample(id:String,home:Vector3,xf:Transform3D,velocity:Vector3,phase:float,stance:float,frequency:float,dt:float,lift:float,moving:bool,seed:Vector3,heading:Vector3,exclusive:=false,reach:=Vector2.ZERO) -> Dictionary:
 	var world_home:=xf*home
 	if not feet.has(id):feet[id]={"plant":seed,"point":seed,"swing":false,"heading":xf.basis*Vector3.BACK,"cycle":0,"last_step":-1,"last_phase":phase,"was_moving":false,"stance_t":0.0}
 	var state:Dictionary=feet[id]
@@ -26,7 +26,7 @@ func sample(id:String,home:Vector3,xf:Transform3D,velocity:Vector3,phase:float,s
 		state.plant=point
 		state.heading=Vector3(state.heading).slerp(heading,blend_phase(u)*.25).normalized()
 		state.was_moving=false
-		state.pending=false
+		state.pending=false;state.erase("reach_offset")
 	else:
 		state.erase("stop_from");state.erase("stop_t")
 		if not state.was_moving:
@@ -34,6 +34,16 @@ func sample(id:String,home:Vector3,xf:Transform3D,velocity:Vector3,phase:float,s
 		elif phase<float(state.last_phase)-.5:state.cycle+=1
 		state.last_phase=phase;state.was_moving=true
 		if phase>=stance and state.last_step!=state.cycle:state.pending=true
+		if reach.x>0 and reach.y>0 and not state.swing:
+			# A planted foot can leave its safe reach before its nominal
+			# phase when the body turns. Predict that strain early enough
+			# to finish the other support's swing, then replant normally.
+			var offset:Vector3=xf.affine_inverse()*point-home
+			var rate:Vector3=(offset-Vector3(state.get("reach_offset",offset)))/maxf(.001,dt)
+			var future:=offset+rate*.16
+			if Vector2(future.x/reach.x,future.z/reach.y).length()>1:state.pending=true
+			state.reach_offset=offset
+		else:state.erase("reach_offset")
 		var blocked:=false
 		if exclusive:
 			for other in feet:

@@ -325,7 +325,31 @@ static func curve(keys:Array,time:float) -> float:
 
 static func sample(action:String,time:float,clock:float) -> Dictionary:
 	var result:Dictionary=REST.duplicate()
-	if action.begins_with("recover_"):
+	if action in ["bound_left","bound_right","bound_forward"]:
+		# A short animal bound: load the hindquarters, release the forepaw,
+		# then reach for the landing. The controller supplies the collision arc.
+		var f:=clampf(time/(.62 if action=="bound_forward" else .58),0,1)
+		var side:float=0 if action=="bound_forward" else (1 if action=="bound_left" else -1)
+		var load:=curve([[0,0],[.13,1],[.30,0],[1,0]],f)
+		var airborne:=curve([[0,0],[.14,0],[.30,.62],[.63,.62],[.84,0],[1,0]],f)
+		var landing:=curve([[0,0],[.72,0],[.87,1],[1,0]],f)
+		result.height-=.065*load+.035*landing
+		result.lean+=.13*load+.08*landing-.12*airborne
+		result.flight=airborne
+		result.paw_weight=curve([[0,1],[.13,1],[.23,0],[.70,0],[.85,1],[1,1]],f)
+		result.paw_y=.065*airborne
+		result.paw_z+=curve([[0,0],[.16,-.05],[.55,.10],[.81,.15],[1,0]],f)
+		result.paw_x+=side*curve([[0,0],[.15,-.025],[.55,.06],[.83,.09],[1,0]],f)
+		result.bank=side*curve([[0,0],[.15,-.07],[.39,.09],[.73,.055],[1,0]],f)
+		result.pelvis_yaw=side*curve([[0,0],[.17,-.08],[.49,.07],[1,0]],f)
+		result.chest_yaw=-side*.065*airborne
+		result.foot_lz+=.13*airborne
+		result.foot_rz-=.08*airborne
+		result.head_pitch-=.08*airborne
+		result.hand_reach-=.07*airborne
+		result.blade_yaw-=side*.17*airborne
+		result.blade_pitch+=.20*airborne
+	elif action.begins_with("recover_"):
 		var id:=action.trim_prefix("recover_")
 		if TRACKS.has(id):
 			var end:Dictionary=REST.duplicate()

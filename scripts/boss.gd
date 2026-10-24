@@ -46,6 +46,12 @@ var entry_velocity:=Vector3.ZERO
 var body_shape:CollisionShape3D
 var rear_shape:CollisionShape3D
 var last_strike:Array=[]
+var maneuver_delta:=Vector3.ZERO
+var maneuver_id:=""
+var maneuver_duration:=.58
+var maneuver_height:=.28
+var maneuver_cooldown:=0.0
+var maneuvers_started:=0
 const FOLLOWUPS={
  "sweep":["backhand","paw_strike","evade_cut"],
  "backhand":["overhead","evade_cut"],
@@ -72,7 +78,7 @@ func _voice(event:String,priority:int,hold:float,db:float=-2.0,pitch:float=1.0) 
 
 func _voice_tick(dt:float) -> void:
 	voice_clock+=dt
-	if not G.playing or state in ["dead","dormant","intro","attack","transition","critical","fall","stagger"]:return
+	if not G.playing or state in ["dead","dormant","intro","attack","transition","critical","fall","stagger","reposition"]:return
 	if not voice_awakened:
 		voice_awakened=true;_voice("beast_growl",1,1.55,-2.0)
 	if voice_clock<voice_until or not G.player or not G.player.alive():return
@@ -98,6 +104,7 @@ func _ready() -> void:
 func _physics_process(dt:float) -> void:
 	if G.freeze>0:return
 	_voice_tick(dt)
+	maneuver_cooldown=maxf(0,maneuver_cooldown-dt)
 	posture_delay-=dt
 	if posture_delay<=0 and state not in ["stagger","fall"]:posture=maxf(0,posture-FightBalance.STANCE_REGEN*dt)
 	for k in cooldowns:cooldowns[k]-=dt
@@ -114,6 +121,7 @@ func _physics_process(dt:float) -> void:
 				if t>2.4:_idle(.5)
 			"idle","move":_think(dt)
 			"attack":_run_attack(dt)
+			"reposition":_run_reposition(dt)
 			"recover":
 				# Complete the weight transfer before the next decision.
 				velocity.x=0;velocity.z=0
@@ -135,6 +143,12 @@ func _physics_process(dt:float) -> void:
 			"critical":
 				if t>2.1:_idle(1.1)
 	var authored_flight:=false
+	if state=="reposition":
+		var u:=clampf((t/maneuver_duration-.14)/.70,0,1)
+		var previous_u:=clampf(((t-dt)/maneuver_duration-.14)/.70,0,1)
+		if u>0 and previous_u<1:
+			authored_flight=true
+			velocity.y=4*maneuver_height*(u*(1-u)-previous_u*(1-previous_u))/dt
 	if state=="attack" and MOVES[attack].has("flight"):
 		var f:Array=MOVES[attack].flight
 		if t>=f[0] and t<=f[1]:
@@ -168,6 +182,7 @@ func _physics_process(dt:float) -> void:
 	elif state=="intro":anim="roar"
 	elif state=="attack":anim=attack
 	elif state=="recover":anim="recover_"+recover_from
+	elif state=="reposition":anim=maneuver_id
 	elif state=="fall":anim="stagger_air"
 	rig.pose(anim,t,dt,stride,relative)
 	if stride>.25 and is_on_floor() and int(rig.gait/PI)!=paw_step:
@@ -204,6 +219,7 @@ func _think(dt:float) -> void:
 	if wait<=0:
 		var choice:=_choose(dist)
 		if choice!="":start_move(choice);return
+		if _try_reposition():return
 		wait=.22
 	var dir:=Vector3.ZERO;var speed:=0.0
 	if dist>3.6:dir=to.normalized();speed=5.2 if dist>12 else (3.8 if phase==2 else 3.3)
@@ -214,6 +230,47 @@ func _think(dt:float) -> void:
 	var motor:=Vector3(velocity.x,0,velocity.z).move_toward(dir*speed,(10.0 if speed>0 else 16.0)*dt)
 	velocity.x=motor.x;velocity.z=motor.z
 	state="move" if motor.length()>.10 else "idle"
+
+func _start_reposition(delta:Vector3,id:String) -> bool:
+	if not G.player or not G.player.alive() or not is_on_floor() or delta.length()<.5:return false
+	var destination:=global_position+delta
+	if G.flat(destination).length()>16.35 or G.flat(destination-G.player.global_position).length()<2.35:return false
+	if not _clear_path(delta.normalized(),delta.length()+.20):return false
+	maneuver_delta=delta;maneuver_id=id
+	maneuver_duration=.62 if id=="bound_forward" else .58
+	maneuver_height=.33 if id=="bound_forward" else .27
+	maneuver_cooldown=4.8 if phase==1 else 3.8
+	maneuvers_started+=1;state="reposition";attack="";followup="";t=0;velocity=Vector3.ZERO
+	if G.audio:G.audio.play("armor_takeoff",global_position,-12,.68)
+	return true
+
+func _try_reposition() -> bool:
+	if not ai_enabled or maneuver_cooldown>0 or transition_pending or not G.player or not G.player.alive():return false
+	var to:=G.flat(G.player.global_position-global_position);var distance:=to.length()
+	if distance<.1 or distance>12:return false
+	var forward:=to.normalized()
+	for side_sign in [orbit,-orbit]:
+		var side:Vector3=forward.cross(Vector3.UP)*float(side_sign)
+		var delta:Vector3=side*1.90+forward*.35
+		var id:="bound_left" if side_sign>0 else "bound_right"
+		if distance<2.75:delta=side*1.30-forward*1.25
+		elif distance>6.0:delta=forward*2.45+side*.50;id="bound_forward"
+		if _start_reposition(delta,id):orbit=-side_sign;return true
+	return false
+
+func _run_reposition(dt:float) -> void:
+	var u:=clampf((t/maneuver_duration-.14)/.70,0,1)
+	var previous_u:=clampf(((t-dt)/maneuver_duration-.14)/.70,0,1)
+	var speed:float=(BeastMoves.smooth_motion(u)-BeastMoves.smooth_motion(previous_u))/dt
+	velocity.x=maneuver_delta.x*speed;velocity.z=maneuver_delta.z*speed
+	if G.player:
+		var to:=G.flat(G.player.global_position-global_position)
+		if to.length()>.1:yaw=rotate_toward(yaw,atan2(to.x,to.z),2.8*dt)
+	if t>=maneuver_duration and is_on_floor():
+		state="idle";t=0;wait=.15;velocity=Vector3.ZERO;maneuver_id="";maneuver_delta=Vector3.ZERO
+		if G.audio:G.audio.play("boot_land",global_position,-8,.70)
+		if G.fx:G.fx.ground_contact(global_position,Vector3.ZERO,.45)
+		if transition_pending:_transition()
 
 func _clear_path(direction:Vector3,distance:float) -> bool:
 	if distance<.1:return true
@@ -422,9 +479,11 @@ func _check_blade(blade:Array) -> void:
 			if state!="attack":return
 
 func _idle(delay:float) -> void:
+	var after_attack:=state=="recover"
 	state="idle";attack="";t=0;wait=delay;orbit=-orbit if randf()<.35 else orbit
 	velocity.x=0;velocity.z=0
 	if transition_pending and is_on_floor():_transition()
+	elif after_attack and randf()<(.42 if phase==1 else .55):_try_reposition()
 
 func _transition() -> void:
 	transition_pending=false;state="transition";attack="";t=0;events.clear();followup=""
@@ -450,7 +509,7 @@ func take_damage(amount:float,stance:float,point:Vector3,_kind:String) -> void:
 
 func _stagger() -> void:
 	posture=0;attack="";t=0;followup=""
-	if global_position.y>.35:
+	if not is_on_floor():
 		state="fall";velocity.y=minf(velocity.y,1.0);velocity.x*=.3;velocity.z*=.3
 	else:state="stagger";velocity=Vector3.ZERO
 	if G.audio:G.audio.play("parry",global_position,-3,.65)
@@ -483,6 +542,7 @@ func lock_point() -> Vector3:return rig.target_point()+Vector3.UP*.25
 func alive() -> bool:return state!="dead"
 
 func set_training_phase() -> void:
+	maneuver_id="";maneuver_delta=Vector3.ZERO;maneuver_cooldown=0
 	phase=2 if phase==1 else 1
 	state="idle";attack="";t=0;wait=1;velocity=Vector3.ZERO
 	global_position.y=.045
@@ -490,6 +550,7 @@ func set_training_phase() -> void:
 	rig.initialized=false
 
 func reset(at:Vector3) -> void:
+	maneuver_id="";maneuver_delta=Vector3.ZERO;maneuver_cooldown=0;maneuvers_started=0
 	voice_clock=0.0;voice_until=0.0;voice_priority=-1;breath_at=2.5;growl_at=5.5;pain_at=0.0;voice_awakened=false
 	last_strike=[]
 	global_position=at;velocity=Vector3.ZERO;yaw=0;hp=MAX_HP;posture=0;posture_delay=0;phase=1;state="dormant";attack="";t=0;wait=.5

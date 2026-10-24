@@ -6,6 +6,7 @@ const context=await browser.newContext({viewport:{width:844,height:390},isMobile
 const page=await context.newPage();page.setDefaultTimeout(120000);
 const cdp=await context.newCDPSession(page),fingers=new Map(),checks=[],errors=[];
 page.on('pageerror',e=>errors.push(e.message));
+page.on('console',message=>{if(/SCRIPT ERROR|Parse Error|Invalid (call|access)/.test(message.text()))errors.push(message.text());});
 function check(label,ok,detail){checks.push({label,ok,detail});console.log(ok?'PASS':'FAIL',label,JSON.stringify(detail));if(!ok)throw Error(label);}
 async function point(selector,id,dy=0,dx=0){const r=await page.locator(selector).boundingBox();if(!r)throw Error('Hidden '+selector);return {id,x:r.x+r.width/2+dx,y:r.y+r.height/2+dy,radiusX:8,radiusY:8,force:.6};}
 async function tap(selector,id=7){const p=await point(selector,id);const down=cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[...fingers.values(),p]});const up=cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:fingers.size?[p]:[]});await Promise.all([down,up]);}

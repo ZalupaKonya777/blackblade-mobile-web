@@ -60,6 +60,7 @@ const PROFILES={
  "light3":{
   "pelvis_yaw":[0,.10,.18,-.06,-.10,-.02,0],
   "chest_yaw":[0,.18,.27,-.10,-.16,-.02,0],
+  "height":[.94,.89,.85,.86,.90,.94,.94],
   "lean":[.08,-.03,-.05,.28,.30,.11,.08],
   "hand_x":[-.29,-.20,-.17,-.12,-.11,-.24,-.29],
   "hand_y":[-.14,-.02,.015,-.025,-.04,-.10,-.14],
@@ -69,7 +70,7 @@ const PROFILES={
   "root_z":[0,-.045,-.065,.105,.12,.02,0],
   "rear_heel":[0,.025,.05,.35,.26,.025,0],
   "free_z":[.18,.25,.27,-.08,-.14,.14,.18],
-  "step":.43,"step_side":.025,"lead":"l"},
+  "step":.38,"step_side":.025,"lead":"l"},
  "heavy":{
   "pelvis_yaw":[0,-.13,-.28,.30,.38,.05,0],
   "chest_yaw":[0,-.19,-.34,.16,.29,.035,0],
@@ -188,18 +189,30 @@ static func _compile(id:String) -> Dictionary:
 	_tracks[id]=tracks
 	return tracks
 
-static func sample(id:String,time:float) -> Dictionary:
+static func sample(id:String,time:float,from_pose:Dictionary={}) -> Dictionary:
 	var tracks:Dictionary=_tracks.get(id,{})
 	if tracks.is_empty():tracks=_compile(id)
 	var result:={}
 	for key in tracks:result[key]=BeastMotion.curve(tracks[key],time)
 	var profile:Dictionary=PROFILES[id];var move:Dictionary=KnightMoves.MOVES[id]
+	# Linked cuts gather from the actual outgoing cut. Pelvis changes direction
+	# first, chest follows, and the hand/blade finish loading last. A chain never
+	# has to pass through the ready guard between opposite cuts.
+	if not from_pose.is_empty():
+		for key in tracks:
+			if not from_pose.has(key):continue
+			var until:=float(move.wind)*.86
+			if key in ["pelvis_yaw","root_x","root_z","height","rear_yaw","rear_heel"]:until=float(move.wind)*.64
+			elif key.begins_with("hand_") or key.begins_with("blade_") or key=="wrist_roll":until=float(move.wind)*.98
+			var f:=smoothstep(0,until,time)
+			result[key]=lerp_angle(float(from_pose[key]),float(result[key]),f) if key.ends_with("yaw") or key in ["blade_pitch","wrist_roll"] else lerpf(float(from_pose[key]),float(result[key]),f)
 	result.hand=Vector3(result.hand_x,result.hand_y,result.hand_z)
 	result.free=Vector3(result.free_x,result.free_y,result.free_z)
 	result.sword=Vector3(sin(result.blade_yaw)*cos(result.blade_pitch),sin(result.blade_pitch),cos(result.blade_yaw)*cos(result.blade_pitch))
 	result.twist=result.chest_yaw
 	result.lead=profile.lead;result.step=profile.step;result.step_side=profile.step_side
-	result.step_load=smoothstep(float(move.wind)*.10,float(move.wind)*.90,time)
-	result.settle=smoothstep(float(move.hits[1])+.12,float(move.length),time)
+	result.step_load=smoothstep(float(move.wind)*.22,float(move.wind)*.98,time)
+	result.rear_load=smoothstep(float(move.wind)*(.70 if float(move.travel)>.55 else .98),float(move.hits[1])+.055,time)
+	result.settle=smoothstep(float(move.hits[1])+(.02 if float(move.travel)>.55 else .12),float(move.length),time)
 	result.head_yaw=float(result.chest_yaw)*.13
 	return result
