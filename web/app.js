@@ -10,6 +10,12 @@ let previousBossPhase = 1;
 let rotationPauseRequested = false;
 let resultTimer = 0;
 let announcementTimer = 0;
+let pendingSoundVolume = null;
+let soundTestUntil = 0;
+let runningBuild = null;
+let availableBuild = null;
+let serviceWorkerRegistration = null;
+let lastUpdateCheck = -Infinity;
 const pointers = new Map();
 let stickPointer = null;
 let lookPointer = null;
@@ -48,6 +54,7 @@ function unlockAudio() {
   }
 }
 document.addEventListener('keydown', unlockAudio, { capture: true });
+document.addEventListener('click', unlockAudio, { capture: true });
 document.addEventListener('pointerdown', unlockAudio, { capture: true });
 document.addEventListener('touchend', unlockAudio, { capture: true, passive: true });
 
@@ -89,6 +96,7 @@ window.BlackbladeUI = {
     $('load-status').textContent = 'Храм открыт. Выбери бой или тренировку.';
     // ready() runs inside Godot's initialisation callback. Do not re-enter
     // WebAssembly to rebuild viewports while the renderer is being created.
+    if (pendingSoundVolume !== null) setTimeout(() => send({ type: 'setting', key: 'volume', value: pendingSoundVolume }), 0);
     if (graphicsQuality !== 1) setTimeout(() => send({ type: 'setting', key: 'quality', value: graphicsQuality }), 0);
   },
   update(encoded) {
@@ -123,6 +131,7 @@ window.BlackbladeUI = {
     }
     if (document.activeElement !== $('volume')) $('volume').value = state.volume;
     $('shake').checked = state.shake;
+    updateSoundControls();
     if (document.activeElement !== $('music-volume')) $('music-volume').value = state.music;
     if (state.phase !== previousPhase) {
       previousPhase = state.phase;
@@ -244,6 +253,7 @@ window.addEventListener('resize', resizeCanvas);
 window.visualViewport?.addEventListener('resize', resizeCanvas);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { cancelControls(); send({ type: 'blur' }); }
+  else checkForGameUpdate();
 });
 window.addEventListener('blur', () => { cancelControls(); send({ type: 'blur' }); });
 resizeCanvas();
@@ -255,7 +265,39 @@ $('retry').addEventListener('click', () => { cancelControls(); send({ type: 'ret
 for (const id of ['to-title', 'result-home']) $(id).addEventListener('click', () => { cancelControls(); send({ type: 'title' }); });
 $('change-phase').addEventListener('click', () => send({ type: 'phase' }));
 $('music-volume').addEventListener('input', event => send({ type: 'setting', key: 'music', value: Number(event.target.value) }));
-$('sound-toggle').addEventListener('click', () => { const sound = window.BlackbladeSound; sound.mute(!sound.muted); $('sound-toggle').textContent = sound.muted ? 'Включить звук' : 'Выключить звук'; $('sound-toggle').setAttribute('aria-pressed', String(sound.muted)); });
+function updateSoundControls() {
+  const sound = window.BlackbladeSound;
+  const disabled = sound.muted || sound.volume <= .0001;
+  $('sound-toggle').textContent = disabled ? 'Включить звук' : 'Выключить звук';
+  $('sound-toggle').setAttribute('aria-pressed', String(disabled));
+  $('sound-enable')?.classList.toggle('needs-audio', disabled || sound.needsGesture);
+  const text = disabled ? 'Звук выключен.' : performance.now() < soundTestUntil
+    ? 'Проверка: два коротких сигнала.' : sound.needsGesture
+      ? 'Нажми кнопку со значком звука.' : 'Звук включён. Можно проверить сигналом.';
+  for (const id of ['sound-status', 'home-sound-status']) if ($(id)) $(id).textContent = text;
+}
+function enableSound() {
+  const sound = window.BlackbladeSound;
+  if (sound.volume <= .0001) {
+    pendingSoundVolume = .75;
+    sound.settings(.75, sound.musicVolume);
+    send({ type: 'setting', key: 'volume', value: .75 });
+  }
+  sound.mute(false);
+  sound.unlock({ repair: true, test: true });
+  soundTestUntil = performance.now() + 1800;
+  updateSoundControls();
+  setTimeout(updateSoundControls, 1900);
+}
+for (const id of ['home-sound', 'sound-enable', 'sound-check']) $(id)?.addEventListener('click', enableSound);
+window.addEventListener('blackbladeaudiochange', updateSoundControls);
+window.addEventListener('blackbladeaudioprobe', () => { soundTestUntil = performance.now() + 1800; updateSoundControls(); setTimeout(updateSoundControls, 1900); });
+$('sound-toggle').addEventListener('click', () => {
+  const sound = window.BlackbladeSound;
+  if (sound.muted || sound.volume <= .0001) enableSound();
+  else { sound.mute(true); updateSoundControls(); }
+});
+updateSoundControls();
 $('volume').addEventListener('input', event => send({ type: 'setting', key: 'volume', value: Number(event.target.value) }));
 $('shake').addEventListener('change', event => send({ type: 'setting', key: 'shake', value: event.target.checked }));
 $('graphics-quality').addEventListener('change', event => {
@@ -284,6 +326,9 @@ const manifestPromise = fetch('runtime.json', { cache: 'no-cache' }).then(respon
   return response.json();
 });
 manifestPromise.then(manifest => {
+  runningBuild = manifest.version;
+  if ($('build-version')) $('build-version').textContent = 'Версия ' + runningBuild.slice(0, 8);
+  showGameUpdate();
   if (!loading) $('load-status').textContent = `Загрузка ≈ ${Math.ceil(manifest.downloadBytes / 1048576)} МБ · горизонтальный экран`;
 }).catch(() => {});
 
@@ -366,6 +411,25 @@ $('enter').addEventListener('click', () => {
 });
 $('training').addEventListener('click', () => { cancelControls(); send({ type: 'start', training: true }); focusGame(); });
 
+function showGameUpdate() {
+  const available = !!(runningBuild && availableBuild && runningBuild !== availableBuild);
+  for (const id of ['update-game', 'home-update-game']) if ($(id)) $(id).hidden = !available;
+}
+function checkForGameUpdate() {
+  if (!serviceWorkerRegistration || performance.now() - lastUpdateCheck < 15000) return;
+  lastUpdateCheck = performance.now(); serviceWorkerRegistration.update().catch(() => {});
+}
+for (const id of ['update-game', 'home-update-game']) $(id)?.addEventListener('click', () => {
+  cancelControls(); send({ type: 'blur' }); location.reload();
+});
 if ('serviceWorker' in navigator && !new URLSearchParams(location.search).has('qa')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(error => console.warn('Offline cache unavailable', error)));
+  navigator.serviceWorker.addEventListener('message', event => {
+    if (event.data?.type !== 'blackblade-update-ready') return;
+    availableBuild = event.data.version; showGameUpdate();
+  });
+  navigator.serviceWorker.addEventListener('controllerchange', () => navigator.serviceWorker.controller?.postMessage({ type: 'blackblade-version' }));
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(registration => {
+    serviceWorkerRegistration = registration; checkForGameUpdate();
+  }).catch(error => console.warn('Offline cache unavailable', error)));
+  window.addEventListener('pageshow', checkForGameUpdate);
 }

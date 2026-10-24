@@ -13,3 +13,5 @@
 .joystick>*,.action-button>*{pointer-events:none}
 .combat-button.heavy.charged{border-color:#f0d38c;box-shadow:0 0 19px #d6ac4f55;background:radial-gradient(circle,#8d744fbb,#283642cc)}
 .combat-button>span{font-size:7px}.combat-button.light>span,.combat-button.dodge>span{font-size:8px;letter-spacing:.02em}
+
+.sound-status{display:block;color:#a9b7bd;font-size:10px;line-height:1.5;margin:3px 0 6px}.home-content .sound-enable{min-height:44px}.home-content .sound-status{max-width:280px;font-size:9px}.utility.needs-audio{border-color:#dfb875;color:#efd29b;box-shadow:0 0 0 2px #c8b18122}.settings-row input[type=range]{min-height:44px}#sound-check{min-height:44px}#sound-toggle{min-height:44px}
