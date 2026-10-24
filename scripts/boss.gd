@@ -43,6 +43,33 @@ var shot_aims:={}
 var followup:=""
 var pressure:=0
 var entry_velocity:=Vector3.ZERO
+var voice_clock:=0.0
+var voice_until:=0.0
+var voice_priority:=-1
+var breath_at:=2.5
+var growl_at:=5.5
+var pain_at:=0.0
+var voice_awakened:=false
+
+func _voice(event:String,priority:int,hold:float,db:float=-2.0,pitch:float=1.0) -> bool:
+	if not G.audio or (voice_clock<voice_until and priority<voice_priority):return false
+	G.audio.play(event,lock_point(),db,pitch)
+	voice_priority=priority;voice_until=voice_clock+hold
+	breath_at=maxf(breath_at,voice_until+1.2);growl_at=maxf(growl_at,voice_until+2.0)
+	return true
+
+func _voice_tick(dt:float) -> void:
+	voice_clock+=dt
+	if not G.playing or state in ["dead","dormant","intro","attack","transition","critical","fall","stagger"]:return
+	if not voice_awakened:
+		voice_awakened=true;_voice("beast_growl",1,1.55,-2.0)
+	if voice_clock<voice_until or not G.player or not G.player.alive():return
+	if voice_clock>=growl_at and G.flat(G.player.global_position-global_position).length()<10:
+		_voice("beast_growl",1,1.55,-5,.94 if phase==2 else 1.0)
+		growl_at=voice_clock+randf_range(6.0,9.0)
+	elif voice_clock>=breath_at:
+		_voice("beast_breath",0,1.15,-8,.94 if phase==2 else 1.0)
+		breath_at=voice_clock+randf_range(3.7,5.2)
 var blade_drag_t:=0.0
 
 func _ready() -> void:
@@ -57,6 +84,7 @@ func _ready() -> void:
 
 func _physics_process(dt:float) -> void:
 	if G.freeze>0:return
+	_voice_tick(dt)
 	posture_delay-=dt
 	if posture_delay<=0 and state not in ["stagger","fall"]:posture=maxf(0,posture-FightBalance.STANCE_REGEN*dt)
 	for k in cooldowns:cooldowns[k]-=dt
@@ -68,6 +96,8 @@ func _physics_process(dt:float) -> void:
 	if G.playing:
 		match state:
 			"intro":
+				if t>=.45 and not events.has("intro_voice"):
+					events.intro_voice=true;_voice("beast_roar",4,2.45,1.0)
 				if t>2.4:_idle(.5)
 			"idle","move":_think(dt)
 			"attack":_run_attack(dt)
@@ -81,7 +111,7 @@ func _physics_process(dt:float) -> void:
 			"transition":
 				if t>1.1 and not events.has("ignite"):
 					events.ignite=true;phase=2;G.new_phase.emit()
-					if G.audio:G.audio.play("roar",global_position,-1,.75)
+					_voice("beast_roar",4,2.5,2.0,.91)
 					if G.fx:G.fx.ring(global_position,5.8,Color(1,.15,.12),.9)
 					if G.arena:G.arena.rage(true)
 				if t>3.0:_idle(1.0)
@@ -226,7 +256,7 @@ func start_move(id:String) -> void:
 	aim=G.flat(G.player.global_position-global_position)
 	air_origin=global_position;air_delta=Vector3.ZERO;drive_distance=0
 	# Turn during anticipation instead of snapping on attack start.
-	if G.audio and id in ["leap","air_blades","death_storm"]:G.audio.play("roar",global_position,-10,1.15)
+	if id in ["leap","air_blades","death_storm"]:_voice("beast_growl",1,1.35,-4,.96)
 
 func _commit_attack() -> void:
 	if events.has("commit"):return
@@ -280,6 +310,7 @@ func _attack_events(blade:Array) -> void:
 		if t>=h[0]-.10 and not events.has(key):
 			events[key]=true
 			if G.audio:G.audio.play("boss_swing",blade[0],-2,1.0)
+			_voice("beast_attack",2,.68,-2,.94 if phase==2 else 1.0)
 	if attack=="drag" and t>.47 and t<.96 and blade[1].y<.38 and int(t*16)!=events.get("scrape",-1):
 		events.scrape=int(t*16)
 		var tip:Vector3=blade[1];tip.y=.055
@@ -298,6 +329,7 @@ func _attack_events(blade:Array) -> void:
 			events.land=true
 			if G.fx:G.fx.slam(global_position,4.2,phase==2)
 			if G.audio:G.audio.play("slam",global_position,-1,.8)
+			_voice("beast_attack",2,.72,0.0,.92)
 			if G.camera:G.camera.shake(.42)
 		if t>=1.90 and not events.has("wave") and events.has("land"):
 			events.wave=true
@@ -310,6 +342,7 @@ func _attack_events(blade:Array) -> void:
 				var start:Vector3=blade[0].lerp(blade[1],.60)
 				if G.fx:G.fx.projectile(start,shot_aims.get(i,G.player.global_position+Vector3.UP*.9),300,18.5,i%2)
 				if G.audio:G.audio.play("projectile",start,-1,.75)
+				_voice("beast_attack",2,.68,-2,1.05)
 			elif t>=fire_time-.18 and t<fire_time and G.fx:G.fx.charge(blade[1])
 	if attack=="death_storm":
 		if t>=.12 and not events.has("tell"):
@@ -319,6 +352,7 @@ func _attack_events(blade:Array) -> void:
 			events.slam=true
 			if G.fx:G.fx.slam(blade[1],5,true)
 			if G.audio:G.audio.play("slam",global_position,-1,.7)
+			_voice("beast_roar",4,2.3,0.0,.94)
 		for i in m.pulses.size():
 			if t>=float(m.pulses[i]) and not events.has("pulse%d"%i):
 				events["pulse%d"%i]=true
@@ -364,7 +398,9 @@ func take_damage(amount:float,stance:float,point:Vector3,_kind:String) -> void:
 	rig.impact((.018 if amount<350 else .055)*(.35 if state=="attack" else 1.0),G.flat(point-global_position).normalized())
 	if G.ui:G.ui.damage_number(amount,point)
 	if hp<=0:
-		state="dead";t=0;attack="";followup="";G.beast_dead.emit();return
+		state="dead";t=0;attack="";followup="";_voice("beast_death",5,3.2,1.0,.96);G.beast_dead.emit();return
+	if voice_clock>=pain_at:
+		_voice("beast_pain",3,.72,-1.0,.94 if phase==2 else 1.0);pain_at=voice_clock+.55
 	if phase==1 and hp<=MAX_HP*.5:transition_pending=true
 	if posture>=STANCE and state not in ["stagger","critical","transition","fall"]:_stagger()
 	elif transition_pending and state in ["idle","move"] and is_on_floor():_transition()
@@ -375,6 +411,8 @@ func _stagger() -> void:
 		state="fall";velocity.y=minf(velocity.y,1.0);velocity.x*=.3;velocity.z*=.3
 	else:state="stagger";velocity=Vector3.ZERO
 	if G.audio:G.audio.play("parry",global_position,-3,.65)
+	if voice_clock>=pain_at:
+		_voice("beast_pain",3,.9,-1,.90);pain_at=voice_clock+.55
 	if G.ui:G.ui.notify("СТОЙКА СЛОМЛЕНА", "Подойди спереди и нажми ЛКМ")
 
 func parried() -> void:_stagger()
@@ -397,6 +435,7 @@ func set_training_phase() -> void:
 	rig.initialized=false
 
 func reset(at:Vector3) -> void:
+	voice_clock=0.0;voice_until=0.0;voice_priority=-1;breath_at=2.5;growl_at=5.5;pain_at=0.0;voice_awakened=false
 	global_position=at;velocity=Vector3.ZERO;yaw=0;hp=MAX_HP;posture=0;posture_delay=0;phase=1;state="dormant";attack="";t=0;wait=.5
 	cooldowns.clear();events.clear();history.clear();hit_flags.clear();shot_aims.clear();transition_pending=false;forced_attack="";followup=""
 	recover_from="";recovery_duration=0;pressure=0;heal_seen=0;air_delta=Vector3.ZERO;drive_distance=0;parry_flash=false;entry_velocity=Vector3.ZERO

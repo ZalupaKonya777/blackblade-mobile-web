@@ -2,7 +2,7 @@ BLACKBLADE MOBILE — BATTLE AUDIO SOURCES
 All packaged battle audio is CC0-1.0. No extracted game audio.
 Kenney source archives were retrieved from the author's own website.
 Recorded foley was trimmed, filtered, pitched, layered and mastered.
-Air movement, creature growls, resonators, ambience, and the 80 BPM
+Air movement, original synthetic creature growls, resonators, ambience, and the 80 BPM
 D-minor music arrangement were synthesized originally for this project.
 These original contributions are dedicated to the public domain under
 CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
@@ -415,3 +415,96 @@ music_2.mp3
   Kenney Impact Sounds 1.0/Audio/impactWood_heavy_003.ogg
   Kenney Impact Sounds 1.0/Audio/impactWood_heavy_004.ogg
   Original procedural synthesis and arrangement (CC0-1.0)
+
+ADDITIONAL BEAST VOCAL BANK — RECORDED TEXTURES (2026-10-24)
+All three primary upload pages identify their recordings as Creative Commons 0 (CC0 1.0).
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Published high-quality MP3 previews were downloaded, not the login-only original WAV/AIFF.
+Derivatives use trims, pitch/time changes, filtering, recorded layers and original low throat harmonics.
+No extracted game audio and no dialogue. Original processing/synthesis is dedicated to CC0 1.0.
+
+my dog growling.wav — akiuee
+Primary page: https://freesound.org/people/akiuee/sounds/337167/
+Downloaded preview: https://cdn.freesound.org/previews/337/337167_4868216-hq.mp3
+SHA-256: 3ea5a1fc1aad11202b93b412dd1b29a61f82e7bfb1e99a51496b4c433e67d604
+License stated by uploader: CC0 1.0
+
+S01-09_Short lion roars.wav — craigsmith
+Primary page: https://freesound.org/people/craigsmith/sounds/675443/
+Downloaded preview: https://cdn.freesound.org/previews/675/675443_2524442-hq.mp3
+SHA-256: 3544ac6209113f892c2b2fe5406567c16dfa7eca636d99a0bbc0d8bc4e9e56c2
+License stated by uploader: CC0 1.0
+
+Werewolf breathing and sniffing — kd_jack
+Primary page: https://freesound.org/people/kd_jack/sounds/261464/
+Downloaded preview: https://cdn.freesound.org/previews/261/261464_1560047-hq.mp3
+SHA-256: 60a8ff3ec5ebeb7d9e35453b4948905a8593f3a5d1951eb127bfb7133fbb45f8
+License stated by uploader: CC0 1.0
+
+PROVENANCE BY ADDITIONAL FINAL FILE:
+beast_breath_01.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/
+beast_breath_02.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/
+beast_breath_03.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/
+beast_growl_01.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+beast_growl_02.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+beast_growl_03.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+beast_attack_01.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+  Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/
+beast_attack_02.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+  Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/
+beast_attack_03.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+  Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/
+beast_pain_01.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+beast_pain_02.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+beast_pain_03.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+beast_roar_01.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+  Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/
+beast_roar_02.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+  Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/
+beast_death_01.wav
+  Original procedural synthesis and arrangement (CC0-1.0)
+  my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/
+  S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/
+  Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/

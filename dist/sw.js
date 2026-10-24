@@ -1,4 +1,4 @@
-const VERSION = '673866a527d0cbec';
+const VERSION = '39bf0ad358299c16';
 const CACHE = 'blackblade-' + VERSION;
 const SHELL = ["./", "index.html", "app.js", "sound.js", "style.css", "manifest.webmanifest", "icon.svg", "runtime.json", "engine.8b649683883a.js", "assets/poster.png", "fonts/Inter.ttf", "fonts/Cormorant.ttf", "game.audio.worklet.js"];
 self.addEventListener('install', event => {

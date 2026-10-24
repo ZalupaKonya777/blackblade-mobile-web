@@ -1297,6 +1297,297 @@
       "beats_per_bar": 4,
       "bars": 12,
       "key": "D minor"
+    },
+    "beast_breath_01": {
+      "file": "beast_breath_01.wav",
+      "loop": false,
+      "duration_s": 0.76,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 48684,
+      "peak_dbfs": -8.0,
+      "rms_dbfs": -21.535,
+      "dc_dbfs": -78.822,
+      "true_peak_4x_dbfs": -7.97,
+      "presence_220_3600_dbfs": -24.249,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/"
+      ]
+    },
+    "beast_breath_02": {
+      "file": "beast_breath_02.wav",
+      "loop": false,
+      "duration_s": 0.86,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 55084,
+      "peak_dbfs": -8.0,
+      "rms_dbfs": -24.657,
+      "dc_dbfs": -88.6,
+      "true_peak_4x_dbfs": -7.975,
+      "presence_220_3600_dbfs": -25.536,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/"
+      ]
+    },
+    "beast_breath_03": {
+      "file": "beast_breath_03.wav",
+      "loop": false,
+      "duration_s": 0.98,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 62764,
+      "peak_dbfs": -8.0,
+      "rms_dbfs": -21.94,
+      "dc_dbfs": -87.602,
+      "true_peak_4x_dbfs": -7.995,
+      "presence_220_3600_dbfs": -23.942,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/"
+      ]
+    },
+    "beast_growl_01": {
+      "file": "beast_growl_01.wav",
+      "loop": false,
+      "duration_s": 1.16,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 74284,
+      "peak_dbfs": -4.5,
+      "rms_dbfs": -17.444,
+      "dc_dbfs": -72.325,
+      "true_peak_4x_dbfs": -4.495,
+      "presence_220_3600_dbfs": -20.218,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/"
+      ]
+    },
+    "beast_growl_02": {
+      "file": "beast_growl_02.wav",
+      "loop": false,
+      "duration_s": 1.28,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 81964,
+      "peak_dbfs": -4.5,
+      "rms_dbfs": -18.725,
+      "dc_dbfs": -68.467,
+      "true_peak_4x_dbfs": -4.495,
+      "presence_220_3600_dbfs": -21.706,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/"
+      ]
+    },
+    "beast_growl_03": {
+      "file": "beast_growl_03.wav",
+      "loop": false,
+      "duration_s": 1.38,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 88364,
+      "peak_dbfs": -4.5,
+      "rms_dbfs": -19.325,
+      "dc_dbfs": -74.856,
+      "true_peak_4x_dbfs": -4.495,
+      "presence_220_3600_dbfs": -21.091,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/"
+      ]
+    },
+    "beast_attack_01": {
+      "file": "beast_attack_01.wav",
+      "loop": false,
+      "duration_s": 0.48,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 30764,
+      "peak_dbfs": -4.5,
+      "rms_dbfs": -15.977,
+      "dc_dbfs": -71.737,
+      "true_peak_4x_dbfs": -4.495,
+      "presence_220_3600_dbfs": -18.869,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/",
+        "Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/"
+      ]
+    },
+    "beast_attack_02": {
+      "file": "beast_attack_02.wav",
+      "loop": false,
+      "duration_s": 0.56,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 35884,
+      "peak_dbfs": -4.5,
+      "rms_dbfs": -16.083,
+      "dc_dbfs": -73.096,
+      "true_peak_4x_dbfs": -4.495,
+      "presence_220_3600_dbfs": -19.113,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/",
+        "Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/"
+      ]
+    },
+    "beast_attack_03": {
+      "file": "beast_attack_03.wav",
+      "loop": false,
+      "duration_s": 0.64,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 41004,
+      "peak_dbfs": -4.5,
+      "rms_dbfs": -15.036,
+      "dc_dbfs": -67.914,
+      "true_peak_4x_dbfs": -4.494,
+      "presence_220_3600_dbfs": -16.891,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/",
+        "Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/"
+      ]
+    },
+    "beast_pain_01": {
+      "file": "beast_pain_01.wav",
+      "loop": false,
+      "duration_s": 0.43,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 27564,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -14.82,
+      "dc_dbfs": -64.489,
+      "true_peak_4x_dbfs": -3.995,
+      "presence_220_3600_dbfs": -16.611,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/"
+      ]
+    },
+    "beast_pain_02": {
+      "file": "beast_pain_02.wav",
+      "loop": false,
+      "duration_s": 0.51,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 32684,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -14.945,
+      "dc_dbfs": -63.067,
+      "true_peak_4x_dbfs": -3.995,
+      "presence_220_3600_dbfs": -17.809,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/"
+      ]
+    },
+    "beast_pain_03": {
+      "file": "beast_pain_03.wav",
+      "loop": false,
+      "duration_s": 0.59,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 37804,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -15.119,
+      "dc_dbfs": -63.692,
+      "true_peak_4x_dbfs": -3.995,
+      "presence_220_3600_dbfs": -16.23,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/"
+      ]
+    },
+    "beast_roar_01": {
+      "file": "beast_roar_01.wav",
+      "loop": false,
+      "duration_s": 1.96,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 125484,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -14.706,
+      "dc_dbfs": -66.535,
+      "true_peak_4x_dbfs": -3.995,
+      "presence_220_3600_dbfs": -17.294,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/",
+        "Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/"
+      ]
+    },
+    "beast_roar_02": {
+      "file": "beast_roar_02.wav",
+      "loop": false,
+      "duration_s": 2.18,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 139564,
+      "peak_dbfs": -4.0,
+      "rms_dbfs": -16.869,
+      "dc_dbfs": -82.845,
+      "true_peak_4x_dbfs": -3.995,
+      "presence_220_3600_dbfs": -19.916,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/",
+        "Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/"
+      ]
+    },
+    "beast_death_01": {
+      "file": "beast_death_01.wav",
+      "loop": false,
+      "duration_s": 2.4,
+      "sample_rate": 32000,
+      "channels": 1,
+      "encoding": "pcm_s16le",
+      "bytes": 153644,
+      "peak_dbfs": -4.5,
+      "rms_dbfs": -17.837,
+      "dc_dbfs": -73.129,
+      "true_peak_4x_dbfs": -4.495,
+      "presence_220_3600_dbfs": -21.496,
+      "sources": [
+        "Original procedural synthesis and arrangement (CC0-1.0)",
+        "my dog growling.wav by akiuee (CC0-1.0): https://freesound.org/people/akiuee/sounds/337167/",
+        "S01-09_Short lion roars.wav by craigsmith (CC0-1.0): https://freesound.org/people/craigsmith/sounds/675443/",
+        "Werewolf breathing and sniffing by kd_jack (CC0-1.0): https://freesound.org/people/kd_jack/sounds/261464/"
+      ]
     }
   },
   "events": {
@@ -1552,6 +1843,93 @@
         0.97,
         1.03
       ]
+    },
+    "beast_breath": {
+      "clips": [
+        "beast_breath_01",
+        "beast_breath_02",
+        "beast_breath_03"
+      ],
+      "gain_db": 2,
+      "pitch": [
+        0.97,
+        1.04
+      ],
+      "group": "beast_voice",
+      "priority": 0,
+      "cooldown_s": 2.8
+    },
+    "beast_growl": {
+      "clips": [
+        "beast_growl_01",
+        "beast_growl_02",
+        "beast_growl_03"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.95,
+        1.04
+      ],
+      "group": "beast_voice",
+      "priority": 1,
+      "cooldown_s": 2.4
+    },
+    "beast_attack": {
+      "clips": [
+        "beast_attack_01",
+        "beast_attack_02",
+        "beast_attack_03"
+      ],
+      "gain_db": 1,
+      "pitch": [
+        0.96,
+        1.06
+      ],
+      "group": "beast_voice",
+      "priority": 2,
+      "cooldown_s": 0.28
+    },
+    "beast_pain": {
+      "clips": [
+        "beast_pain_01",
+        "beast_pain_02",
+        "beast_pain_03"
+      ],
+      "gain_db": 0,
+      "pitch": [
+        0.97,
+        1.06
+      ],
+      "group": "beast_voice",
+      "priority": 3,
+      "cooldown_s": 0.3
+    },
+    "beast_roar": {
+      "clips": [
+        "beast_roar_01",
+        "beast_roar_02"
+      ],
+      "gain_db": 1,
+      "pitch": [
+        0.97,
+        1.02
+      ],
+      "group": "beast_voice",
+      "priority": 4,
+      "cooldown_s": 2.0
+    },
+    "beast_death": {
+      "clips": [
+        "beast_death_01"
+      ],
+      "gain_db": 1,
+      "pitch": [
+        0.98,
+        1.01
+      ],
+      "group": "beast_voice",
+      "priority": 5,
+      "cooldown_s": 0.0
     }
   },
   "loops": {

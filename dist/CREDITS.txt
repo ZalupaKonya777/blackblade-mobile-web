@@ -50,4 +50,6 @@ https://github.com/101arrowz/fflate
 BATTLE AUDIO
 Kenney Impact Sounds and RPG Audio: CC0 (https://kenney.nl/assets).
 Original sound design, creature layers and two-phase composition: CC0.
+Beast voice uses transformed CC0 recordings by akiuee (dog growls),
+craigsmith (lion roars) and kd_jack (werewolf breathing), from Freesound.
 Full sources, transformations and licenses: LICENSES/Battle-Audio-Sources.txt.

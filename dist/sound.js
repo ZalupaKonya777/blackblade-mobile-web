@@ -5,6 +5,7 @@ const dbGain = db => Math.pow(10, db / 20);
 class BattleSound {
   context = null; bank = null; buffers = new Map(); readyBuffers = new Map(); pending = new Map();
   decoded = new Set(); lastClip = new Map(); active = new Set(); loops = new Map(); counters = {};
+  voices = new Map(); voiceTimes = new Map();
   volume = .75; musicVolume = .5; fighting = false; phase = 1; paused = false; muted = false;
   needsGesture = true; unlocked = false; sessionType = 'unavailable'; lastError = '';
   mediaOutput = null; mediaDestination = null; mediaPlaying = false; outputRoute = 'web-audio';
@@ -66,7 +67,7 @@ class BattleSound {
     this.analyser = c.createAnalyser(); this.analyser.fftSize = 2048;
     this.master.connect(compressor).connect(this.analyser).connect(c.destination);
     this.sfx = c.createGain(); this.sfx.connect(this.master);
-    this.music = c.createGain(); this.music.connect(this.master);
+    this.music = c.createGain(); this.musicDuck = c.createGain(); this.music.connect(this.musicDuck).connect(this.master);
     this.ambient = c.createGain(); this.ambient.gain.value = .32; this.ambient.connect(this.master);
     this.reverb = c.createConvolver();
     const impulse = c.createBuffer(2, Math.round(c.sampleRate * 1.65), c.sampleRate);
@@ -200,6 +201,7 @@ class BattleSound {
     const old = this.context;
     for (const source of this.active) { try { source.stop(); } catch {} }
     this.active.clear();
+    this.voices.clear(); this.voiceTimes.clear();
     for (const loop of this.loops.values()) if (loop) { try { loop.source.stop(); } catch {} }
     this.loops.clear(); this.buffers.clear();
     if (this.mediaOutput) { this.mediaOutput.pause(); this.mediaOutput.srcObject = null; this.mediaOutput.remove(); }
@@ -260,25 +262,59 @@ class BattleSound {
     const event = this.bank.events[name]; if (!event) return;
     const clips = event.clips; let index = Math.floor(Math.random() * clips.length);
     if (clips.length > 1 && clips[index] === this.lastClip.get(name)) index = (index + 1) % clips.length;
-    const id = clips[index]; this.lastClip.set(name,id); const requestTime = this.context.currentTime;
+    const id = clips[index]; this.lastClip.set(name,id); const requestedContext = this.context; const requestTime = requestedContext.currentTime;
     const start = buffer => {
-      const c = this.context; if (c.state !== 'running' || c.currentTime - requestTime > .12) return;
-      if (this.active.size >= 28) { const oldest = this.active.values().next().value; this.active.delete(oldest); oldest.stop(); }
+      const c = this.context; if (c !== requestedContext || c.state !== 'running' || c.currentTime - requestTime > .12) return;
+      const group = event.group; const priority = event.priority || 0;
+      if (group) {
+        const old = this.voices.get(group);
+        if (old && old.priority > priority) return;
+        if (c.currentTime - (this.voiceTimes.get(name) ?? -Infinity) < (event.cooldown_s || 0)) return;
+        if (old) this.fadeVoice(old);
+      }
+      if (this.active.size >= 28) {
+        const reserved = new Set([...this.voices.values()].map(v => v.source));
+        const oldest = [...this.active].find(source => !reserved.has(source));
+        if (oldest) { this.active.delete(oldest); try { oldest.stop(); } catch {} }
+      }
       const source = c.createBufferSource(); source.buffer = buffer;
       const range = event.pitch || [1,1];
       source.playbackRate.value = Math.max(.45,Math.min(1.8,pitch*(range[0]+Math.random()*(range[1]-range[0]))));
-      const gain = c.createGain(); gain.gain.value = dbGain(db+(event.gain_db||0));
+      const gain = c.createGain(); const level = dbGain(db+(event.gain_db||0));
+      gain.gain.value = group ? 0 : level;
+      if (group) gain.gain.linearRampToValueAtTime(level,c.currentTime+.012);
       const panner = c.createPanner(); panner.panningModel = 'equalpower'; panner.distanceModel = 'inverse';
       panner.refDistance=5; panner.maxDistance=42; panner.rolloffFactor=.65;
       if(panner.positionX){panner.positionX.value=x;panner.positionY.value=y;panner.positionZ.value=z;} else panner.setPosition(x,y,z);
       source.connect(gain).connect(panner); panner.connect(this.sfx); panner.connect(this.reverb);
-      source.onended = () => { this.active.delete(source); source.disconnect(); gain.disconnect(); panner.disconnect(); };
+      source.onended = () => {
+        this.active.delete(source); source.disconnect(); gain.disconnect(); panner.disconnect();
+        if (group && this.voices.get(group)?.source === source) { this.voices.delete(group); this.voiceDuck(); }
+      };
+      if (group) {
+        this.voices.set(group,{source,gain,priority,event:name}); this.voiceTimes.set(name,c.currentTime); this.voiceDuck();
+      }
       this.active.add(source); this.counters[name]=(this.counters[name]||0)+1; source.start();
     };
     if(this.readyBuffers.has(id))start(this.readyBuffers.get(id));
     else this.buffer(id).then(start).catch(error=>console.warn('Audio event',name,error));
   }
-  fight(on) { this.fighting=on; this.syncLoops(); }
+  fadeVoice(voice) {
+    if (!this.context) return;
+    const at=this.context.currentTime;
+    try { voice.gain.gain.cancelScheduledValues(at); voice.gain.gain.setTargetAtTime(0,at,.008); voice.source.stop(at+.035); } catch {}
+  }
+  voiceDuck() {
+    if (!this.context || !this.musicDuck) return;
+    const priority=Math.max(-1,...[...this.voices.values()].map(v=>v.priority));
+    const target=priority>=4?.55:priority>=2?.76:1;
+    this.musicDuck.gain.setTargetAtTime(target,this.context.currentTime,target<1?.025:.22);
+  }
+  stopVoices(all=true) {
+    for (const [group,voice] of this.voices) if (all || voice.priority<5) { this.fadeVoice(voice); this.voices.delete(group); }
+    if (all) this.voiceTimes.clear(); this.voiceDuck();
+  }
+  fight(on) { this.stopVoices(on); this.fighting=on; this.syncLoops(); }
   state(phase,paused) { this.phase=phase; this.paused=paused; this.settings(this.volume,this.musicVolume); this.syncLoops(); }
   syncLoops() {
     if(!this.context||!this.bank||this.context.state!=='running')return;
@@ -309,7 +345,7 @@ class BattleSound {
     let rms=0;
     if(this.analyser){const a=new Float32Array(this.analyser.fftSize);this.analyser.getFloatTimeDomainData(a);rms=Math.sqrt(a.reduce((s,v)=>s+v*v,0)/a.length);}
     return {state:this.context?.state||'locked',files:this.bank?Object.keys(this.bank.files).length:0,
-      decoded:this.decoded.size,active:this.active.size,events:{...this.counters},rms,phase:this.phase,muted:this.muted,
+      decoded:this.decoded.size,active:this.active.size,events:{...this.counters},voices:[...this.voices.values()].map(v=>({event:v.event,priority:v.priority})),rms,phase:this.phase,muted:this.muted,
       needsGesture:this.needsGesture,sessionType:this.sessionType,mediaPlaying:this.mediaPlaying,
       mediaTime:this.mediaOutput?.currentTime||0,outputRoute:this.outputRoute,standalone:!!(navigator.standalone||window.matchMedia?.('(display-mode: standalone)').matches),warmups:this.warmups,rebuilds:this.rebuilds,probes:this.probes||0,lastError:this.lastError,frozen:this.frozen};
   }

@@ -32,6 +32,8 @@ try{
  await page.waitForFunction(()=>typeof BlackbladeNative==='function'&&BlackbladeUI.state?.phase==='title',null,{timeout:240000});
  check('actual release WASM boots with a software-GPU test budget',true,await page.evaluate(()=>BlackbladeUI.graphics));
  await tap('#training',1);await page.waitForFunction(()=>BlackbladeUI.state?.phase==='fight',null,{timeout:180000});
+ await page.waitForFunction(()=>(BlackbladeSound.diagnostics.events.beast_roar||0)>0,null,{timeout:120000});
+ check('real beast intro sends its recorded roar through the native browser bridge',await page.evaluate(()=>BlackbladeSound.diagnostics.decoded===82),await page.evaluate(()=>BlackbladeSound.diagnostics));
  await page.evaluate(()=>BlackbladeNative(JSON.stringify({type:'qa_dummy'})));
  await page.waitForFunction(()=>!BlackbladeUI.state.bossAI);
  await touch('#joystick',2,true,40);

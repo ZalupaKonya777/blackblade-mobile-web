@@ -17,8 +17,8 @@ for(const [name,type,executablePath] of [
   await page.evaluate(async()=>{await BlackbladeSound.prepare();for(const kind of ['pointerdown','touchend','click'])document.querySelector('#enter').addEventListener(kind,()=>BlackbladeSound.unlock());});
   check('audio remains locked before gesture',await page.evaluate(()=>BlackbladeSound.context===null));
   await page.locator('#enter').tap();
-  await page.waitForFunction(()=>BlackbladeSound.diagnostics.decoded===67&&BlackbladeSound.diagnostics.state==='running',null,{timeout:30000});
-  check('trusted touch unlocks and decodes all 67 files',true,await page.evaluate(()=>BlackbladeSound.diagnostics));
+  await page.waitForFunction(()=>BlackbladeSound.diagnostics.decoded===Object.keys(BlackbladeSound.bank.files).length&&BlackbladeSound.diagnostics.state==='running',null,{timeout:30000});
+  check('trusted touch unlocks and decodes the complete bank',true,await page.evaluate(()=>BlackbladeSound.diagnostics));
   await page.evaluate(()=>{BlackbladeSound.listener(0,1,4,0,0,-1,0,1,0);BlackbladeSound.fight(true);BlackbladeSound.play('knight_swing',0,1,0,-1,1);});
   await page.waitForFunction(()=>BlackbladeSound.diagnostics.rms>.0005);
   check('gesture starts an actual warm-up source',await page.evaluate(()=>BlackbladeSound.diagnostics.warmups>0),await page.evaluate(()=>BlackbladeSound.diagnostics));

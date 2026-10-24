@@ -3,7 +3,8 @@ extends Node3D
 var cam:Camera3D
 var yaw:=0.0
 var pitch:=.13
-var distance:=4.7
+const FOLLOW_DISTANCE:=4.2
+var distance:=FOLLOW_DISTANCE
 var pivot:=Vector3.ZERO
 var trauma:=0.0
 var cinematic:=true
@@ -13,7 +14,9 @@ var mouse_delta:=Vector2.ZERO
 var clock:=0.0
 var landing_spring:=0.0
 var landing_velocity:=0.0
-var smoothed_zoom:=4.9
+var smoothed_zoom:=FOLLOW_DISTANCE
+var collision_distance:=FOLLOW_DISTANCE
+var framing_lift:=0.0
 var camera_ready:=false
 var post:ShaderMaterial
 var impact_offset:=Vector3.ZERO
@@ -60,16 +63,24 @@ func _physics_process(dt:float) -> void:
 	pivot.x=lerpf(pivot.x,p.x,1-exp(-12*dt));pivot.z=lerpf(pivot.z,p.z,1-exp(-12*dt));pivot.y=lerpf(pivot.y,p.y,1-exp(-6*dt))
 	var look:=pivot+Vector3(-sin(yaw),0,-cos(yaw))*1.2
 	var pad:=Input.get_vector("cam_left","cam_right","cam_up","cam_down")
-	var zoom:=5.0
+	var zoom:=distance
 	if G.player.target:
 		var bp:Vector3=G.player.target.lock_point()
 		var to:=bp-pivot
 		var desired:=atan2(-to.x,-to.z)
 		if Vector2(to.x,to.z).length()>1:yaw=lerp_angle(yaw,desired,1-exp(-8*dt))
 		look=(pivot+Vector3.UP*.13).lerp(bp+Vector3.UP*.10,.34)
-		pitch=lerpf(pitch,clampf(.19-to.y*.025,.06,.27),1-exp(-4*dt))
-		zoom+=smoothstep(5.5,2.0,to.length())*.30+clampf(to.y-2,0,2)*.15
+		# A raised blade needs headroom even when its wielder stays on the floor.
+		var raised:=0.0
+		if "rig" in G.player.target and G.player.target.rig:
+			for point in G.player.target.rig.blade():raised=maxf(raised,point.y-bp.y-1.0)
+		raised=clampf(raised,0,2.2)
+		framing_lift=lerpf(framing_lift,raised*.33,1-exp(-5*dt))
+		look.y+=framing_lift
+		pitch=lerpf(pitch,clampf(.19+to.y*.025,.10,.34),1-exp(-4*dt))
+		zoom+=(1-smoothstep(2.0,5.5,to.length()))*.25+clampf(to.y-1.0,0,3)*.48+raised*.30
 	else:
+		framing_lift=lerpf(framing_lift,0,1-exp(-5*dt))
 		yaw-=mouse_delta.x*.0022*float(G.settings.sensitivity)+pad.x*dt*2.3
 		pitch+=mouse_delta.y*.0022*float(G.settings.sensitivity)+pad.y*dt*1.7
 		pitch=clampf(pitch,-.65,1.05)
@@ -78,7 +89,7 @@ func _physics_process(dt:float) -> void:
 	smoothed_zoom=lerpf(smoothed_zoom,zoom,1-exp(-4*dt))
 	cam.fov=lerpf(cam.fov,61.0 if G.player.sprinting else 59.0,1-exp(-4*dt))
 	var offset:=Vector3(sin(yaw)*cos(pitch),sin(pitch),cos(yaw)*cos(pitch))*smoothed_zoom
-	var shoulder:=Vector3(cos(yaw),0,-sin(yaw))*.28
+	var shoulder:=Vector3(cos(yaw),0,-sin(yaw))*.18
 	var desired:=pivot+offset+shoulder
 	var arm:Vector3=desired-pivot
 	var arm_length:=arm.length()
@@ -86,12 +97,15 @@ func _physics_process(dt:float) -> void:
 		var query:=PhysicsRayQueryParameters3D.create(pivot+side,desired+side,1)
 		var hit:=get_world_3d().direct_space_state.intersect_ray(query)
 		if not hit.is_empty():arm_length=minf(arm_length,pivot.distance_to(hit.position)-.24)
-	desired=pivot+arm.normalized()*maxf(.35,arm_length)+Vector3.UP*landing_spring
+	var safe_length:=maxf(.35,arm_length)
+	if safe_length<collision_distance:collision_distance=safe_length
+	else:collision_distance=lerpf(collision_distance,safe_length,1-exp(-8*dt))
+	desired=pivot+arm.normalized()*collision_distance+Vector3.UP*landing_spring
 	cam.global_position=desired+impact_offset
 	if trauma>.01:
 		var amount:=trauma*trauma*.10;cam.global_position+=Vector3(sin(clock*85),cos(clock*103),0)*amount
 	cam.look_at(look)
 
 func reset() -> void:
-	yaw=0;pitch=.19;pivot=Vector3.ZERO;trauma=0;mouse_delta=Vector2.ZERO;landing_spring=0;landing_velocity=0;smoothed_zoom=5.0
+	yaw=0;pitch=.19;pivot=Vector3.ZERO;trauma=0;mouse_delta=Vector2.ZERO;landing_spring=0;landing_velocity=0;smoothed_zoom=distance;collision_distance=distance;framing_lift=0
 	impact_offset=Vector3.ZERO;impact_velocity=Vector3.ZERO

@@ -45,16 +45,17 @@ dest = ROOT/'dist'
 if dest.exists(): shutil.rmtree(dest)
 dest.mkdir(); (dest/'data').mkdir(); (dest/'fonts').mkdir()
 for source in (ROOT/'web').iterdir():
-    if source.name == 'sw-template.js': continue
-    if source.is_dir(): shutil.copytree(source, dest/source.name)
+    if source.name == 'sw-template.js' or source.name.endswith('.import'): continue
+    if source.is_dir(): shutil.copytree(source, dest/source.name, ignore=shutil.ignore_patterns('*.import', '.*'))
     else: shutil.copy2(source, dest/source.name)
 for name in ['Cormorant.ttf','Inter.ttf']:
     shutil.copy2(ROOT/'assets/fonts'/name, dest/'fonts'/name)
 shutil.copy2(ROOT/'icon.svg', dest/'icon.svg')
 shutil.copy2(ROOT/'CREDITS.txt', dest/'CREDITS.txt')
-shutil.copytree(ROOT/'assets/audio/battle', dest/'audio')
+shutil.copytree(ROOT/'assets/audio/battle', dest/'audio', ignore=shutil.ignore_patterns('*.import', '.*'))
 shutil.copytree(ROOT/'LICENSES', dest/'LICENSES', dirs_exist_ok=True)
 for path in raw.glob('game.*'):
+    if path.name.endswith('.import'): continue
     if path.name not in ['game.wasm','game.pck','game.js','game.html']:
         shutil.copy2(path, dest/path.name)
 script = (raw/'game.js').read_bytes()
