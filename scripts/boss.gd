@@ -43,6 +43,18 @@ var shot_aims:={}
 var followup:=""
 var pressure:=0
 var entry_velocity:=Vector3.ZERO
+var body_shape:CollisionShape3D
+var rear_shape:CollisionShape3D
+var last_strike:Array=[]
+const FOLLOWUPS={
+ "sweep":["backhand","paw_strike","evade_cut"],
+ "backhand":["overhead","evade_cut"],
+ "drag":["backhand","overhead"],
+ "lunge":["sweep","backhand"],
+ "combo":["evade_cut"],
+ "paw_strike":["backhand","evade_cut"],
+ "air_blades":["lunge"],
+ "spin":["backhand","evade_cut"]}
 var voice_clock:=0.0
 var voice_until:=0.0
 var voice_priority:=-1
@@ -74,8 +86,9 @@ var blade_drag_t:=0.0
 
 func _ready() -> void:
 	G.boss=self
-	collision_layer=4;collision_mask=1
-	var cs:=CollisionShape3D.new();var cap:=CapsuleShape3D.new();cap.radius=.73;cap.height=2.3;cs.shape=cap;cs.position.y=1.15;add_child(cs)
+	collision_layer=4;collision_mask=3
+	body_shape=CollisionShape3D.new();var cap:=CapsuleShape3D.new();cap.radius=.90;cap.height=2.2;body_shape.shape=cap;body_shape.position=Vector3(0,1.1,.3);add_child(body_shape)
+	rear_shape=CollisionShape3D.new();var rear:=CapsuleShape3D.new();rear.radius=.58;rear.height=1.6;rear_shape.shape=rear;rear_shape.position=Vector3(0,.90,-.55);add_child(rear_shape)
 	floor_snap_length=.3
 	rig=FighterRig.new();add_child(rig);rig.setup("boss");rig.scale=Vector3.ONE*1.20
 	last_blade=rig.blade()
@@ -104,10 +117,10 @@ func _physics_process(dt:float) -> void:
 			"recover":
 				# Complete the weight transfer before the next decision.
 				velocity.x=0;velocity.z=0
-				if t>=recovery_duration:
-					if followup!="" and ai_enabled and _can_follow(followup):
-						var next:=followup;followup="";start_move(next)
-					else:followup="";_idle(.18 if pressure<1 else .48)
+				if followup!="" and ai_enabled and t>=(.12 if phase==1 else .10) and _can_follow(followup):
+					var next:=followup;followup="";start_move(next)
+				elif t>=recovery_duration:
+					followup="";_idle(.17 if pressure<1 else .36)
 			"transition":
 				if t>1.1 and not events.has("ignite"):
 					events.ignite=true;phase=2;G.new_phase.emit()
@@ -140,6 +153,8 @@ func _physics_process(dt:float) -> void:
 		if not is_on_floor():velocity.y-=28*dt
 		else:velocity.y=-2
 	rig.rotation.y=yaw
+	body_shape.position=Vector3(sin(yaw)*.3,1.1,cos(yaw)*.3)
+	rear_shape.position=Vector3(-sin(yaw)*.55,.90,-cos(yaw)*.55)
 	var before:=global_position
 	move_and_slide()
 	var flat:=Vector2(global_position.x,global_position.z)
@@ -160,14 +175,15 @@ func _physics_process(dt:float) -> void:
 		pass # Contact-driven rig events supply the three-limb gait sound.
 		if G.fx:G.fx.ground_contact(global_position,displacement.normalized(),.45)
 	var blade:=rig.blade()
+	var strike:=_strike_segment()
 	if G.playing and state=="attack":
 		_attack_events(blade)
 		if attack=="drag" and t>.34 and t<.90 and blade_drag_t<=0 and blade[1].y<.4:
 			blade_drag_t=.30
 			if G.audio:G.audio.play("blade_drag",blade[1],-9,1.0)
-		_check_blade(blade)
+		_check_blade(strike)
 	if G.fx:
-		G.fx.trail("boss",blade,state=="attack" and (_active() or attack=="air_blades" and _shot_release()),Color(1,.15,.12,.56) if phase==2 else Color(.88,.77,.57,.35))
+		G.fx.trail("boss",blade,state=="attack" and MOVES[attack].get("hit_source","")!="paw" and (_active() or attack=="air_blades" and _shot_release()),Color(1,.15,.12,.56) if phase==2 else Color(.88,.77,.57,.35))
 		if phase==2 and state!="dead":G.fx.blade_fire(blade)
 	parry_flash=state=="attack" and phase==2 and MOVES[attack].get("parry",false) and _active(true)
 	blade_light.global_position=blade[0].lerp(blade[1],.5)
@@ -175,13 +191,14 @@ func _physics_process(dt:float) -> void:
 	blade_light.light_energy=2.0 if parry_flash else (.9 if phase==2 and state!="dead" else 0.0)
 	eye_light.global_position=rig.motion.to_global(rig.globals.head.origin) if rig.globals.has("head") else rig.target_point()
 	last_blade=blade
+	last_strike=strike
 
 func _think(dt:float) -> void:
 	if not ai_enabled or not G.player or not G.player.alive():
 		velocity.x=move_toward(velocity.x,0,16*dt);velocity.z=move_toward(velocity.z,0,16*dt);return
 	var to:=G.flat(G.player.global_position-global_position)
 	var dist:=to.length();var heading:=atan2(to.x,to.z)
-	yaw=rotate_toward(yaw,heading,1.90*dt)
+	yaw=rotate_toward(yaw,heading,(2.65 if phase==1 else 2.95)*dt)
 	wait-=dt
 	if transition_pending and is_on_floor():_transition();return
 	if wait<=0:
@@ -189,9 +206,9 @@ func _think(dt:float) -> void:
 		if choice!="":start_move(choice);return
 		wait=.22
 	var dir:=Vector3.ZERO;var speed:=0.0
-	if dist>3.9:dir=to.normalized();speed=5.2 if dist>12 else (3.15 if phase==2 else 2.75)
-	elif dist<1.9:dir=-to.normalized();speed=1.5
-	elif wait>.3:dir=to.normalized().cross(Vector3.UP)*orbit;speed=.95
+	if dist>3.6:dir=to.normalized();speed=5.2 if dist>12 else (3.8 if phase==2 else 3.3)
+	elif dist<2.05:dir=-to.normalized();speed=1.9
+	elif wait>.11:dir=to.normalized().cross(Vector3.UP)*orbit;speed=1.55 if phase==2 else 1.30
 	if speed>0:
 		dir=_steer(dir)
 	var motor:=Vector3(velocity.x,0,velocity.z).move_toward(dir*speed,(10.0 if speed>0 else 16.0)*dt)
@@ -200,7 +217,7 @@ func _think(dt:float) -> void:
 
 func _clear_path(direction:Vector3,distance:float) -> bool:
 	if distance<.1:return true
-	var side:=direction.cross(Vector3.UP).normalized()*.62
+	var side:=direction.cross(Vector3.UP).normalized()*.88
 	for offset in [Vector3.ZERO,side,-side]:
 		var from:Vector3=global_position+Vector3.UP*.85+offset
 		var q:=PhysicsRayQueryParameters3D.create(from,from+direction*distance,1)
@@ -220,10 +237,11 @@ func _choose(dist:float) -> String:
 		var chosen:=forced_attack;forced_attack="";return chosen
 	var choices:Array=[];var total:=0.0
 	var to:=G.flat(G.player.global_position-global_position)
-	if absf(wrapf(atan2(to.x,to.z)-yaw,-PI,PI))>.90:return ""
+	var angle:=absf(wrapf(atan2(to.x,to.z)-yaw,-PI,PI))
 	for id in MOVES:
 		var m:Dictionary=MOVES[id]
 		if m.get("phase",1)>phase or cooldowns.get(id,0)>0:continue
+		if angle>(1.65 if m.get("wide",false) else .95):continue
 		if dist>m.reach or dist<float(m.get("min_range",0)):continue
 		if not _clear_path(to.normalized(),maxf(.1,dist-1.1)):continue
 		var w:float=m.weight
@@ -231,6 +249,7 @@ func _choose(dist:float) -> String:
 		if history.has(id):w*=.58
 		if dist>7 and id in ["lunge","leap","air_blades"]:w*=2
 		if dist<3.2 and id in ["combo","sweep","spin"]:w*=1.5
+		if dist<2.8 and id in ["paw_strike","backhand","evade_cut"]:w*=1.65
 		if heal_seen>.35 and id in ["lunge","leap"]:w*=1.55
 		if id=="death_storm" and dist>4:w*=.45
 		total+=w;choices.append([id,total])
@@ -243,7 +262,16 @@ func _choose(dist:float) -> String:
 func _can_follow(id:String) -> bool:
 	if transition_pending or pressure>=1 or not G.player or not G.player.alive():return false
 	var to:=G.flat(G.player.global_position-global_position)
-	return cooldowns.get(id,0)<=0 and to.length()>=MOVES[id].get("min_range",0) and to.length()<=MOVES[id].reach and absf(wrapf(atan2(to.x,to.z)-yaw,-PI,PI))<.65 and _clear_path(to.normalized(),to.length()-1)
+	return MOVES[id].get("phase",1)<=phase and cooldowns.get(id,0)<=0 and to.length()>=MOVES[id].get("min_range",0) and to.length()<=MOVES[id].reach and absf(wrapf(atan2(to.x,to.z)-yaw,-PI,PI))<(.95 if MOVES[id].get("wide",false) else .70) and _clear_path(to.normalized(),to.length()-1)
+
+func _plan_followup(finished:String) -> String:
+	if not ai_enabled or pressure>=1 or transition_pending:return ""
+	# Heavy misses remain punishable; only compact attacks may branch.
+	if randf()>(.52 if phase==1 else .68):return ""
+	var available:Array=[]
+	for id in FOLLOWUPS.get(finished,[]):
+		if _can_follow(id):available.append(id)
+	return available.pick_random() if not available.is_empty() else ""
 
 func start_move(id:String) -> void:
 	if not MOVES.has(id) or not alive() or not G.player:return
@@ -255,6 +283,7 @@ func start_move(id:String) -> void:
 	if history.size()>3:history.pop_front()
 	aim=G.flat(G.player.global_position-global_position)
 	air_origin=global_position;air_delta=Vector3.ZERO;drive_distance=0
+	last_strike=[]
 	# Turn during anticipation instead of snapping on attack start.
 	if id in ["leap","air_blades","death_storm"]:_voice("beast_growl",1,1.35,-4,.96)
 
@@ -266,6 +295,9 @@ func _commit_attack() -> void:
 	drive_distance=clampf(aim.length()-2.6,2.0,9.6)
 	air_origin=global_position
 	air_delta=committed_dir*clampf(aim.length()-1.35,1.0,14.0) if attack=="leap" else -committed_dir*1.65
+	if MOVES[attack].has("retreat"):
+		var retreat:Array=MOVES[attack].retreat
+		air_delta=-committed_dir*float(retreat[2])+committed_dir.cross(Vector3.UP)*orbit*float(retreat[3])
 	if not _clear_path(air_delta.normalized(),air_delta.length()):air_delta=Vector3.ZERO
 
 func _run_attack(dt:float) -> void:
@@ -274,7 +306,11 @@ func _run_attack(dt:float) -> void:
 		var to:=G.flat(G.player.global_position-global_position)
 		if to.length()>.1:yaw=rotate_toward(yaw,atan2(to.x,to.z),float(m.turn)*dt)
 	else:_commit_attack()
-	if m.has("drive"):
+	if m.has("retreat"):
+		var d:Array=m.retreat
+		var delta:float=BeastMoves.smooth_motion((t-d[0])/(d[1]-d[0]))-BeastMoves.smooth_motion((t-dt-d[0])/(d[1]-d[0]))
+		velocity.x=air_delta.x*delta/dt;velocity.z=air_delta.z*delta/dt
+	elif m.has("drive"):
 		var d:Array=m.drive
 		var delta:float=BeastMoves.drive_progress((t-d[0])/(d[1]-d[0]))-BeastMoves.drive_progress((t-dt-d[0])/(d[1]-d[0]))
 		velocity.x=committed_dir.x*drive_distance*delta/dt;velocity.z=committed_dir.z*drive_distance*delta/dt
@@ -295,13 +331,11 @@ func _run_attack(dt:float) -> void:
 				var to:=G.flat(predicted-global_position)
 				var heading:=yaw+clampf(wrapf(atan2(to.x,to.z)-yaw,-PI,PI),-1.12,1.12)
 				shot_aims[i]=Vector3(global_position.x+sin(heading)*to.length(),predicted.y,global_position.z+cos(heading)*to.length())
-	if t>=float(m.length):
+	if t>=BeastMoves.finish(attack):
 		var finished:=attack
+		followup=_plan_followup(finished)
 		recover_from=finished;recovery_duration=m.recover;state="recover";attack="";t=0
 		velocity.x=0;velocity.z=0
-		if phase==2 and pressure==0:
-			var links:Dictionary={"air_blades":"lunge","sweep":"drag","drag":"overhead","spin":"sweep"}
-			if links.has(finished) and randf()<.42:followup=links[finished]
 
 func _attack_events(blade:Array) -> void:
 	var m:Dictionary=MOVES[attack]
@@ -309,7 +343,9 @@ func _attack_events(blade:Array) -> void:
 		var h:Array=m.hits[i];var key:="sound%d"%i
 		if t>=h[0]-.10 and not events.has(key):
 			events[key]=true
-			if G.audio:G.audio.play("boss_swing",blade[0],-2,1.0)
+			if G.audio:
+				if m.get("hit_source","")=="paw":G.audio.play("armor_takeoff",_bone_head("hand_l"),-8,.78)
+				else:G.audio.play("boss_swing",blade[0],-2,1.0)
 			_voice("beast_attack",2,.68,-2,.94 if phase==2 else 1.0)
 	if attack=="drag" and t>.47 and t<.96 and blade[1].y<.38 and int(t*16)!=events.get("scrape",-1):
 		events.scrape=int(t*16)
@@ -366,6 +402,11 @@ func _shot_release() -> bool:
 func _active(early:=false) -> bool:
 	return BeastMoves.active(attack,t,.20 if early else 0.0)
 
+func _strike_segment() -> Array:
+	if attack!="" and MOVES[attack].get("hit_source","")=="paw":
+		return [rig.motion.to_global(rig.globals.fore_l.origin),rig.motion.to_global(rig.globals.hand_l.origin)]
+	return rig.blade()
+
 func _check_blade(blade:Array) -> void:
 	if state!="attack" or not G.player or not G.player.alive():return
 	var m:Dictionary=MOVES[attack]
@@ -373,7 +414,9 @@ func _check_blade(blade:Array) -> void:
 		if hit_flags.has(i):continue
 		var h:Array=m.hits[i]
 		if t<h[0] or t>=h[1]:continue
-		if CombatMath.blade_hits(last_blade,blade,G.player,.16):
+		var previous:Array=last_strike if last_strike.size()==2 else blade
+		var radius:=.24 if m.get("hit_source","")=="paw" else .16
+		if CombatMath.blade_hits(previous,blade,G.player,radius):
 			hit_flags[i]=true
 			G.player.receive_hit(h[2]*(1.08 if phase==2 else 1),global_position,108 if attack in ["overhead","leap"] else 72,phase==2,phase==2 and m.get("parry",false),m.get("low",false))
 			if state!="attack":return
@@ -420,9 +463,21 @@ func critical_ready() -> bool:return state=="stagger" and t>.30 and t<2.8 and gl
 func accept_critical() -> void:state="critical";t=0
 
 func hurt_segments() -> Array:
-	var center:=rig.target_point()
-	var base:Vector3=rig.motion.global_transform*rig.globals.pelvis.origin if rig.globals.has("pelvis") else global_position+Vector3.UP
-	return [[base,center+Vector3.UP*.45,.66],[global_position+Vector3(0,.3,0),base,.58]]
+	var result:Array=[]
+	for link in [["pelvis","spine2",.53],["spine2","head",.60]]:
+		result.append([_bone_head(link[0]),_bone_head(link[1]) if link[1]!="" else _bone_tail(link[0]),link[2]])
+	var head_forward:Vector3=(rig.motion.global_basis*rig.globals.head.basis*rig.rest.head.basis.inverse()*Vector3.BACK).normalized()*.16
+	result.append([_bone_head("head")+head_forward,_bone_tail("head")+head_forward,.48])
+	for side in ["l","r"]:
+		for link in [["upper_","fore_",.36],["fore_","hand_",.36],["thigh_","shin_",.43],["shin_","foot_",.42],["foot_","",.38]]:
+			result.append([_bone_head(link[0]+side),_bone_head(link[1]+side) if link[1]!="" else _bone_tail(link[0]+side),link[2]])
+	return result
+
+func _bone_head(bone:String) -> Vector3:
+	return rig.motion.to_global(rig.globals[bone].origin)
+
+func _bone_tail(bone:String) -> Vector3:
+	return rig.motion.to_global(rig.globals[bone]*rig.rest[bone].affine_inverse()*rig.tails[bone])
 
 func lock_point() -> Vector3:return rig.target_point()+Vector3.UP*.25
 func alive() -> bool:return state!="dead"
@@ -436,6 +491,7 @@ func set_training_phase() -> void:
 
 func reset(at:Vector3) -> void:
 	voice_clock=0.0;voice_until=0.0;voice_priority=-1;breath_at=2.5;growl_at=5.5;pain_at=0.0;voice_awakened=false
+	last_strike=[]
 	global_position=at;velocity=Vector3.ZERO;yaw=0;hp=MAX_HP;posture=0;posture_delay=0;phase=1;state="dormant";attack="";t=0;wait=.5
 	cooldowns.clear();events.clear();history.clear();hit_flags.clear();shot_aims.clear();transition_pending=false;forced_attack="";followup=""
 	recover_from="";recovery_duration=0;pressure=0;heal_seen=0;air_delta=Vector3.ZERO;drive_distance=0;parry_flash=false;entry_velocity=Vector3.ZERO

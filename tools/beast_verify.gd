@@ -29,27 +29,29 @@ func run(scene:Node) -> void:
 	for id in EclipseBeast.MOVES:
 		b.rig.initialized=false
 		var last:=Vector3.INF;var max_jump:=0.0;var low:=100.0;var finite:=true;var wrist_error:=0.0
-		var travels:Array=[]
+		var travels:Array=[];var last_contact:=Vector3.INF
 		for h in EclipseBeast.MOVES[id].hits:travels.append(0.0)
 		for frame in int(ceil(float(EclipseBeast.MOVES[id].length)*60))+1:
 			var time:=frame/60.0
 			b.rig.pose(id,time,1.0/60.0,0,Vector3.ZERO)
 			b.rig.skel.force_update_all_bone_transforms()
 			var blade:=b.rig.blade()
+			var contact:Vector3=b.rig.motion.to_global(b.rig.globals.hand_l.origin) if EclipseBeast.MOVES[id].get("hit_source","")=="paw" else blade[1]
 			finite=finite and blade[0].is_finite() and blade[1].is_finite()
 			low=minf(low,blade[1].y)
 			if last!=Vector3.INF:
 				var distance:float=blade[1].distance_to(last);max_jump=maxf(max_jump,distance)
 				for i in travels.size():
 					var h:Array=EclipseBeast.MOVES[id].hits[i]
-					if time>=h[0] and time<h[1]:travels[i]+=distance
+					if time>=h[0] and time<h[1] and last_contact!=Vector3.INF:travels[i]+=contact.distance_to(last_contact)
 			last=blade[1]
+			last_contact=contact
 			var wrist:Vector3=b.rig.skel.global_transform*b.rig.skel.get_bone_global_pose(b.rig.ids.hand_r)*b.rig.rest.hand_r.affine_inverse()*b.rig.right_socket
 			wrist_error=maxf(wrist_error,wrist.distance_to(b.rig.weapon.to_global(b.rig.source_grip)))
 		check(id+" continuous full-body motion",finite and max_jump<1.35,{"max_tip_step":max_jump,"tip_min_y":low})
 		check(id+" sword stays attached inside animated palm",wrist_error<.005,wrist_error)
 		if id!="lunge":
-			for i in travels.size():check(id+" active swing %d moves the blade"%i,float(travels[i])>.55,travels[i])
+			for i in travels.size():check(id+" active strike %d follows its actual limb or blade"%i,float(travels[i])>.55,travels[i])
 	var auditor=load("res://tools/roll_studio.gd").new();auditor.rig=b.rig
 	for sample in [["idle",0.0],["sweep",.52],["combo",1.46],["overhead",1.18],["leap",1.60],["spin",1.31],["death_storm",1.28],["dead",2.0]]:
 		b.rig.initialized=false
@@ -66,7 +68,7 @@ func run(scene:Node) -> void:
 	var committed:=b.yaw;p.global_position=Vector3(-3,.05,-3)
 	await step(105)
 	check("committed combination does not home behind a roll",absf(wrapf(b.yaw-committed,-PI,PI))<.001,b.yaw)
-	await reset();b.start_move("overhead");await step(126)
+	await reset();b.start_move("overhead");await step(105)
 	var at:=b.global_position;b.ai_enabled=true
 	await step(24)
 	check("heavy attack has a stationary punish window",b.state=="recover" and b.global_position.distance_to(at)<.02,[b.state,b.global_position.distance_to(at)])
@@ -75,7 +77,7 @@ func run(scene:Node) -> void:
 	await reset(9);b.start_move("lunge");await step(39)
 	at=b.rig.blade()[1];await step(17)
 	check("pouncing thrust carries the blade through its hit window",G.flat(b.rig.blade()[1]-at).length()>2,G.flat(b.rig.blade()[1]-at).length())
-	await step(49)
+	await step(20)
 	check("lunge brakes before its recovery",b.state=="recover" and G.flat(b.velocity).length()<.02,[b.state,b.velocity])
 	await reset(10);b.start_move("leap")
 	var peak:=0.0;var max_rise:=0.0;var previous:=b.global_position.y

@@ -24,6 +24,7 @@ var blade_length := 1.10
 var previous_grip := Vector3.ZERO
 var previous_tip := Vector3.ZERO
 var roll_direction := Vector3.FORWARD
+var roll_locked:=false
 var pose_blend := 13.0
 var initialized := false
 var feet := {}
@@ -217,7 +218,7 @@ func pose(action: String, t: float, dt: float, speed: float, direction: Vector3,
 	if not skel: return
 	clock += dt
 	if kind=="knight":
-		var two_hands:=KnightMoves.is_attack(action) and KnightMoves.key(action,variant) in ["heavy","counter","jump_attack"]
+		var two_hands:=KnightMoves.is_attack(action) and KnightMoves.two_handed(action,variant)
 		var next_grip:=move_toward(left_grip_blend,1.0 if two_hands else 0.0,dt*12)
 		if not is_equal_approx(next_grip,left_grip_blend):
 			left_grip_blend=next_grip
@@ -592,7 +593,7 @@ func _pose_weapon(action:String,t:float,dt:float,variant:int) -> void:
 		var shoulder:Vector3=globals.spine2*rest.spine2.affine_inverse()*heads["upper_"+side]
 		var pole:=chest_bs*Vector3(sx*.65,-.18,-.65)
 		if side=="r":_grasp(side,shoulder,palm,sword,pole,float(pose.wrist_roll))
-		elif id in ["heavy","counter","jump_attack"]:
+		elif KnightMoves.two_handed(action,variant):
 			var actual_palm:Vector3=globals.hand_r*rest.hand_r.affine_inverse()*right_socket
 			_grasp(side,shoulder,actual_palm-sword*.075,sword,pole,float(pose.wrist_roll))
 		else:
@@ -841,16 +842,20 @@ func _pose_roll(t:float,dt:float) -> void:
 	var spin:float=authored.spin
 	var bank:float=authored.bank
 	var heading:=atan2(roll_direction.x,roll_direction.z)
-	# Turn into the shoulder roll, then return to the target-facing stance.
+	# Lock-on keeps the chest facing its target: the body tumbles about the
+	# horizontal axis perpendicular to travel instead of turning a forward roll.
 	var turn:=smoothstep(0,.12,f)*(1-smoothstep(.79,1,f))
-	motion.transform=Transform3D(Basis(Vector3.UP,wrapf(heading,-PI,PI)*turn),Vector3.ZERO)
+	motion.transform=Transform3D.IDENTITY if roll_locked else Transform3D(Basis(Vector3.UP,wrapf(heading,-PI,PI)*turn),Vector3.ZERO)
+	var axis:=Vector3.UP.cross(roll_direction).normalized() if roll_locked else Vector3.RIGHT
+	if axis.length_squared()<.5:axis=Vector3.RIGHT
+	var tumble:=Basis(axis,spin)
 	var p:=Vector3(.045*sin(f*PI),authored.height,0)
-	var pelvis_bs:=Basis(Vector3.FORWARD,bank)*Basis(Vector3.RIGHT,spin+.08)
+	var pelvis_bs:=Basis(Vector3.FORWARD,bank)*tumble*Basis(Vector3.RIGHT,.08)
 	var spinal:=p
 	var radii:={"pelvis":.17,"spine1":.17,"spine2":.18,"neck":.14,"head":.32}
 	for bn in ["pelvis","spine1","spine2","neck","head"]:
 		var flex:float={"pelvis":0.0,"spine1":.25,"spine2":.60,"neck":1.20,"head":1.68}[bn]*tuck
-		var bs:=Basis(Vector3.FORWARD,bank)*Basis(Vector3.RIGHT,spin+.08+flex)
+		var bs:=Basis(Vector3.FORWARD,bank)*tumble*Basis(Vector3.RIGHT,.08+flex)
 		var endpoint:Vector3=spinal+bs*(tails[bn]-heads[bn])
 		_oriented(bn,spinal,bs)
 		spinal=endpoint
@@ -861,8 +866,8 @@ func _pose_roll(t:float,dt:float) -> void:
 		var hip:Vector3=p+pelvis_bs*(heads["thigh_"+side]-heads.pelvis)
 		var hip_flex:float=-2.05*tuck*lead
 		var knee_flex:float=2.65*tuck*(.94 if side=="l" else 1.0)
-		var leg_bs:=Basis(Vector3.FORWARD,bank)*Basis(Vector3.RIGHT,spin+hip_flex)
-		var shin_bs:=Basis(Vector3.FORWARD,bank)*Basis(Vector3.RIGHT,spin+hip_flex+knee_flex)
+		var leg_bs:=Basis(Vector3.FORWARD,bank)*tumble*Basis(Vector3.RIGHT,hip_flex)
+		var shin_bs:=Basis(Vector3.FORWARD,bank)*tumble*Basis(Vector3.RIGHT,hip_flex+knee_flex)
 		var knee:Vector3=hip+leg_bs*Vector3.DOWN*lengths["thigh_"+side]
 		var ankle:Vector3=knee+shin_bs*Vector3.DOWN*lengths["shin_"+side]
 		var plant:=smoothstep(.56 if side=="l" else .70,.78 if side=="l" else .90,f)
@@ -883,18 +888,22 @@ func _pose_roll(t:float,dt:float) -> void:
 		else:
 			_put("thigh_"+side,hip,knee)
 			_put("shin_"+side,knee,ankle)
-		var foot_bs:=Basis(Vector3.RIGHT,(spin+hip_flex+knee_flex*.72)*(1-plant))
+		var foot_bs:=Basis(axis,spin*(1-plant))*Basis(Vector3.RIGHT,(hip_flex+knee_flex*.72)*(1-plant))
 		_put("foot_"+side,ankle,ankle+foot_bs*Vector3(0,-.035,.15))
 		feet[side]=ankle
 		var chest:Transform3D=globals.spine2
 		var shoulder:Vector3=chest.origin+chest.basis*rest.spine2.basis.inverse()*(heads["upper_"+side]-heads.spine2)
 		# The free palm braces the approach; the sword arm stays close to the ribs.
 		var local_hand:=Vector3(sx*lerpf(.29,.23,tuck),lerpf(-.24,-.05,tuck),lerpf(.12,.34,tuck))
-		var chest_basis:=Basis(Vector3.FORWARD,bank)*Basis(Vector3.RIGHT,spin+.35*tuck)
+		var chest_basis:=Basis(Vector3.FORWARD,bank)*tumble*Basis(Vector3.RIGHT,.35*tuck)
 		var hand_target:Vector3=globals.spine2.origin+chest_basis*local_hand
 		if side=="l":
 			var brace:=sin(smoothstep(.06,.28,f)*PI)*(1-smoothstep(.28,.36,f))
-			hand_target=hand_target.lerp(Vector3(.27,.09,.50),brace*.72)
+			var brace_at:=Vector3(.27,.09,.50)
+			if roll_locked:
+				brace_at=roll_direction*.46+Vector3(0,.09,0)
+				if roll_direction.x<-.25:brace*=.25
+			hand_target=hand_target.lerp(brace_at,brace*.72)
 		var pole:=chest_basis*Vector3(sx*.85,-.35,-.30)
 		var sword_axis:=chest_basis*Vector3(-.24,.12,.96).normalized()
 		if side=="r":
@@ -915,7 +924,8 @@ func _pose_roll(t:float,dt:float) -> void:
 			if bn=="root":continue
 			var rad:float=radii.get(bn,.065 if bn.begins_with("hand") else .09)
 			min_y=minf(min_y,globals[bn].origin.y-rad)
-	var lift:=ground_min-min_y
+	var side_clearance:=(.014+.018*absf(roll_direction.x))*pow(sin(f*PI),2) if roll_locked else 0.0
+	var lift:=ground_min+side_clearance-min_y
 	for bn in globals:
 		if bn!="root":globals[bn].origin.y+=lift
 	grip.y+=lift

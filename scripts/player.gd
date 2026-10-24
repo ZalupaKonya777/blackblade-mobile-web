@@ -64,7 +64,7 @@ var air_velocity:=Vector3.ZERO
 
 func _ready() -> void:
 	G.player=self
-	collision_layer=2;collision_mask=1
+	collision_layer=2;collision_mask=5
 	body_shape=CollisionShape3D.new();body_capsule=CapsuleShape3D.new();body_capsule.radius=.31;body_capsule.height=1.60;body_shape.shape=body_capsule;body_shape.position.y=.80;add_child(body_shape)
 	floor_snap_length=.30
 	rig=FighterRig.new();add_child(rig);rig.setup("knight")
@@ -161,7 +161,9 @@ func _physics_process(dt:float) -> void:
 			"backstep":
 				var back:=Vector3(-sin(yaw),0,-cos(yaw))
 				velocity.x=back.x*4.0*(1-t/.5);velocity.z=back.z*4.0*(1-t/.5);anim="backstep"
-				if t>=.50:_finish()
+				if queue=="light" and t>=.35:
+					if _attack("backstep_attack"):queue=""
+				elif t>=.50:_finish()
 			"attack":
 				_advance_attack(dt);anim=action;anim_t=t
 			"heal":
@@ -205,9 +207,6 @@ func _physics_process(dt:float) -> void:
 		var flat:=Vector2(global_position.x,global_position.z)
 		if flat.length()>18.3:
 			flat=flat.normalized()*18.3;global_position.x=flat.x;global_position.z=flat.y
-	if G.boss and G.boss.alive() and not invulnerable and state!="critical":
-		var sep:=G.flat(global_position-G.boss.global_position)
-		if sep.length()<.94 and sep.length()>.01:global_position+=sep.normalized()*(.94-sep.length())*.45
 	if state=="attack":anim=action;anim_t=t
 	elif state=="roll" and anim!="roll":anim="roll";anim_t=t*.70/roll_duration
 	elif state=="hurt":anim="hurt";anim_t=t
@@ -239,6 +238,7 @@ func _command(cmd:String) -> bool:
 		roll_duration=[.70,.70,.93][int(G.settings.load)]
 		roll_distance=[4.10,3.25,2.65][int(G.settings.load)]
 		rig.roll_direction=dodge_dir.rotated(Vector3.UP,-yaw)
+		rig.roll_locked=target!=null
 		roll_events.clear()
 		_begin("roll")
 		if G.audio:G.audio.play("armor_takeoff",global_position,-13)
@@ -248,6 +248,7 @@ func _command(cmd:String) -> bool:
 			var toward:=G.flat(G.boss.lock_point()-global_position).normalized()
 			yaw=atan2(toward.x,toward.z)
 			G.boss.accept_critical();_begin("critical");hit_done=false;return true
+		if cmd=="light" and sprinting and G.flat(velocity).length()>4.1:return _attack("running_attack")
 		return _attack("counter" if cmd=="heavy" and last_block<.8 else cmd)
 	if cmd=="heal":
 		if flasks<=0 or hp>=hp_cap-.5:return true
@@ -279,8 +280,9 @@ func _attack(which:String,chain:=0) -> bool:
 func _advance_attack(dt:float) -> void:
 	var m:Dictionary=KnightMoves.data(action,combo)
 	var previous:=t-dt
-	if action=="heavy" and heavy_held and t>=.50 and charge_time<.85:
-		t=maxf(.50,previous);charge_time+=dt
+	var charge_at:=minf(.50,float(m.wind)-.10)
+	if action=="heavy" and heavy_held and t>=charge_at and charge_time<.85:
+		t=maxf(charge_at,previous);charge_time+=dt
 		if charge_time>=FightBalance.CHARGE_TIME and not charged:
 			if stamina>=FightBalance.CHARGE_COST:spend(FightBalance.CHARGE_COST);charged=true
 			else:charge_time=.85
@@ -300,8 +302,11 @@ func _advance_attack(dt:float) -> void:
 	if queue=="dodge" and t>=float(m.dodge):
 		if _command("dodge"):queue=""
 	elif queue in ["light","heavy"] and t>=float(m.chain):
-		var chain:=combo+1 if action=="light" and queue=="light" else 0
-		if chain<3 and _attack(queue,chain):queue=""
+		var next_chain:=0
+		if action=="light" and queue=="light":next_chain=combo+1
+		elif action=="heavy" and queue=="heavy":next_chain=combo+1
+		var limit:=4 if queue=="light" else 2
+		if next_chain<limit and _attack(queue,next_chain):queue=""
 	if state=="attack" and t>=float(m.length):_finish()
 
 func spend(amount:float) -> void:

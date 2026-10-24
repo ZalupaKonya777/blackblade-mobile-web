@@ -1,6 +1,6 @@
 extends Node3D
 ## Real controller/IK/hit tests on a plain collision floor. Bots are timing probes,
-## not estimates of human win rates. Cloth is omitted only in this headless lab.
+## not estimates of human win rates. Production skin and cloth stay enabled.
 var p
 var b
 var fx
@@ -31,7 +31,7 @@ func _ready() -> void:
 	b=EclipseBeast.new();b.position=Vector3(0,.05,0);add_child(b)
 	G.camera=LabCamera.new();add_child(G.camera)
 	for rig in [p.rig,b.rig]:
-		if "secondary_motion" in rig:rig.secondary_motion=false
+		if "secondary_motion" in rig:rig.secondary_motion=true
 		rig.model.visible=false;rig.weapon.visible=false
 	b.ai_enabled=false;b.state="idle";b.wait=100
 	run.call_deferred()
@@ -76,11 +76,11 @@ func verify() -> void:
 	check("release brakes with a short grounded stop",G.flat(p.velocity).length()<.05 and G.flat(p.global_position-at).length()>.15 and G.flat(p.global_position-at).length()<.55,p.global_position-at)
 	await reset(8);p.target=null;p._attack("light")
 	var starts:Array=[0.0];var previous:=0;var clock:=0.0
-	for frame in 170:
+	for frame in 240:
 		p._queue("light");await step(1);clock+=1.0/60
 		if p.state=="attack" and p.combo!=previous:starts.append(clock);previous=p.combo
-		if starts.size()>=4:break
-	check("three-hit chain includes a committed finisher",starts.size()>=4 and float(starts[1])>=.64 and float(starts[2])-float(starts[1])>=.69 and float(starts[3])-float(starts[2])>=1.18,starts)
+		if starts.size()>=5:break
+	check("four-hit chain includes a committed finisher",starts.size()>=5 and float(starts[1])>=.64 and float(starts[2])-float(starts[1])>=.69 and float(starts[4])-float(starts[3])>=1.18,starts)
 	await reset(8);p.target=null;p._attack("heavy");p.heavy_held=true
 	await step(38);at=p.global_position;var held:float=p.t
 	await step(20)
@@ -136,17 +136,18 @@ func verify() -> void:
 			p.rig.skel.force_update_all_bone_transforms();var blade:Array=p.rig.blade()
 			if last!=Vector3.INF:max_step=maxf(max_step,blade[1].distance_to(last))
 			last=blade[1];low=minf(low,blade[1].y)
-			var wrist:Vector3=p.rig.skel.global_transform*p.rig.skel.get_bone_global_pose(p.rig.ids.hand_r).origin
-			wrist_error=maxf(wrist_error,wrist.distance_to(blade[0]))
+			var wrist:Vector3=p.rig.skel.global_transform*p.rig.skel.get_bone_global_pose(p.rig.ids.hand_r)*p.rig.rest.hand_r.affine_inverse()*p.rig.right_socket
+			wrist_error=maxf(wrist_error,wrist.distance_to(p.rig.weapon.to_global(p.rig.source_grip)))
 		check(id+" continuous blade motion and floor clearance",max_step<.9 and low>.025,[max_step,low])
 		check(id+" visible sword stays in the animated hand",wrist_error<.005,wrist_error)
 	# Compare real resource commitments to the available window after a medium roll.
-	var quick_window:=1.48+.48+.18+.61-(.61-.07+.70)
-	var slam_window:=2.05+.90+.18+.61-(1.0-.07+.70)
+	var quick_window:=BeastMoves.finish("sweep")+float(BeastMoves.ATTACKS.sweep.recover)+.17+.43-(.61-.07+.70)
+	var slam_window:=BeastMoves.finish("overhead")+float(BeastMoves.ATTACKS.overhead.recover)+.17+.43-(1.0-.07+.70)
+	var light_escape:=float(KnightMoves.MOVES.light1.dodge)+2.0/60
 	var heavy_escape:=1.07+2.0/60
 	var charged_escape:=heavy_escape+.65
-	check("short recovery permits heavy but punishes a charged greed attempt",heavy_escape<quick_window and charged_escape>quick_window,[quick_window,heavy_escape,charged_escape])
-	check("dodging a committed overhead earns a charged punish",charged_escape<slam_window,[slam_window,charged_escape])
+	check("short recovery permits a light punish and rewards restraint",light_escape<quick_window and heavy_escape>quick_window,[quick_window,light_escape,heavy_escape])
+	check("dodging a committed overhead earns a normal heavy punish",heavy_escape<slam_window and charged_escape>slam_window,[slam_window,heavy_escape,charged_escape])
 
 func move_bot(dir:Vector3) -> void:
 	p.bot_move=Vector2(dir.x,-dir.z)

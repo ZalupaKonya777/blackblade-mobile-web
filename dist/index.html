@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="game.apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=39bf0ad358299c16">
+  <link rel="stylesheet" href="style.css?v=2d496d270667e6e1">
 </head>
 <body>
   <canvas id="game" tabindex="0" aria-label="Арена Храма затмения"></canvas>
@@ -49,8 +49,9 @@
       <button id="home-help-toggle" class="text-button" type="button" aria-expanded="false">Как играть <span aria-hidden="true">＋</span></button>
       <div id="home-help" class="home-help" hidden>
         <p><b>Движение</b> — стик слева. Камера — свайп по свободной части экрана.</p>
-        <p><b>Перекат</b> — отпусти кнопку с направлением; удержание включает спринт.</p>
-        <p><b>Сильный удар</b> — удерживай для заряда. После блока он становится контрударом.</p>
+        <p><b>Удар</b> — серия из четырёх разных атак. Во время спринта — выпад, после отскока — удар снизу.</p>
+        <p><b>Перекат</b> — отпусти кнопку с направлением; удержание включает спринт. При захвате цели влево и вправо — боковые перекаты.</p>
+        <p><b>Сильный удар</b> — повторное нажатие продолжает удар сверху широким обратным срезом. Удерживай для заряда; после блока — контрудар.</p>
         <p>На iPhone: «Поделиться» → «На экран “Домой”» для запуска без панелей браузера.</p>
       </div>
       <div class="home-foot">СЕНСОРНОЕ УПРАВЛЕНИЕ <span>·</span> КЛАВИАТУРА <span>·</span> ГЕЙМПАД</div>
@@ -122,6 +123,6 @@
 
   <div id="rotate" class="screen rotate-screen" hidden><div class="phone-outline" aria-hidden="true">↻</div><h2>Разверни телефон</h2><p>Храм открыт в горизонтальном положении.</p></div>
   <div id="error" class="screen error-screen" hidden><div class="menu-card"><div class="eyebrow">СВЯЗЬ С ХРАМОМ ПРЕРВАНА</div><h2>Не удалось войти</h2><p id="error-text"></p><button id="reload" class="primary" type="button">Попробовать снова <span>↻</span></button></div></div>
-  <script type="module" src="app.js?v=39bf0ad358299c16"></script>
+  <script type="module" src="app.js?v=2d496d270667e6e1"></script>
 </body>
 </html>

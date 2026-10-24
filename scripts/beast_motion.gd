@@ -6,6 +6,51 @@ extends RefCounted
 const REST={"height":.33,"lean":1.12,"twist":0.0,"bank":0.0,"blade_yaw":-.25,"blade_pitch":-.58,"hand_x":-.28,"hand_y":.68,"hand_reach":.20,"paw_weight":1.0,"paw_x":.36,"paw_z":.47,"foot_lz":-.50,"foot_rz":-.28,"head_pitch":.20,"flight":0.0,"spread":1.0,"pelvis_yaw":0.0,"chest_yaw":0.0,"root_x":0.0,"root_z":0.0,"paw_y":0.0,"foot_lift_l":0.0,"foot_lift_r":0.0,"foot_yaw_l":0.0,"foot_yaw_r":0.0,"wrist_roll":0.0,"shoulder_reach":0.0,"body_drive":0.0}
 
 const TRACKS={
+ "backhand":{
+  "blade_yaw":[[0,-.25],[.19,1.30],[.34,1.55],[.46,.88],[.62,-1.72],[.86,-1.58],[1.16,-.25]],
+  "blade_pitch":[[0,-.58],[.26,.28],[.45,.24],[.65,.02],[1.16,-.58]],
+  "pelvis_yaw":[[0,0],[.25,.26],[.45,.12],[.65,-.29],[1.16,0]],
+  "chest_yaw":[[0,0],[.31,.31],[.47,.14],[.66,-.40],[1.16,0]],
+  "twist":[[0,0],[.31,.25],[.63,-.31],[1.16,0]],
+  "height":[[0,.33],[.28,.30],[.56,.34],[1.16,.33]],
+  "root_x":[[0,0],[.30,.045],[.64,-.045],[1.16,0]],
+  "hand_reach":[[0,.20],[.31,.27],[.59,.48],[.87,.35],[1.16,.20]],
+  "hand_y":[[0,.68],[.30,.77],[.63,.68],[1.16,.68]],
+  "wrist_roll":[[0,0],[.31,.31],[.65,-.32],[1.16,0]],
+  "foot_yaw_l":[[0,0],[.31,.10],[.65,-.17],[1.16,0]],
+  "foot_yaw_r":[[0,0],[.28,.16],[.65,-.25],[1.16,0]],
+  "body_drive":[[0,0],[.35,0],[.61,.80],[.87,.32],[1.16,0]]},
+ "paw_strike":{
+  "blade_yaw":[[0,-.25],[.25,-.74],[.64,-.82],[1.24,-.25]],
+  "blade_pitch":[[0,-.58],[.30,-.22],[.70,-.24],[1.24,-.58]],
+  "height":[[0,.33],[.24,.31],[.43,.38],[.66,.34],[1.24,.33]],
+  "lean":[[0,1.12],[.26,.96],[.48,1.04],[.66,1.20],[1.24,1.12]],
+  "pelvis_yaw":[[0,0],[.30,.17],[.61,-.20],[1.24,0]],
+  "chest_yaw":[[0,0],[.31,.24],[.62,-.35],[1.24,0]],
+  "root_x":[[0,0],[.28,-.065],[.58,.035],[1.24,0]],
+  "paw_weight":[[0,1],[.17,1],[.29,0],[.68,0],[.90,1],[1.24,1]],
+  "paw_y":[[0,0],[.23,.08],[.36,.43],[.51,.31],[.65,.16],[.89,0],[1.24,0]],
+  "paw_x":[[0,.36],[.27,.48],[.40,.52],[.58,-.05],[.75,.14],[1.02,.36],[1.24,.36]],
+  "paw_z":[[0,.47],[.24,.37],[.39,.46],[.54,.91],[.68,.81],[.92,.50],[1.24,.47]],
+  "spread":[[0,1],[.27,1.13],[.67,1.13],[1.24,1]],
+  "head_pitch":[[0,.20],[.32,.02],[.62,.31],[1.24,.20]],
+  "body_drive":[[0,0],[.32,0],[.57,.75],[.80,.30],[1.24,0]]},
+ "evade_cut":{
+  "blade_yaw":[[0,-.25],[.30,-1.32],[.43,-1.51],[.57,-.58],[.74,1.65],[1.04,1.34],[1.43,-.25]],
+  "blade_pitch":[[0,-.58],[.30,.08],[.58,.15],[.77,.06],[1.43,-.58]],
+  "height":[[0,.33],[.22,.27],[.48,.35],[.74,.30],[1.43,.33]],
+  "lean":[[0,1.12],[.28,1.20],[.58,1.02],[.85,1.14],[1.43,1.12]],
+  "bank":[[0,0],[.27,-.12],[.63,.09],[1.43,0]],
+  "pelvis_yaw":[[0,0],[.30,-.22],[.68,.28],[1.43,0]],
+  "chest_yaw":[[0,0],[.39,-.29],[.76,.40],[1.43,0]],
+  "root_x":[[0,0],[.28,-.04],[.70,.055],[1.43,0]],
+  "hand_reach":[[0,.20],[.35,.29],[.70,.51],[1.02,.34],[1.43,.20]],
+  "paw_weight":[[0,1],[.22,.95],[.39,.10],[.70,.15],[.91,1],[1.43,1]],
+  "paw_y":[[0,0],[.28,.03],[.52,.10],[.78,.04],[.93,0],[1.43,0]],
+  "paw_z":[[0,.47],[.31,.40],[.70,.37],[.94,.50],[1.43,.47]],
+  "foot_lift_r":[[0,0],[.24,0],[.43,.10],[.68,0],[1.43,0]],
+  "foot_lift_l":[[0,0],[.48,0],[.66,.08],[.86,0],[1.43,0]],
+  "wrist_roll":[[0,0],[.35,-.20],[.76,.24],[1.43,0]]},
  "sweep":{
   "blade_yaw":[[0,-.25],[.28,-1.62],[.53,-1.78],[.64,-1.10],[.75,.35],[.86,1.80],[1.14,1.65],[1.48,-.25]],
   "blade_pitch":[[0,-.58],[.35,.06],[.65,.10],[.86,-.08],[1.20,-.30],[1.48,-.58]],
@@ -284,14 +329,15 @@ static func sample(action:String,time:float,clock:float) -> Dictionary:
 		var id:=action.trim_prefix("recover_")
 		if TRACKS.has(id):
 			var end:Dictionary=REST.duplicate()
-			for key in TRACKS[id]:end[key]=curve(TRACKS[id][key],BeastMoves.ATTACKS[id].length)
-			for key in BODY_TRACKS[id]:end[key]=curve(BODY_TRACKS[id][key],BeastMoves.ATTACKS[id].length)
-			for k in result:result[k]=lerpf(end[k],result[k],smoothstep(0,.48,time))
+			var end_time:=BeastMoves.finish(id)
+			for key in TRACKS[id]:end[key]=curve(TRACKS[id][key],end_time)
+			for key in BODY_TRACKS.get(id,{}):end[key]=curve(BODY_TRACKS[id][key],end_time)
+			for k in result:result[k]=lerpf(end[k],result[k],smoothstep(0,float(BeastMoves.ATTACKS[id].recover),time))
 		result.height-=sin(time*11)*exp(-time*7)*.012
 		result.lean+=sin(time*11)*exp(-time*7)*.025
 	elif TRACKS.has(action):
 		for key in TRACKS[action]:result[key]=curve(TRACKS[action][key],time)
-		for key in BODY_TRACKS[action]:result[key]=curve(BODY_TRACKS[action][key],time)
+		for key in BODY_TRACKS.get(action,{}):result[key]=curve(BODY_TRACKS[action][key],time)
 	elif action in ["stagger","hurt","critical"]:
 		result.height=.23;result.lean=1.32;result.blade_pitch=-.16;result.blade_yaw=-1.2;result.hand_y=.24;result.paw_weight=1;result.head_pitch=.68
 	elif action=="stagger_air":

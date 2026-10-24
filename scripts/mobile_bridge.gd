@@ -98,6 +98,7 @@ func _send_state() -> void:
 		"flasks":p.flasks,"bossHP":b.hp,"maxBossHP":b.MAX_HP,"bossPhase":b.phase,
 		"stance":b.posture,"maxStance":b.STANCE,"locked":p.target!=null,
 		"playerState":p.state,"action":p.action,"playerX":p.position.x,"playerZ":p.position.z,
+		"playerMove":KnightMoves.key(p.action,p.combo) if p.state=="attack" else "",
 		"charge":p.charge_time/FightBalance.CHARGE_TIME,"charged":p.charged,"counter":p.last_block<.8,
 		"rolls":G.stats.rolls,"evades":G.stats.evades,"hits":G.stats.hits,"damage":G.stats.damage,
 		"elapsed":G.elapsed,"fps":Engine.get_frames_per_second(),"curse":p.dd_timer,
@@ -105,4 +106,6 @@ func _send_state() -> void:
 		"quality":G.settings.quality,"renderScale":get_viewport().scaling_3d_scale,"msaa":get_viewport().msaa_3d,
 		"shadows":G.arena.moon.shadow_enabled,"bossX":b.position.x,"bossZ":b.position.z,"bossState":b.state,"bossAttack":b.attack,
 		"bossAI":b.ai_enabled}
+	if "--qa-controls" in OS.get_cmdline_user_args():
+		data.rollLocked=p.rig.roll_locked;data.rollLocalX=p.rig.roll_direction.x;data.rollLocalZ=p.rig.roll_direction.z
 	browser.BlackbladeUI.update(JSON.stringify(data))
